@@ -364,17 +364,11 @@ window.limparBancoDeDados = async () => {
   }
   
   try {
-    // Remove todos os confirmados
-    for (const player of confirmados) {
-      await remove(ref(db, `confirmados/${player.id}`));
-    }
+    // Remove TODOS os dados dos nós confirmados e listaEspera
+    await remove(ref(db, 'confirmados'));
+    await remove(ref(db, 'listaEspera'));
     
-    // Remove todos da lista de espera
-    for (const player of listaEspera) {
-      await remove(ref(db, `listaEspera/${player.id}`));
-    }
-    
-    alert('✅ Banco de dados limpo com sucesso!');
+    alert('✅ Banco de dados limpo com sucesso! Todos os jogadores foram removidos.');
   } catch (e) {
     alert('Erro ao limpar banco: ' + e.message);
   }
