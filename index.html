@@ -8,7 +8,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma;background:#0d1b0d;color:#fff;min-height:100vh}
+body{font-family:'Roboto',Tahoma;background:#0d1b0d;color:#fff;min-height:100vh}
 .logo-top{text-align:center;padding:20px}
 .logo-top img{max-width:200px}
 .container{max-width:1000px;margin:auto;padding:20px}
@@ -66,7 +66,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="container">
 
 <header>
-<h1>POKER DE QUINTA</h1>
+<h1>LISTA DE CONFIRMADOS POKER DE QUINTA</h1>
 <div class="subtitle">📅 1ª Etapa - 29/01/2026</div>
 </header>
 
@@ -79,7 +79,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <button class="add-btn" id="btnConfirmar">➕ CONFIRMAR PRESENÇA</button>
 <button class="cancel-btn-main" id="btnAbrirCancelar">❌ CANCELAR MINHA INSCRIÇÃO</button>
 <button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR CSV</button>
-<button class="add-btn" id="btnLimparBanco" style="background:#8b0000;color:#fff">🗑️ LIMPAR BANCO DE DADOS</button>
 
 <div class="section">
 <h3>✅ CONFIRMADOS</h3>
@@ -352,29 +351,6 @@ window.removerConvidado = async (id, isWait) => {
     alert('Erro ao remover: ' + e.message);
   }
 };
-
-// Função para limpar todo o banco de dados
-window.limparBancoDeDados = async () => {
-  if (!confirm('⚠️ ATENÇÃO! Esta ação irá APAGAR TODOS os jogadores confirmados e da lista de espera. Deseja continuar?')) {
-    return;
-  }
-  
-  if (!confirm('Tem certeza absoluta? Esta ação NÃO pode ser desfeita!')) {
-    return;
-  }
-  
-  try {
-    // Remove TODOS os dados dos nós confirmados e listaEspera
-    await remove(ref(db, 'confirmados'));
-    await remove(ref(db, 'listaEspera'));
-    
-    alert('✅ Banco de dados limpo com sucesso! Todos os jogadores foram removidos.');
-  } catch (e) {
-    alert('Erro ao limpar banco: ' + e.message);
-  }
-};
-
-btnLimparBanco.onclick = limparBancoDeDados;
 
 function formatarData(iso) {
   const d = new Date(iso);
