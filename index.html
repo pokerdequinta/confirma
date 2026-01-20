@@ -228,6 +228,10 @@ try {
 }
 
 const selectJogador = document.getElementById('playerName');
+const optDefault = document.createElement('option');
+optDefault.value = '';
+optDefault.textContent = 'Selecione seu nome...';
+selectJogador.appendChild(optDefault);
 jogadores.sort().forEach(j => {
   const o = document.createElement('option');
   o.value = o.textContent = j;
@@ -283,10 +287,11 @@ function atualizar() {
   waitlistList.innerHTML = listaEspera.length ? '' : '<li class="empty-state">Fila vazia</li>';
   listaEspera.forEach((p, i) => {
     const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
+    const guestInfo = p.isGuest && p.guestOf ? ` (Convidado de ${p.guestOf})` : '';
     const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge wait">ESPERA</span>';
     waitlistList.innerHTML += `<li class="player-item">
         <div class="player-info"><div class="player-number">${i+1}º</div>
-        <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${new Date(p.data).toLocaleTimeString()}</small></div></div>
+        <div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleTimeString()}</small></div></div>
         ${badge}
         ${btnRemover}</li>`;
   });
