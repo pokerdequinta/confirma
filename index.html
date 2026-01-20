@@ -151,7 +151,7 @@ const firebaseConfig = {
 };
 
 const LIMITE_VAGAS = 20;
-const TELEFONE_ORGANIZADOR = "5541987210685"; // Seu telefone para notificações
+const TELEFONE_ORGANIZADOR = "5541987210685";
 const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
 let db;
@@ -229,60 +229,52 @@ btnConfirmarModal.onclick = async () => {
   } catch (e) { alert('Erro: ' + e.message); }
 };
 
-// Função para enviar notificação ao organizador
-function notificarOrganizador(nomeJogador, status) {
+// Função para notificar via WhatsApp (corrigida para mobile)
+function notificarCancelamento(nomeJogador, statusAnterior) {
   const dataHora = new Date().toLocaleString('pt-BR');
-  const statusTexto = status === 'confirmado' ? 'CONFIRMADOS' : 'LISTA DE ESPERA';
-  const msg = encodeURIComponent(
-    `🚨 CANCELAMENTO - Poker de Quinta\n\n` +
-    `Jogador: ${nomeJogador}\n` +
-    `Status anterior: ${statusTexto}\n` +
-    `Data/Hora: ${dataHora}\n\n` +
-    `O jogador cancelou sua inscrição.`
-  );
-  window.open(`https://wa.me/${TELEFONE_ORGANIZADOR}?text=${msg}`, '_blank');
+  const statusTexto = statusAnterior === 'confirmado' ? 'CONFIRMADOS' : 'LISTA DE ESPERA';
+  
+  const mensagem = `🚨 CANCELAMENTO - Poker de Quinta
+
+Jogador: ${nomeJogador}
+Status anterior: ${statusTexto}
+Data/Hora: ${dataHora}
+
+O jogador cancelou sua inscrição.`;
+
+  // Codifica a mensagem para URL
+  const mensagemCodificada = encodeURIComponent(mensagem);
+  const urlWhatsApp = `https://wa.me/${TELEFONE_ORGANIZADOR}?text=${mensagemCodificada}`;
+  
+  // Abre em nova aba/janela
+  window.open(urlWhatsApp, '_blank');
 }
 
-// LÓGICA DE CANCELAMENTO COM WHATSAPP (ATUALIZADA)
+// LÓGICA DE CANCELAMENTO PELO BOTÃO GRANDE
 btnExecutarCancelamento.onclick = async () => {
-    const nomeAlvo = selectCancelJogador.value;
-    const playerC = confirmados.find(p => p.nome === nomeAlvo && !p.isGuest);
-    const playerE = listaEspera.find(p => p.nome === nomeAlvo && !p.isGuest);
-    const player = playerC || playerE;
+  const nomeAlvo = selectCancelJogador.value;
+  const playerC = confirmados.find(p => p.nome === nomeAlvo && !p.isGuest);
+  const playerE = listaEspera.find(p => p.nome === nomeAlvo && !p.isGuest);
+  const player = playerC || playerE;
 
-    if (!player) return alert("Você não foi encontrado na lista de inscritos.");
-    if (!confirm(`Confirmar cancelamento de ${nomeAlvo}?`)) return;
+  if (!player) return alert("Você não foi encontrado na lista de inscritos.");
+  if (!confirm(`Confirmar cancelamento de ${nomeAlvo}?`)) return;
 
-    try {
-        // Determina o status atual do jogador
-        const statusAtual = playerC ? 'confirmado' : 'espera';
-        
-        // Remove do Banco
-        await window.remover(player.id, !!playerE);
-        
-        // Notifica o organizador
-        notificarOrganizador(nomeAlvo, statusAtual);
-        
-        modalCancelar.classList.remove('active');
-        alert('Cancelamento realizado! O organizador foi notificado.');
-    } catch (e) { 
-        alert("Erro ao cancelar: " + e.message); 
-    }
-};
-
-window.remover = async (id, isWait) => {
   try {
-    const listaAtual = isWait ? listaEspera : confirmados;
-    const player = listaAtual.find(p => p.id === id);
-    if(!player) return;
-
-    const path = isWait ? 'listaEspera' : 'confirmados';
-    await remove(ref(db, `${path}/${id}`));
-
-    if (!isWait) {
+    const statusAtual = playerC ? 'confirmado' : 'espera';
+    
+    // Remove do banco
+    const path = playerC ? 'confirmados' : 'listaEspera';
+    await remove(ref(db, `${path}/${player.id}`));
+    
+    // Remove convidados associados se estava nos confirmados
+    if (playerC) {
       const convidados = listaEspera.filter(p => p.guestOf === player.nome);
-      for (const conv of convidados) await remove(ref(db, `listaEspera/${conv.id}`));
-
+      for (const conv of convidados) {
+        await remove(ref(db, `listaEspera/${conv.id}`));
+      }
+      
+      // Promove próximo da lista de espera
       const proximo = listaEspera.find(p => jogadores.includes(p.nome) && !p.isGuest);
       if (proximo) {
         await remove(ref(db, `listaEspera/${proximo.id}`));
@@ -290,7 +282,43 @@ window.remover = async (id, isWait) => {
         await set(novoRef, { ...proximo, id: novoRef.key });
       }
     }
-  } catch (e) { console.error(e); }
+    
+    // Notifica organizador
+    notificarCancelamento(nomeAlvo, statusAtual);
+    
+    modalCancelar.classList.remove('active');
+    alert('Cancelamento realizado! O organizador foi notificado.');
+  } catch (e) { 
+    alert("Erro ao cancelar: " + e.message); 
+  }
+};
+
+// Função de remover CONVIDADOS (somente convidados podem ser removidos pelo botão X)
+window.removerConvidado = async (id, isWait) => {
+  try {
+    const listaAtual = isWait ? listaEspera : confirmados;
+    const player = listaAtual.find(p => p.id === id);
+    
+    if (!player) return;
+    
+    // Verifica se é convidado
+    if (!player.isGuest) {
+      alert('Apenas convidados podem ser removidos por este botão. Membros devem usar o botão "Cancelar Minha Inscrição".');
+      return;
+    }
+    
+    if (!confirm(`Remover ${player.nome}?`)) return;
+
+    const path = isWait ? 'listaEspera' : 'confirmados';
+    await remove(ref(db, `${path}/${id}`));
+    
+    // Notifica organizador
+    notificarCancelamento(player.nome, isWait ? 'espera' : 'confirmado');
+    
+  } catch (e) { 
+    console.error(e);
+    alert('Erro ao remover: ' + e.message);
+  }
 };
 
 function formatarData(iso) {
@@ -305,22 +333,37 @@ function atualizar() {
 
   confirmedList.innerHTML = confirmados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
   confirmados.forEach((p, i) => {
+    const isMembro = jogadores.includes(p.nome);
+    const isConvidado = p.isGuest;
+    
+    // Botão X só aparece para CONVIDADOS
+    const btnRemover = isConvidado ? `<button class="remove-btn" onclick="removerConvidado('${p.id}',false)">❌</button>` : '';
+    
     confirmedList.innerHTML += `<li class="player-item">
         <div class="player-info"><div class="player-number">${i+1}º</div>
         <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${formatarData(p.data)}</small></div></div>
-        ${jogadores.includes(p.nome) ? '<span class="player-badge member">MEMBRO</span>' : ''}
-        <button class="remove-btn" onclick="remover('${p.id}',false)">❌</button></li>`;
+        ${isMembro ? '<span class="player-badge member">MEMBRO</span>' : ''}
+        ${isConvidado ? '<span class="player-badge guest">CONVIDADO</span>' : ''}
+        ${btnRemover}</li>`;
   });
 
   waitlistList.innerHTML = listaEspera.length ? '' : '<li class="empty-state">Nenhum jogador</li>';
   listaEspera.forEach((p, i) => {
-    const badge = p.isGuest ? 'guest' : (jogadores.includes(p.nome) ? 'member' : 'wait');
+    const isMembro = jogadores.includes(p.nome);
+    const isConvidado = p.isGuest;
+    
+    // Botão X só aparece para CONVIDADOS
+    const btnRemover = isConvidado ? `<button class="remove-btn" onclick="removerConvidado('${p.id}',true)">❌</button>` : '';
+    
+    const badge = isConvidado ? 'guest' : (isMembro ? 'member' : 'wait');
+    const badgeText = isConvidado ? 'CONVIDADO' : 'ESPERA';
+    
     waitlistList.innerHTML += `<li class="player-item">
         <div class="player-info"><div class="player-number">${i+1}º</div>
         <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${formatarData(p.data)}</small>
         ${p.guestOf ? `<small>👤 De: ${p.guestOf}</small>` : ''}</div></div>
-        <span class="player-badge ${badge}">${p.isGuest ? 'CONVIDADO' : 'ESPERA'}</span>
-        <button class="remove-btn" onclick="remover('${p.id}',true)">❌</button></li>`;
+        <span class="player-badge ${badge}">${badgeText}</span>
+        ${btnRemover}</li>`;
   });
 }
 
