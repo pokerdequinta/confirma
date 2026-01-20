@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirmação de Presença - 1ª Etapa</title>
+<title>Poker de Quinta - 1ª Etapa</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
@@ -21,7 +21,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 .add-btn{width:100%;padding:15px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:10px;color:#000}
 .cancel-btn-main{width:100%;padding:15px;background:#c72c48;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px;color:#fff}
-.export-btn{background:#2d5016;margin-top:10px; color:#fff}
 
 .section{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;margin-bottom:25px}
 .player-list{list-style:none}
@@ -30,14 +29,12 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .player-number{font-family:'Anton';color:#d4a121}
 .player-details{display:flex;flex-direction:column}
 .player-details small{opacity:.85}
-.player-badge{background:#d4a121;color:#000;padding:4px 10px;border-radius:20px;font-size:.8em;font-weight:bold}
+.player-badge{padding:4px 10px;border-radius:20px;font-size:.8em;font-weight:bold;margin-left:10px}
 .wait{background:#c72c48;color:#fff}
 .guest{background:#4CAF50;color:#000}
 .member{background:#1E90FF;color:#fff}
 
-/* Segurança: Botão de remover oculto para evitar remoções acidentais */
-.remove-btn{display:none} 
-
+.remove-btn{background:#c72c48;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:bold}
 .empty-state{text-align:center;opacity:.7;padding:30px}
 
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);justify-content:center;align-items:center;z-index:1000}
@@ -52,8 +49,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .modal-btn.cancel{background:#c72c48;color:#fff}
 
 .status-indicator{position:fixed;top:10px;right:10px;background:#2d5016;padding:8px 15px;border-radius:20px;font-size:0.85em;border:1px solid #d4a121}
-.status-indicator.connected{background:#1a3d1a;border-color:#4CAF50}
-@media(max-width:768px){ .info-cards{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -78,16 +73,15 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
     <button class="add-btn" id="btnConfirmar">➕ CONFIRMAR PRESENÇA</button>
     <button class="cancel-btn-main" id="btnAbrirCancelar">❌ CANCELAR MINHA INSCRIÇÃO</button>
-    <button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR CSV</button>
 
     <div class="section">
         <h3>✅ CONFIRMADOS</h3>
-        <ul id="confirmedList" class="player-list"><li class="empty-state">Carregando...</li></ul>
+        <ul id="confirmedList" class="player-list"></ul>
     </div>
 
     <div class="section">
         <h3>⏳ LISTA DE ESPERA</h3>
-        <ul id="waitlistList" class="player-list"><li class="empty-state">Carregando...</li></ul>
+        <ul id="waitlistList" class="player-list"></ul>
     </div>
 </div>
 
@@ -103,11 +97,10 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
         </div>
         <div id="guestFields" style="display:none">
             <div class="form-group"><label>Nome do Convidado</label><input id="guestName"></div>
-            <div class="form-group"><label>Telefone do Convidado</label><input id="guestPhone"></div>
         </div>
         <div class="modal-buttons">
-            <button class="modal-btn cancel" id="btnCancelar">Voltar</button>
-            <button class="modal-btn confirm" id="btnConfirmarModal">Confirmar</button>
+            <button class="modal-btn cancel" id="btnFecharModal">Voltar</button>
+            <button class="modal-btn confirm" id="btnConfirmarSalvar">Confirmar</button>
         </div>
     </div>
 </div>
@@ -115,21 +108,21 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="modal" id="modalCancelar">
     <div class="modal-content">
         <h2 style="color: #c72c48;">Cancelar Inscrição</h2>
-        <p style="margin: 10px 0; font-size: 0.9em; opacity: 0.8;">Escolha seu nome para sair da lista. Você será redirecionado para enviar o aviso ao organizador.</p>
+        <p style="margin: 10px 0; font-size: 0.9em;">Escolha seu nome. O sistema abrirá seu WhatsApp para avisar o organizador.</p>
         <div class="form-group">
-            <label>Qual nome deseja remover?</label>
-            <select id="cancelPlayerName"></select>
+            <label>Quem está saindo?</label>
+            <select id="cancelPlayerSelect"></select>
         </div>
         <div class="modal-buttons">
-            <button class="modal-btn cancel" id="btnFecharCancelar">Voltar</button>
-            <button class="modal-btn confirm" id="btnExecutarCancelamento" style="background:#c72c48; color:#fff">Confirmar Saída</button>
+            <button class="modal-btn cancel" id="btnFecharCancel">Voltar</button>
+            <button class="modal-btn confirm" id="btnConfirmarCancelamento" style="background:#c72c48; color:#fff">Confirmar e Avisar</button>
         </div>
     </div>
 </div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getDatabase, ref, set, onValue, remove, push, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { getDatabase, ref, set, onValue, remove, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
@@ -142,7 +135,7 @@ const firebaseConfig = {
 };
 
 const LIMITE_VAGAS = 20;
-const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
+const jogadoresMembros = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
@@ -150,167 +143,141 @@ const db = getDatabase(app);
 let confirmados = [];
 let listaEspera = [];
 
-// Preencher selects
-const selectInscricao = document.getElementById('playerName');
-const selectCancel = document.getElementById('cancelPlayerName');
-jogadores.sort().forEach(j => {
-    selectInscricao.add(new Option(j, j));
-    selectCancel.add(new Option(j, j));
+// Popular Selects
+const pSelect = document.getElementById('playerName');
+const cSelect = document.getElementById('cancelPlayerSelect');
+jogadoresMembros.sort().forEach(j => {
+    pSelect.add(new Option(j, j));
+    cSelect.add(new Option(j, j));
 });
 
-// Sincronização em Tempo Real
-onValue(ref(db, 'confirmados'), (snapshot) => {
+// Sync Firebase
+onValue(ref(db, 'confirmados'), (snap) => {
     confirmados = [];
-    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
-    atualizarUI();
-    verificarQuartaFeira();
+    if(snap.exists()) snap.forEach(c => { confirmados.push({...c.val(), id: c.key}); });
+    renderUI();
 });
 
-onValue(ref(db, 'listaEspera'), (snapshot) => {
+onValue(ref(db, 'listaEspera'), (snap) => {
     listaEspera = [];
-    if (snapshot.exists()) snapshot.forEach(child => { 
-        listaEspera.push({...child.val(), id: child.key}); 
-    });
-    atualizarUI();
+    if(snap.exists()) snap.forEach(c => { listaEspera.push({...c.val(), id: c.key}); });
+    renderUI();
 });
 
-// Ações de Botões e Modais
+// Modais
 btnConfirmar.onclick = () => document.getElementById('modal').classList.add('active');
-btnCancelar.onclick = () => document.getElementById('modal').classList.remove('active');
+btnFecharModal.onclick = () => document.getElementById('modal').classList.remove('active');
 btnAbrirCancelar.onclick = () => document.getElementById('modalCancelar').classList.add('active');
-btnFecharCancelar.onclick = () => document.getElementById('modalCancelar').classList.remove('active');
+btnFecharCancel.onclick = () => document.getElementById('modalCancelar').classList.remove('active');
 isGuest.onchange = e => document.getElementById('guestFields').style.display = e.target.checked ? 'block' : 'none';
 
-// Confirmar Presença
-btnConfirmarModal.onclick = async () => {
-    const nome = selectInscricao.value;
-    if(!isGuest.checked && (confirmados.some(p => p.nome === nome) || listaEspera.some(p => p.nome === nome))) return alert("Jogador já está na lista!");
+// Salvar Inscrição
+btnConfirmarSalvar.onclick = async () => {
+    const nome = isGuest.checked ? document.getElementById('guestName').value : pSelect.value;
+    if(!nome) return alert("Digite o nome");
     
-    const agora = new Date().toISOString();
+    const jaInscrito = [...confirmados, ...listaEspera].some(p => p.nome === nome);
+    if(jaInscrito) return alert("Este nome já está na lista!");
+
+    const dados = { nome, isGuest: isGuest.checked, guestOf: isGuest.checked ? pSelect.value : null, data: new Date().toISOString() };
+    
     try {
-        if(!isGuest.checked) {
-            const path = confirmados.length < LIMITE_VAGAS ? 'confirmados' : 'listaEspera';
-            await push(ref(db, path), { nome, isGuest: false, data: agora });
-        } else {
-            const gNome = document.getElementById('guestName').value;
-            if(!gNome) return alert("Nome do convidado?");
-            await push(ref(db, 'listaEspera'), { nome: gNome, isGuest: true, guestOf: nome, data: agora });
-        }
+        const path = (!isGuest.checked && confirmados.length < LIMITE_VAGAS) ? 'confirmados' : 'listaEspera';
+        await push(ref(db, path), dados);
         document.getElementById('modal').classList.remove('active');
-    } catch (e) { alert("Erro de conexão com o banco."); }
+    } catch (e) { alert("Erro ao salvar"); }
 };
 
-// LOGICA DE CANCELAMENTO REFINADA
-btnExecutarCancelamento.onclick = async () => {
-    const nomeAlvo = selectCancel.value;
+// BOTÃO DE CANCELAR (MEMBROS)
+btnConfirmarCancelamento.onclick = async () => {
+    const nome = cSelect.value;
+    const p = confirmados.find(x => x.nome === nome) || listaEspera.find(x => x.nome === nome);
     
-    // Procura em ambas as listas
-    const pConf = confirmados.find(p => p.nome === nomeAlvo);
-    const pEsp = listaEspera.find(p => p.nome === nomeAlvo);
-    const player = pConf || pEsp;
-
-    if(!player) return alert("Jogador não encontrado na lista atual.");
-    if(!confirm(`Deseja mesmo cancelar a inscrição de ${nomeAlvo}?`)) return;
-
-    try {
-        const isWait = !!pEsp;
-        const path = isWait ? 'listaEspera' : 'confirmados';
-
-        // 1. Remove do Firebase
-        await remove(ref(db, `${path}/${player.id}`));
-
-        // 2. Se saiu dos confirmados, promove o próximo da espera (Sem apagar convidados)
-        if(!isWait && listaEspera.length > 0) {
-            const proximoMembroIdx = listaEspera.findIndex(p => jogadores.includes(p.nome) && !p.isGuest);
-            const pIdx = proximoMembroIdx !== -1 ? proximoMembroIdx : 0;
-            const proximo = listaEspera[pIdx];
-
-            // Move para confirmados
-            await remove(ref(db, `listaEspera/${proximo.id}`));
-            await push(ref(db, 'confirmados'), { 
-                nome: proximo.nome, 
-                isGuest: proximo.isGuest || false, 
-                guestOf: proximo.guestOf || null, 
-                data: proximo.data 
-            });
-        }
-
-        // 3. Notificação WhatsApp (Abre o chat com você avisando da saída)
-        const telefoneOrganizador = "5541987210685";
-        const msgTexto = `AVISO: O jogador ${nomeAlvo} acabou de cancelar a inscrição na 1ª Etapa. Verifique a lista!`;
-        const linkWA = `https://wa.me/${telefoneOrganizador}?text=${encodeURIComponent(msgTexto)}`;
+    if(!p) return alert("Você não está na lista!");
+    
+    if(confirm(`Confirmar saída de ${nome}?`)) {
+        await executarRemocao(p.id, listaEspera.some(x => x.id === p.id));
         
+        // Notificação via WhatsApp
+        const msg = encodeURIComponent(`🚨 AVISO DE CANCELAMENTO: O jogador ${nome} acabou de remover o nome da lista da 1ª Etapa.`);
+        window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
         document.getElementById('modalCancelar').classList.remove('active');
-        window.open(linkWA, '_blank');
-
-    } catch (e) { alert("Erro ao processar cancelamento."); }
+    }
 };
 
-function atualizarUI() {
+// Função Global de Remoção
+window.removerJogador = async (id, isWait) => {
+    if(confirm("Deseja remover este convidado/não-membro?")) {
+        await executarRemocao(id, isWait);
+    }
+};
+
+async function executarRemocao(id, isWait) {
+    const path = isWait ? 'listaEspera' : 'confirmados';
+    await remove(ref(db, `${path}/${id}`));
+
+    // Se liberou vaga nos confirmados, promove o próximo da espera
+    if(!isWait && listaEspera.length > 0) {
+        // Prioridade para membros na fila de espera
+        const proxIdx = listaEspera.findIndex(p => jogadoresMembros.includes(p.nome) && !p.isGuest);
+        const alvoIdx = proxIdx !== -1 ? proxIdx : 0;
+        const proximo = listaEspera[alvoIdx];
+
+        await remove(ref(db, `listaEspera/${proximo.id}`));
+        await push(ref(db, 'confirmados'), { ...proximo, id: null });
+    }
+}
+
+function renderUI() {
     document.getElementById('statusIndicator').textContent = '✅ Conectado';
-    confirmedCount.textContent = confirmados.length;
-    vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
-    waitlistCount.textContent = listaEspera.length;
+    document.getElementById('confirmedCount').textContent = confirmados.length;
+    document.getElementById('vacancyCount').textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
+    document.getElementById('waitlistCount').textContent = listaEspera.length;
 
-    const formatTime = (iso) => new Date(iso).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const mapearLista = (p, i, isWait) => {
+        const isMembro = jogadoresMembros.includes(p.nome) && !p.isGuest;
+        const tagClass = p.isGuest ? 'guest' : (isMembro ? 'member' : 'wait');
+        const tagText = p.isGuest ? 'CONVIDADO' : (isMembro ? 'MEMBRO' : 'ESPERA');
+        
+        // Só mostra botão de excluir se NÃO for membro oficial
+        const btnDelete = !isMembro ? `<button class="remove-btn" onclick="removerJogador('${p.id}', ${isWait})">❌</button>` : '';
 
-    // Lista Confirmados
-    confirmedList.innerHTML = confirmados.map((p, i) => `
-        <li class="player-item">
-            <div class="player-info">
-                <div class="player-number">${i+1}º</div>
-                <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${formatTime(p.data)}</small></div>
-            </div>
-            ${jogadores.includes(p.nome) ? '<span class="player-badge member">MEMBRO</span>' : ''}
-        </li>`).join('') || '<li class="empty-state">Vazio</li>';
-
-    // Lista Espera (Ordenada: Membros primeiro, depois por data)
-    const filaOrdenada = [...listaEspera].sort((a, b) => {
-        const aM = jogadores.includes(a.nome) && !a.isGuest;
-        const bM = jogadores.includes(b.nome) && !b.isGuest;
-        if (aM && !bM) return -1;
-        if (!aM && bM) return 1;
-        return new Date(a.data) - new Date(b.data);
-    });
-
-    waitlistList.innerHTML = filaOrdenada.map((p, i) => {
-        const isM = jogadores.includes(p.nome) && !p.isGuest;
-        const bClass = p.isGuest ? 'guest' : (isM ? 'member' : 'wait');
         return `
         <li class="player-item">
             <div class="player-info">
                 <div class="player-number">${i+1}º</div>
                 <div class="player-details">
-                    <strong>${p.nome}</strong><small>🕒 ${formatTime(p.data)}</small>
-                    ${p.guestOf ? `<small>👤 Convidado de ${p.guestOf}</small>` : ''}
+                    <strong>${p.nome}</strong>
+                    <small>${p.guestOf ? 'Convidado de '+p.guestOf : ''}</small>
                 </div>
+                <span class="player-badge ${tagClass}">${tagText}</span>
             </div>
-            <span class="player-badge ${bClass}">${p.isGuest ? 'CONVIDADO' : (isM ? 'MEMBRO' : 'ESPERA')}</span>
-        </li>`}).join('') || '<li class="empty-state">Vazio</li>';
+            ${btnDelete}
+        </li>`;
+    };
+
+    document.getElementById('confirmedList').innerHTML = confirmados.map((p, i) => mapearLista(p, i, false)).join('') || '<li class="empty-state">Vazio</li>';
+    
+    // Ordenar espera: Membros primeiro
+    const esperaOrdenada = [...listaEspera].sort((a,b) => {
+        const am = jogadoresMembros.includes(a.nome) && !a.isGuest;
+        const bm = jogadoresMembros.includes(b.nome) && !b.isGuest;
+        return (bm - am) || (new Date(a.data) - new Date(b.data));
+    });
+    
+    document.getElementById('waitlistList').innerHTML = esperaOrdenada.map((p, i) => mapearLista(p, i, true)).join('') || '<li class="empty-state">Vazio</li>';
 }
 
+// Promoção de Quarta-feira
 async function verificarQuartaFeira() {
     const agora = new Date();
-    const dataEvento = new Date('2026-01-29');
-    const quarta = new Date(dataEvento); quarta.setDate(dataEvento.getDate() - 1); quarta.setHours(10, 0, 0, 0);
-    if (agora >= quarta && confirmados.length < LIMITE_VAGAS && listaEspera.length > 0) {
-        const pMembro = listaEspera.find(p => jogadores.includes(p.nome) && !p.isGuest);
-        if (pMembro) {
-             await remove(ref(db, `listaEspera/${pMembro.id}`));
-             await push(ref(db, 'confirmados'), { ...pMembro, id: null });
+    if(agora.getDay() === 3 && agora.getHours() >= 10) {
+        if(confirmados.length < LIMITE_VAGAS && listaEspera.some(p => jogadoresMembros.includes(p.nome) && !p.isGuest)) {
+            const m = listaEspera.find(p => jogadoresMembros.includes(p.nome) && !p.isGuest);
+            await executarRemocao(m.id, true);
         }
     }
 }
-
-btnExportar.onclick = () => {
-    let csv = "\uFEFFPosicao,Nome,Status\n";
-    confirmados.forEach((p, i) => csv += `${i+1},${p.nome},Confirmado\n`);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'poker_lista.csv';
-    link.click();
-};
 </script>
 </body>
 </html>
