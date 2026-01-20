@@ -9,38 +9,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@300;400;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Roboto', sans-serif;background:#0d1b0d;color:#fff;min-height:100vh}
-.logo-top{text-align:center;padding:20px}
 .container{max-width:1000px;margin:auto;padding:20px}
 
 header{text-align:center;background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;margin-bottom:30px}
 h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
-/* Estilo do Cronómetro Regressivo */
+/* Estilo do Cronómetro e Texto de Abertura */
 #countdownArea {
     background: rgba(212, 161, 33, 0.1);
     border: 2px solid #d4a121;
     border-radius: 12px;
-    padding: 20px;
+    padding: 25px;
     margin-bottom: 25px;
     text-align: center;
 }
+.abertura-texto {
+    font-family: 'Anton';
+    font-size: 1.4em;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    display: block;
+}
 #timer {
     font-family: 'Anton';
-    font-size: 2.2em;
+    font-size: 2.5em;
     color: #d4a121;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     display: block;
-    margin-top: 10px;
 }
-.timer-label { font-size: 0.9em; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9; }
+.timer-label { font-size: 0.8em; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-top: 5px; display: block; }
 
 .info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:25px}
 .info-card{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;text-align:center}
 .info-card h2{font-family:'Anton';font-size:2.5em;color:#d4a121}
 
-.add-btn{width:100%;padding:18px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:10px;color:#000;font-size: 1.1em; transition: 0.3s;}
+.add-btn{width:100%;padding:18px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:10px;color:#000;font-size: 1.1em; transition: 0.3s; font-family: 'Roboto';}
 .add-btn:disabled{background:#333; color:#666; cursor:not-allowed; border: 1px solid #444;}
-.cancel-btn-main{width:100%;padding:15px;background:#c72c48;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px;color:#fff}
+.cancel-btn-main{width:100%;padding:15px;background:#c72c48;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px;color:#fff; font-family: 'Roboto';}
 
 .section{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;margin-bottom:25px}
 .player-list{list-style:none}
@@ -77,8 +84,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     </header>
 
     <div id="countdownArea">
-        <span class="timer-label">⏳ Abertura das Inscrições em:</span>
+        <span class="abertura-texto">As Inscrições abrem dia 26/01 às 07:00</span>
         <div id="timer">00d 00h 00m 00s</div>
+        <span class="timer-label">Tempo restante para liberar a lista</span>
     </div>
 
     <div class="info-cards">
@@ -126,7 +134,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getDatabase, ref, push, onValue, remove, set } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { getDatabase, ref, push, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
@@ -257,11 +265,11 @@ function atualizarUI() {
 
     document.getElementById('confirmedList').innerHTML = confirmados
         .sort((a,b) => new Date(a.dataHora) - new Date(b.dataHora))
-        .map((p,i) => template(p, i, false)).join('');
+        .map((p,i) => template(p, i, false)).join('') || '<li class="player-item">Nenhum confirmado</li>';
 
     document.getElementById('waitlistList').innerHTML = espera
         .sort((a,b) => new Date(a.dataHora) - new Date(b.dataHora))
-        .map((p,i) => template(p, i, true)).join('');
+        .map((p,i) => template(p, i, true)).join('') || '<li class="player-item">Fila vazia</li>';
 }
 </script>
 </body>
