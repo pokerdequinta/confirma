@@ -3,641 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmação de Presença - 1ª Etapa</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0d1b0d;
-            color: #fff;
-            padding: 0;
-            min-height: 100vh;
-        }
-
-        .logo-top {
-            width: 100%;
-            text-align: center;
-            padding: 20px;
-            background: #0d1b0d;
-        }
-
-        .logo-top img {
-            max-width: 200px;
-            height: auto;
-            filter: drop-shadow(0 8px 16px rgba(212, 161, 33, 0.7));
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px 20px 20px;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, #1a3d1a 0%, #0f2a0f 100%);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 2px solid #d4a121;
-        }
-
-        .logo-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo {
-            display: none;
-        }
-
-        .header-title {
-            font-family: 'Anton', sans-serif;
-            font-size: 1.2em;
-            color: #d4a121;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            line-height: 1.4;
-        }
-
-        h1 {
-            font-family: 'Anton', sans-serif;
-            font-size: 3em;
-            margin-bottom: 8px;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
-            color: #d4a121;
-            letter-spacing: 4px;
-        }
-
-        .subtitle {
-            font-size: 1.3em;
-            opacity: 0.95;
-            color: #e0e0e0;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-
-        .info-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .info-card {
-            background: linear-gradient(135deg, #1a3d1a 0%, #0f2a0f 100%);
-            border: 2px solid #d4a121;
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-
-        .info-card h2 {
-            font-family: 'Anton', sans-serif;
-            font-size: 3em;
-            color: #d4a121;
-            margin-bottom: 5px;
-        }
-
-        .info-card p {
-            color: #e0e0e0;
-            font-size: 1.1em;
-        }
-
-        .info-card.warning {
-            border-color: #c72c48;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .info-card.warning h2 {
-            color: #c72c48;
-        }
-
-        .info-card.success {
-            border-color: #4CAF50;
-        }
-
-        .info-card.success h2 {
-            color: #4CAF50;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.03);
-            }
-        }
-
-        .section {
-            background: linear-gradient(135deg, #1a3d1a 0%, #0f2a0f 100%);
-            border: 2px solid #d4a121;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .section h3 {
-            font-family: 'Anton', sans-serif;
-            color: #d4a121;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .add-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #d4a121 0%, #b8891c 100%);
-            color: #0d1b0d;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(212, 161, 33, 0.4);
-            margin-bottom: 20px;
-        }
-
-        .add-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 161, 33, 0.6);
-        }
-
-        .add-btn:active {
-            transform: translateY(0);
-        }
-
-        .player-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .player-item {
-            background: rgba(212, 161, 33, 0.1);
-            border: 2px solid #2d5016;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-        }
-
-        .player-item:hover {
-            background: rgba(212, 161, 33, 0.15);
-            border-color: #d4a121;
-        }
-
-        .player-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex: 1;
-        }
-
-        .player-number {
-            font-family: 'Anton', sans-serif;
-            font-size: 1.5em;
-            color: #d4a121;
-            min-width: 40px;
-        }
-
-        .player-details {
-            flex: 1;
-        }
-
-        .player-name {
-            font-weight: bold;
-            font-size: 1.1em;
-            color: #fff;
-            margin-bottom: 3px;
-        }
-
-        .player-phone {
-            color: #e0e0e0;
-            opacity: 0.8;
-            font-size: 0.9em;
-        }
-
-        .player-badge {
-            background: #d4a121;
-            color: #0d1b0d;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
-        }
-
-        .player-badge.guest {
-            background: #4CAF50;
-        }
-
-        .waitlist-badge {
-            background: #c72c48;
-            color: #fff;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            opacity: 0.7;
-            color: #e0e0e0;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #1a3d1a 0%, #0f2a0f 100%);
-            border: 3px solid #d4a121;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.7);
-        }
-
-        .modal-content h2 {
-            font-family: 'Anton', sans-serif;
-            color: #d4a121;
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #d4a121;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid #2d5016;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 1em;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #d4a121;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-            cursor: pointer;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 25px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .modal-btn.confirm {
-            background: linear-gradient(135deg, #d4a121 0%, #b8891c 100%);
-            color: #0d1b0d;
-        }
-
-        .modal-btn.cancel {
-            background: #c72c48;
-            color: #fff;
-        }
-
-        .modal-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        @media (max-width: 768px) {
-            .logo-top img {
-                max-width: 150px;
-            }
-            h1 {
-                font-size: 2em;
-            }
-            .header-title {
-                font-size: 1em;
-            }
-            .info-cards {
-                grid-template-columns: 1fr;
-            }
-            .player-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-        }
-    </style>
+    <title>Poker de Quinta - Confirmação de Presença</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Aptos&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="logo-top">
-        <img src="logo pdq.png" alt="Logo Poker de Quinta" onerror="this.style.display='none'">
-    </div>
-    
     <div class="container">
         <header>
-            <div class="logo-container">
-                <div class="header-title">
-                    Confirmação de Presença<br>
-                    Poker de Quinta
-                </div>
-            </div>
-            <h1>POKER DE QUINTA</h1>
-            <div class="subtitle">📅 1ª Etapa - 29/01/2026</div>
+            <h1>Poker de Quinta - Temporada 2026</h1>
+            <h2 class="topic">Confirmação de Presença - 1ª Etapa (29/01)</h2>
         </header>
 
-        <div class="info-cards">
-            <div class="info-card success">
-                <h2 id="confirmedCount">0</h2>
-                <p>✅ Confirmados</p>
-            </div>
-            <div class="info-card" id="vacancyCard">
-                <h2 id="vacancyCount">20</h2>
-                <p>🎯 Vagas Restantes</p>
-            </div>
-            <div class="info-card warning">
-                <h2 id="waitlistCount">0</h2>
-                <p>⏳ Lista de Espera</p>
-            </div>
-        </div>
-
-        <button class="add-btn" onclick="openModal()">
-            ➕ CONFIRMAR PRESENÇA
-        </button>
-
-        <div class="section">
-            <h3>✅ CONFIRMADOS (20 vagas)</h3>
-            <ul class="player-list" id="confirmedList">
-                <li class="empty-state">Nenhuma confirmação ainda</li>
-            </ul>
-        </div>
-
-        <div class="section">
-            <h3>⏳ LISTA DE ESPERA</h3>
-            <ul class="player-list" id="waitlistList">
-                <li class="empty-state">Nenhum jogador na lista de espera</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <h2>Confirmar Presença</h2>
-            <form id="confirmForm">
-                <div class="form-group">
-                    <label>Nome Completo *</label>
-                    <input type="text" id="playerName" required>
-                </div>
-                <div class="form-group">
-                    <label>Telefone *</label>
-                    <input type="tel" id="playerPhone" placeholder="(00) 00000-0000" required>
-                </div>
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="isGuest">
-                        <label for="isGuest" style="margin: 0;">É seu convidado?</label>
+        <main>
+            <section class="dashboard">
+                <h3 class="topic">Resumo da Etapa</h3>
+                <div class="dashboard-grid">
+                    <div class="dashboard-item">
+                        <p>Confirmados:</p>
+                        <span id="confirmedCount">0</span>/20
+                    </div>
+                    <div class="dashboard-item">
+                        <p>Vagas Abertas:</p>
+                        <span id="availableSpots">20</span>
+                    </div>
+                    <div class="dashboard-item">
+                        <p>Lista de Espera:</p>
+                        <span id="waitlistCount">0</span>
                     </div>
                 </div>
-                <div class="form-group" id="guestOfGroup" style="display: none;">
-                    <label>Convidado de quem? *</label>
-                    <input type="text" id="guestOf" placeholder="Nome do titular">
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="modal-btn confirm">Confirmar</button>
-                </div>
-            </form>
+            </section>
+
+            <section class="confirmation-form">
+                <h3 class="topic">Confirmar Presença</h3>
+                <form id="playerConfirmationForm">
+                    <label for="playerName">Selecione seu nome:</label>
+                    <select id="playerName" name="playerName" required>
+                        <option value="">-- Escolha um jogador --</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                    <button type="submit">Confirmar</button>
+                </form>
+            </section>
+
+            <section class="confirmed-players">
+                <h3 class="topic">Jogadores Confirmados</h3>
+                <ul id="confirmedPlayersList">
+                    <!-- Confirmed players will be listed here -->
+                </ul>
+            </section>
+
+            <section class="waitlist">
+                <h3 class="topic">Lista de Espera</h3>
+                <ul id="waitlistPlayersList">
+                    <!-- Waitlist players will be listed here -->
+                </ul>
+                <button id="addGuestButton" class="add-guest-button">Adicionar Convidado</button>
+            </section>
+        </main>
+    </div>
+
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <p>Tem certeza que deseja confirmar sua presença?</p>
+            <button id="confirmModalYes">Sim</button>
+            <button id="confirmModalNo">Não</button>
         </div>
     </div>
 
-    <script>
-        const LIMITE_VAGAS = 20;
-        let confirmados = [];
-        let listaEspera = [];
+    <div id="guestModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3 class="topic">Adicionar Convidado</h3>
+            <label for="guestNameInput">Nome do Convidado:</label>
+            <input type="text" id="guestNameInput" placeholder="Digite o nome do convidado" required>
+            <button id="addGuestConfirm">Adicionar</button>
+        </div>
+    </div>
 
-        function loadData() {
-            const savedConfirmed = localStorage.getItem('confirmacoes_etapa_0');
-            const savedWaitlist = localStorage.getItem('lista_espera_etapa_0');
-            
-            if (savedConfirmed) {
-                confirmados = JSON.parse(savedConfirmed);
-            }
-            if (savedWaitlist) {
-                listaEspera = JSON.parse(savedWaitlist);
-            }
-            
-            updateDisplay();
-        }
-
-        function saveData() {
-            localStorage.setItem('confirmacoes_etapa_0', JSON.stringify(confirmados));
-            localStorage.setItem('lista_espera_etapa_0', JSON.stringify(listaEspera));
-        }
-
-        function updateDisplay() {
-            // Atualizar contadores
-            const totalConfirmados = confirmados.length;
-            const vagasRestantes = Math.max(0, LIMITE_VAGAS - totalConfirmados);
-            const totalEspera = listaEspera.length;
-
-            document.getElementById('confirmedCount').textContent = totalConfirmados;
-            document.getElementById('vacancyCount').textContent = vagasRestantes;
-            document.getElementById('waitlistCount').textContent = totalEspera;
-
-            // Mudar cor do card de vagas
-            const vacancyCard = document.getElementById('vacancyCard');
-            if (vagasRestantes === 0) {
-                vacancyCard.classList.add('warning');
-            } else {
-                vacancyCard.classList.remove('warning');
-            }
-
-            // Atualizar lista de confirmados
-            const confirmedList = document.getElementById('confirmedList');
-            if (confirmados.length === 0) {
-                confirmedList.innerHTML = '<li class="empty-state">Nenhuma confirmação ainda</li>';
-            } else {
-                confirmedList.innerHTML = confirmados.map((player, index) => `
-                    <li class="player-item">
-                        <div class="player-info">
-                            <div class="player-number">${index + 1}º</div>
-                            <div class="player-details">
-                                <div class="player-name">${player.nome}</div>
-                                <div class="player-phone">📱 ${player.telefone}</div>
-                                ${player.guestOf ? `<div class="player-phone" style="color: #4CAF50;">👤 Convidado de: ${player.guestOf}</div>` : ''}
-                            </div>
-                        </div>
-                        ${player.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge">TITULAR</span>'}
-                    </li>
-                `).join('');
-            }
-
-            // Atualizar lista de espera
-            const waitlistList = document.getElementById('waitlistList');
-            if (listaEspera.length === 0) {
-                waitlistList.innerHTML = '<li class="empty-state">Nenhum jogador na lista de espera</li>';
-            } else {
-                waitlistList.innerHTML = listaEspera.map((player, index) => `
-                    <li class="player-item">
-                        <div class="player-info">
-                            <div class="player-number">${index + 1}º</div>
-                            <div class="player-details">
-                                <div class="player-name">${player.nome}</div>
-                                <div class="player-phone">📱 ${player.telefone}</div>
-                                ${player.guestOf ? `<div class="player-phone" style="color: #4CAF50;">👤 Convidado de: ${player.guestOf}</div>` : ''}
-                            </div>
-                        </div>
-                        ${player.isGuest ? '<span class="player-badge guest waitlist-badge">CONVIDADO</span>' : '<span class="player-badge waitlist-badge">ESPERA</span>'}
-                    </li>
-                `).join('');
-            }
-        }
-
-        function openModal() {
-            document.getElementById('modal').classList.add('active');
-            document.getElementById('playerName').focus();
-        }
-
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-            document.getElementById('confirmForm').reset();
-        }
-
-        document.getElementById('confirmForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const nome = document.getElementById('playerName').value.trim();
-            const telefone = document.getElementById('playerPhone').value.trim();
-            const isGuest = document.getElementById('isGuest').checked;
-            const guestOf = document.getElementById('guestOf').value.trim();
-
-            if (!nome || !telefone) {
-                alert('⚠️ Por favor, preencha todos os campos!');
-                return;
-            }
-
-            if (isGuest && !guestOf) {
-                alert('⚠️ Por favor, informe de quem é o convidado!');
-                return;
-            }
-
-            const player = {
-                id: Date.now(),
-                nome: nome,
-                telefone: telefone,
-                isGuest: isGuest,
-                guestOf: isGuest ? guestOf : null,
-                etapa: '29/01 - 1ª Etapa',
-                dataConfirmacao: new Date().toLocaleString('pt-BR')
-            };
-
-            // Verificar se ainda há vagas
-            if (confirmados.length < LIMITE_VAGAS) {
-                confirmados.push(player);
-                alert(`✅ Confirmação realizada com sucesso!\n\nVocê está na posição ${confirmados.length}º`);
-            } else {
-                listaEspera.push(player);
-                alert(`⏳ Vagas esgotadas!\n\nVocê foi adicionado à lista de espera na posição ${listaEspera.length}º`);
-            }
-
-            saveData();
-            updateDisplay();
-            closeModal();
-        });
-
-        // Fechar modal ao clicar fora
-        document.getElementById('modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-
-        // Máscara de telefone
-        document.getElementById('playerPhone').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length <= 11) {
-                value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-                value = value.replace(/(\d)(\d{4})$/, '$1-$2');
-            }
-            e.target.value = value;
-        });
-
-        // Mostrar/ocultar campo de convidado
-        document.getElementById('isGuest').addEventListener('change', function(e) {
-            const guestOfGroup = document.getElementById('guestOfGroup');
-            const guestOfInput = document.getElementById('guestOf');
-            
-            if (e.target.checked) {
-                guestOfGroup.style.display = 'block';
-                guestOfInput.required = true;
-            } else {
-                guestOfGroup.style.display = 'none';
-                guestOfInput.required = false;
-                guestOfInput.value = '';
-            }
-        });
-
-        loadData();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
