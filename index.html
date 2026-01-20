@@ -1,87 +1,339 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poker de Quinta - Confirmação de Presença</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Aptos&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmação de Presença - 1ª Etapa</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma;background:#0d1b0d;color:#fff;min-height:100vh}
+.logo-top{text-align:center;padding:20px}
+.logo-top img{max-width:200px}
+.container{max-width:1000px;margin:auto;padding:20px}
+header{text-align:center;background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;margin-bottom:30px}
+h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
+.subtitle{margin-top:10px}
+.info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:25px}
+.info-card{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;text-align:center}
+.info-card h2{font-family:'Anton';font-size:2.5em;color:#d4a121}
+.add-btn{width:100%;padding:15px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px}
+.export-btn{background:#2d5016;margin-top:10px}
+.section{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;margin-bottom:25px}
+.player-list{list-style:none}
+.player-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);padding:15px;border-radius:10px;margin-bottom:10px;gap:10px}
+.player-info{display:flex;gap:15px;align-items:center}
+.player-number{font-family:'Anton';color:#d4a121}
+.player-details{display:flex;flex-direction:column}
+.player-details small{opacity:.85}
+.player-badge{background:#d4a121;color:#000;padding:4px 10px;border-radius:20px;font-size:.8em;font-weight:bold}
+.wait{background:#c72c48;color:#fff}
+.guest{background:#4CAF50;color:#000}
+.member{background:#1E90FF;color:#fff}
+.remove-btn{background:#c72c48;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+.empty-state{text-align:center;opacity:.7;padding:30px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);justify-content:center;align-items:center}
+.modal.active{display:flex}
+.modal-content{background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;width:90%;max-width:500px}
+.form-group{margin-bottom:15px}
+.form-group label{color:#d4a121;font-weight:bold}
+.form-group input,.form-group select{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
+.modal-buttons{display:flex;gap:10px;margin-top:20px}
+.modal-btn{flex:1;padding:10px;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
+.modal-btn.confirm{background:#d4a121;color:#000}
+.modal-btn.cancel{background:#c72c48;color:#fff}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <header>
-            <h1>Poker de Quinta - Temporada 2026</h1>
-            <h2 class="topic">Confirmação de Presença - 1ª Etapa (29/01)</h2>
-        </header>
 
-        <main>
-            <section class="dashboard">
-                <h3 class="topic">Resumo da Etapa</h3>
-                <div class="dashboard-grid">
-                    <div class="dashboard-item">
-                        <p>Confirmados:</p>
-                        <span id="confirmedCount">0</span>/20
-                    </div>
-                    <div class="dashboard-item">
-                        <p>Vagas Abertas:</p>
-                        <span id="availableSpots">20</span>
-                    </div>
-                    <div class="dashboard-item">
-                        <p>Lista de Espera:</p>
-                        <span id="waitlistCount">0</span>
-                    </div>
-                </div>
-            </section>
+<div class="logo-top">
+<img src="logo pdq.png" onerror="this.style.display='none'">
+</div>
 
-            <section class="confirmation-form">
-                <h3 class="topic">Confirmar Presença</h3>
-                <form id="playerConfirmationForm">
-                    <label for="playerName">Selecione seu nome:</label>
-                    <select id="playerName" name="playerName" required>
-                        <option value="">-- Escolha um jogador --</option>
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
-                    <button type="submit">Confirmar</button>
-                </form>
-            </section>
+<div class="container">
 
-            <section class="confirmed-players">
-                <h3 class="topic">Jogadores Confirmados</h3>
-                <ul id="confirmedPlayersList">
-                    <!-- Confirmed players will be listed here -->
-                </ul>
-            </section>
+<header>
+<h1>POKER DE QUINTA</h1>
+<div class="subtitle">📅 1ª Etapa - 29/01/2026</div>
+</header>
 
-            <section class="waitlist">
-                <h3 class="topic">Lista de Espera</h3>
-                <ul id="waitlistPlayersList">
-                    <!-- Waitlist players will be listed here -->
-                </ul>
-                <button id="addGuestButton" class="add-guest-button">Adicionar Convidado</button>
-            </section>
-        </main>
-    </div>
+<div class="info-cards">
+<div class="info-card"><h2 id="confirmedCount">0</h2>Confirmados</div>
+<div class="info-card"><h2 id="vacancyCount">20</h2>Vagas</div>
+<div class="info-card"><h2 id="waitlistCount">0</h2>Espera</div>
+</div>
 
-    <div id="confirmationModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <p>Tem certeza que deseja confirmar sua presença?</p>
-            <button id="confirmModalYes">Sim</button>
-            <button id="confirmModalNo">Não</button>
-        </div>
-    </div>
+<button class="add-btn" id="btnConfirmar">➕ CONFIRMAR PRESENÇA</button>
+<button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR CSV</button>
 
-    <div id="guestModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h3 class="topic">Adicionar Convidado</h3>
-            <label for="guestNameInput">Nome do Convidado:</label>
-            <input type="text" id="guestNameInput" placeholder="Digite o nome do convidado" required>
-            <button id="addGuestConfirm">Adicionar</button>
-        </div>
-    </div>
+<div class="section">
+<h3>✅ CONFIRMADOS</h3>
+<ul id="confirmedList" class="player-list"></ul>
+</div>
 
-    <script src="script.js"></script>
+<div class="section">
+<h3>⏳ LISTA DE ESPERA</h3>
+<ul id="waitlistList" class="player-list"></ul>
+</div>
+
+</div>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+<h2>Confirmar Presença</h2>
+
+<div class="form-group">
+<label>Jogador</label>
+<select id="playerName"></select>
+</div>
+
+<div class="form-group">
+<input type="checkbox" id="isGuest"> Adicionar convidado
+</div>
+
+<div class="form-group" id="guestNameGroup" style="display:none">
+<label>Nome do Convidado</label>
+<input id="guestName">
+</div>
+
+<div class="form-group" id="guestPhoneGroup" style="display:none">
+<label>Telefone do Convidado</label>
+<input id="guestPhone">
+</div>
+
+<div class="modal-buttons">
+<button class="modal-btn cancel" id="btnCancelar">Cancelar</button>
+<button class="modal-btn confirm" id="btnConfirmarModal">Confirmar</button>
+</div>
+</div>
+</div>
+
+<script>
+const LIMITE_VAGAS = 20;
+
+const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
+
+let confirmados=[], listaEspera=[];
+
+const modal=document.getElementById('modal');
+const selectJogador=document.getElementById('playerName');
+
+jogadores.forEach(j=>{
+const o=document.createElement('option');
+o.value=o.textContent=j;
+selectJogador.appendChild(o);
+});
+
+btnConfirmar.onclick=()=>modal.classList.add('active');
+btnCancelar.onclick=()=>modal.classList.remove('active');
+
+isGuest.onchange=e=>{
+guestNameGroup.style.display=guestPhoneGroup.style.display=e.target.checked?'block':'none';
+};
+
+btnConfirmarModal.onclick=()=>{
+if(!confirm('Você está se inscrevendo na etapa do Poker de Quinta.\nLeia o Regulamento.')) return;
+
+const nome=playerName.value;
+if(!nome) return alert('Selecione o jogador');
+
+// 🚫 BLOQUEIO DE INSCRIÇÃO DUPLICADA (apenas para o jogador principal, não convidado)
+if(!isGuest.checked){
+if(confirmados.find(p=>p.nome===nome && !p.isGuest)||listaEspera.find(p=>p.nome===nome && !p.isGuest)){
+return alert('Este jogador já está inscrito!');
+}
+}
+
+const agora=new Date().toISOString();
+
+// Se não for só convidado, adiciona o jogador
+if(!isGuest.checked){
+(confirmados.length<LIMITE_VAGAS?confirmados:listaEspera).push({
+id:Date.now(),
+nome,
+isGuest:false,
+guestOf:null,
+data:agora
+});
+}
+
+// Adiciona convidado se marcado
+if(isGuest.checked){
+if(!guestName.value) return alert('Informe o nome do convidado');
+listaEspera.push({
+id:Date.now()+1,
+nome:guestName.value,
+telefone:guestPhone.value,
+isGuest:true,
+guestOf:nome,
+data:agora
+});
+}
+
+salvar();
+atualizar();
+modal.classList.remove('active');
+guestName.value='';
+guestPhone.value='';
+isGuest.checked=false;
+guestNameGroup.style.display='none';
+guestPhoneGroup.style.display='none';
+};
+
+function formatarData(iso){
+const d=new Date(iso);
+return d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function remover(id,isWait){
+const lista=isWait?listaEspera:confirmados;
+const idx=lista.findIndex(p=>p.id===id);
+if(idx<0) return;
+
+const nome=lista[idx].nome;
+if(!confirm(`Remover ${nome}?`)) return;
+
+lista.splice(idx,1);
+listaEspera=listaEspera.filter(p=>p.guestOf!==nome);
+
+// Puxar da lista de espera apenas se for MEMBRO
+if(!isWait && listaEspera.length>0){
+const proximoMembroIdx = listaEspera.findIndex(p => jogadores.includes(p.nome) && !p.isGuest);
+if(proximoMembroIdx !== -1){
+const membro = listaEspera.splice(proximoMembroIdx, 1)[0];
+confirmados.push(membro);
+}
+}
+
+salvar();
+atualizar();
+}
+
+function atualizar(){
+confirmedCount.textContent=confirmados.length;
+vacancyCount.textContent=LIMITE_VAGAS-confirmados.length;
+waitlistCount.textContent=listaEspera.length;
+
+// Ordenar lista de espera: MEMBROS primeiro, depois CONVIDADOS
+listaEspera.sort((a,b)=>{
+const aIsMembro = jogadores.includes(a.nome);
+const bIsMembro = jogadores.includes(b.nome);
+if(aIsMembro && !bIsMembro) return -1;
+if(!aIsMembro && bIsMembro) return 1;
+return new Date(a.data) - new Date(b.data);
+});
+
+confirmedList.innerHTML=confirmados.length?'':'<li class="empty-state">Nenhuma confirmação</li>';
+confirmados.forEach((p,i)=>{
+const isMembro = jogadores.includes(p.nome);
+confirmedList.innerHTML+=`
+<li class="player-item">
+<div class="player-info">
+<div class="player-number">${i+1}º</div>
+<div class="player-details">
+<strong>${p.nome}</strong>
+<small>🕒 ${formatarData(p.data)}</small>
+</div>
+</div>
+${isMembro?'<span class="player-badge member">MEMBRO</span>':''}
+<button class="remove-btn" onclick="remover(${p.id},false)">❌</button>
+</li>`;
+});
+
+waitlistList.innerHTML=listaEspera.length?'':'<li class="empty-state">Nenhum jogador</li>';
+listaEspera.forEach((p,i)=>{
+const isMembro = jogadores.includes(p.nome);
+const badgeClass = p.isGuest ? 'guest' : (isMembro ? 'member' : 'wait');
+const badgeText = p.isGuest ? 'CONVIDADO' : (isMembro ? 'MEMBRO' : 'ESPERA');
+waitlistList.innerHTML+=`
+<li class="player-item">
+<div class="player-info">
+<div class="player-number">${i+1}º</div>
+<div class="player-details">
+<strong>${p.nome}</strong>
+<small>🕒 ${formatarData(p.data)}</small>
+${p.guestOf?`<small>👤 Convidado de ${p.guestOf}</small>`:''}
+</div>
+</div>
+<span class="player-badge ${badgeClass}">${badgeText}</span>
+<button class="remove-btn" onclick="remover(${p.id},true)">❌</button>
+</li>`;
+});
+}
+
+function salvar(){
+// Comentado para não salvar no localStorage - sempre iniciar zerado
+// localStorage.setItem('conf',JSON.stringify(confirmados));
+// localStorage.setItem('wait',JSON.stringify(listaEspera));
+}
+
+function carregar(){
+// Sempre inicia zerado - não carrega do localStorage
+confirmados=[];
+listaEspera=[];
+// confirmados=JSON.parse(localStorage.getItem('conf')||'[]');
+// listaEspera=JSON.parse(localStorage.getItem('wait')||'[]');
+}
+
+// 📄 EXPORTAR CSV
+function exportarCSV(){
+let csv='Posição,Nome,Status,Data/Hora,Convidado de,Telefone\n';
+confirmados.forEach((p,i)=>{
+csv+=`${i+1},"${p.nome}",CONFIRMADO,"${formatarData(p.data)}","",""\n`;
+});
+listaEspera.forEach((p,i)=>{
+const status=p.isGuest?'CONVIDADO':'ESPERA';
+csv+=`${i+1},"${p.nome}",${status},"${formatarData(p.data)}","${p.guestOf||''}","${p.telefone||''}"\n`;
+});
+const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+const link=document.createElement('a');
+link.href=URL.createObjectURL(blob);
+link.download='poker_de_quinta_29-01-2026.csv';
+link.click();
+}
+
+// ⏰ REGRA DA QUARTA-FEIRA ÀS 10H
+function verificarQuartaFeira(){
+const agora=new Date();
+const dataEvento=new Date('2026-01-29');
+const quartaAntes=new Date(dataEvento);
+quartaAntes.setDate(dataEvento.getDate()-1);
+quartaAntes.setHours(10,0,0,0);
+
+if(agora>=quartaAntes && confirmados.length<LIMITE_VAGAS && listaEspera.length>0){
+const ultimaExec=localStorage.getItem('ultimaExecQuarta');
+const hoje=agora.toDateString();
+if(ultimaExec!==hoje){
+// Primeiro: puxar MEMBROS
+while(confirmados.length<LIMITE_VAGAS && listaEspera.length>0){
+const idx = listaEspera.findIndex(p => jogadores.includes(p.nome) && !p.isGuest);
+if(idx !== -1){
+const membro = listaEspera.splice(idx, 1)[0];
+confirmados.push(membro);
+}else{
+break; // Não há mais membros
+}
+}
+// Depois: se ainda houver vagas, puxar CONVIDADOS
+while(confirmados.length<LIMITE_VAGAS && listaEspera.length>0){
+const convidado = listaEspera.shift();
+confirmados.push(convidado);
+}
+localStorage.setItem('ultimaExecQuarta',hoje);
+salvar();
+atualizar();
+}
+}
+}
+
+btnExportar.onclick=exportarCSV;
+
+carregar();
+verificarQuartaFeira();
+atualizar();
+</script>
+
 </body>
 </html>
