@@ -26,10 +26,11 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .player-list{list-style:none}
 .player-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);padding:15px;border-radius:10px;margin-bottom:10px;gap:10px}
 .player-info{display:flex;gap:15px;align-items:center}
-.player-number{font-family:'Anton';color:#d4a121}
-.player-details{display:flex;flex-direction:column}
-.player-details small{opacity:.85}
-.player-badge{padding:4px 10px;border-radius:20px;font-size:.8em;font-weight:bold;margin-left:10px}
+.player-number{font-family:'Anton';color:#d4a121;min-width:30px}
+.player-details{display:flex;flex-direction:column;flex-grow:1}
+.player-details strong{font-size:1.1em}
+.player-details small{color:#d4a121;font-size:0.85em;margin-top:2px}
+.player-badge{padding:4px 10px;border-radius:20px;font-size:0.75em;font-weight:bold;white-space:nowrap}
 .wait{background:#c72c48;color:#fff}
 .guest{background:#4CAF50;color:#000}
 .member{background:#1E90FF;color:#fff}
@@ -42,9 +43,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .modal-content{background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;width:90%;max-width:500px}
 .form-group{margin-bottom:15px}
 .form-group label{color:#d4a121;font-weight:bold;display:block;margin-bottom:5px}
-.form-group input,.form-group select{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
+.form-group input,.form-group select{width:100%;padding:12px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
 .modal-buttons{display:flex;gap:10px;margin-top:20px}
-.modal-btn{flex:1;padding:10px;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
+.modal-btn{flex:1;padding:12px;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
 .modal-btn.confirm{background:#d4a121;color:#000}
 .modal-btn.cancel{background:#c72c48;color:#fff}
 
@@ -53,11 +54,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </head>
 <body>
 
-<div class="status-indicator" id="statusIndicator">🔄 Conectando...</div>
-
-<div class="logo-top">
-    <img src="logo pdq.png" onerror="this.style.display='none'">
-</div>
+<div class="status-indicator" id="statusIndicator">🔄 Sincronizando...</div>
 
 <div class="container">
     <header>
@@ -75,7 +72,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     <button class="cancel-btn-main" id="btnAbrirCancelar">❌ CANCELAR MINHA INSCRIÇÃO</button>
 
     <div class="section">
-        <h3>✅ CONFIRMADOS</h3>
+        <h3>✅ CONFIRMADOS (LIMITE 20)</h3>
         <ul id="confirmedList" class="player-list"></ul>
     </div>
 
@@ -89,18 +86,23 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     <div class="modal-content">
         <h2>Confirmar Presença</h2>
         <div class="form-group">
-            <label>Jogador</label>
-            <select id="playerName"></select>
+            <label>Selecione seu Nome</label>
+            <select id="playerNameSelect"></select>
         </div>
         <div class="form-group">
-            <input type="checkbox" id="isGuest"> Adicionar convidado
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" id="isGuestCheck" style="width: 20px; height: 20px;"> Sou um Convidado
+            </label>
         </div>
         <div id="guestFields" style="display:none">
-            <div class="form-group"><label>Nome do Convidado</label><input id="guestName"></div>
+            <div class="form-group">
+                <label>Nome do Convidado</label>
+                <input type="text" id="guestNameInput" placeholder="Digite o nome completo">
+            </div>
         </div>
         <div class="modal-buttons">
-            <button class="modal-btn cancel" id="btnFecharModal">Voltar</button>
-            <button class="modal-btn confirm" id="btnConfirmarSalvar">Confirmar</button>
+            <button class="modal-btn cancel" id="btnFecharInscricao">Sair</button>
+            <button class="modal-btn confirm" id="btnSalvarInscricao">Confirmar</button>
         </div>
     </div>
 </div>
@@ -108,21 +110,21 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="modal" id="modalCancelar">
     <div class="modal-content">
         <h2 style="color: #c72c48;">Cancelar Inscrição</h2>
-        <p style="margin: 10px 0; font-size: 0.9em;">Escolha seu nome. O sistema abrirá seu WhatsApp para avisar o organizador.</p>
+        <p style="margin: 10px 0; font-size: 0.9em; color: #ccc;">Atenção: Ao confirmar, o sistema abrirá seu WhatsApp para notificar o organizador da sua desistência.</p>
         <div class="form-group">
-            <label>Quem está saindo?</label>
-            <select id="cancelPlayerSelect"></select>
+            <label>Qual nome deseja retirar?</label>
+            <select id="cancelNameSelect"></select>
         </div>
         <div class="modal-buttons">
             <button class="modal-btn cancel" id="btnFecharCancel">Voltar</button>
-            <button class="modal-btn confirm" id="btnConfirmarCancelamento" style="background:#c72c48; color:#fff">Confirmar e Avisar</button>
+            <button class="modal-btn confirm" id="btnExecutarCancelamento" style="background:#c72c48; color:#fff">Confirmar e Notificar</button>
         </div>
     </div>
 </div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getDatabase, ref, set, onValue, remove, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { getDatabase, ref, push, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
@@ -134,147 +136,175 @@ const firebaseConfig = {
     appId: "1:776724152456:web:fbffde9a1c1a7628c61f3d"
 };
 
-const LIMITE_VAGAS = 20;
-const jogadoresMembros = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
+const LIMITE = 20;
+const membrosOficiais = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 let confirmados = [];
-let listaEspera = [];
+let espera = [];
 
-// Popular Selects
-const pSelect = document.getElementById('playerName');
-const cSelect = document.getElementById('cancelPlayerSelect');
-jogadoresMembros.sort().forEach(j => {
-    pSelect.add(new Option(j, j));
-    cSelect.add(new Option(j, j));
+// Preencher Listas de Seleção
+const pSelect = document.getElementById('playerNameSelect');
+const cSelect = document.getElementById('cancelNameSelect');
+membrosOficiais.sort().forEach(m => {
+    pSelect.add(new Option(m, m));
+    cSelect.add(new Option(m, m));
 });
 
-// Sync Firebase
-onValue(ref(db, 'confirmados'), (snap) => {
+// Sincronização
+onValue(ref(db, 'confirmados'), (snapshot) => {
     confirmados = [];
-    if(snap.exists()) snap.forEach(c => { confirmados.push({...c.val(), id: c.key}); });
-    renderUI();
+    snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
+    atualizarTudo();
 });
 
-onValue(ref(db, 'listaEspera'), (snap) => {
-    listaEspera = [];
-    if(snap.exists()) snap.forEach(c => { listaEspera.push({...c.val(), id: c.key}); });
-    renderUI();
+onValue(ref(db, 'listaEspera'), (snapshot) => {
+    espera = [];
+    snapshot.forEach(child => { espera.push({...child.val(), id: child.key}); });
+    atualizarTudo();
 });
 
-// Modais
+// Controle de Modais
 btnConfirmar.onclick = () => document.getElementById('modal').classList.add('active');
-btnFecharModal.onclick = () => document.getElementById('modal').classList.remove('active');
+btnFecharInscricao.onclick = () => document.getElementById('modal').classList.remove('active');
 btnAbrirCancelar.onclick = () => document.getElementById('modalCancelar').classList.add('active');
 btnFecharCancel.onclick = () => document.getElementById('modalCancelar').classList.remove('active');
-isGuest.onchange = e => document.getElementById('guestFields').style.display = e.target.checked ? 'block' : 'none';
+isGuestCheck.onchange = e => document.getElementById('guestFields').style.display = e.target.checked ? 'block' : 'none';
 
 // Salvar Inscrição
-btnConfirmarSalvar.onclick = async () => {
-    const nome = isGuest.checked ? document.getElementById('guestName').value : pSelect.value;
-    if(!nome) return alert("Digite o nome");
+btnSalvarInscricao.onclick = async () => {
+    const isGuest = isGuestCheck.checked;
+    const nome = isGuest ? document.getElementById('guestNameInput').value.trim() : pSelect.value;
     
-    const jaInscrito = [...confirmados, ...listaEspera].some(p => p.nome === nome);
-    if(jaInscrito) return alert("Este nome já está na lista!");
+    if(!nome) return alert("Por favor, informe o nome.");
+    if([...confirmados, ...espera].some(p => p.nome.toLowerCase() === nome.toLowerCase())) return alert("Este jogador já está na lista!");
 
-    const dados = { nome, isGuest: isGuest.checked, guestOf: isGuest.checked ? pSelect.value : null, data: new Date().toISOString() };
-    
+    const payload = {
+        nome: nome,
+        isGuest: isGuest,
+        membroResponsavel: isGuest ? pSelect.value : null,
+        dataHora: new Date().toISOString()
+    };
+
     try {
-        const path = (!isGuest.checked && confirmados.length < LIMITE_VAGAS) ? 'confirmados' : 'listaEspera';
-        await push(ref(db, path), dados);
+        // Regra: Membros vão direto pros confirmados se houver vaga. Convidados SEMPRE vão pra espera.
+        const destino = (!isGuest && confirmados.length < LIMITE) ? 'confirmados' : 'listaEspera';
+        await push(ref(db, destino), payload);
         document.getElementById('modal').classList.remove('active');
-    } catch (e) { alert("Erro ao salvar"); }
+        document.getElementById('guestNameInput').value = "";
+    } catch (e) { alert("Erro ao salvar no banco."); }
 };
 
-// BOTÃO DE CANCELAR (MEMBROS)
-btnConfirmarCancelamento.onclick = async () => {
-    const nome = cSelect.value;
-    const p = confirmados.find(x => x.nome === nome) || listaEspera.find(x => x.nome === nome);
-    
-    if(!p) return alert("Você não está na lista!");
-    
-    if(confirm(`Confirmar saída de ${nome}?`)) {
-        await executarRemocao(p.id, listaEspera.some(x => x.id === p.id));
+// Cancelamento com Notificação
+btnExecutarCancelamento.onclick = async () => {
+    const nomeAlvo = cSelect.value;
+    const player = confirmados.find(p => p.nome === nomeAlvo) || espera.find(p => p.nome === nomeAlvo);
+
+    if(!player) return alert("Jogador não encontrado.");
+
+    if(confirm(`Confirmar cancelamento de ${nomeAlvo}?`)) {
+        const isNaEspera = espera.some(p => p.id === player.id);
         
-        // Notificação via WhatsApp
-        const msg = encodeURIComponent(`🚨 AVISO DE CANCELAMENTO: O jogador ${nome} acabou de remover o nome da lista da 1ª Etapa.`);
-        window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
+        // Remove do banco
+        await executarRemocao(player.id, isNaEspera);
+
+        // Notificação WhatsApp
+        const celularDono = "5541987210685";
+        const texto = encodeURIComponent(`⚠️ CANCELAMENTO: O jogador ${nomeAlvo} acabou de cancelar sua inscrição na 1ª Etapa.`);
+        window.open(`https://wa.me/${celularDono}?text=${texto}`, '_blank');
+        
         document.getElementById('modalCancelar').classList.remove('active');
     }
 };
 
-// Função Global de Remoção
-window.removerJogador = async (id, isWait) => {
-    if(confirm("Deseja remover este convidado/não-membro?")) {
-        await executarRemocao(id, isWait);
-    }
-};
-
+// Função de Remoção com Lógica de Fila
 async function executarRemocao(id, isWait) {
+    const playerSaindo = (isWait ? espera : confirmados).find(p => p.id === id);
     const path = isWait ? 'listaEspera' : 'confirmados';
+    
     await remove(ref(db, `${path}/${id}`));
 
-    // Se liberou vaga nos confirmados, promove o próximo da espera
-    if(!isWait && listaEspera.length > 0) {
-        // Prioridade para membros na fila de espera
-        const proxIdx = listaEspera.findIndex(p => jogadoresMembros.includes(p.nome) && !p.isGuest);
-        const alvoIdx = proxIdx !== -1 ? proxIdx : 0;
-        const proximo = listaEspera[alvoIdx];
+    // Se saiu alguém dos confirmados, puxa o próximo da espera
+    if(!isWait && espera.length > 0) {
+        // Prioridade 1: Membros oficiais na espera
+        // Prioridade 2: Ordem de inscrição
+        const listaOrdenada = [...espera].sort((a,b) => {
+            const am = membrosOficiais.includes(a.nome) && !a.isGuest;
+            const bm = membrosOficiais.includes(b.nome) && !b.isGuest;
+            return (bm - am) || (new Date(a.dataHora) - new Date(b.dataHora));
+        });
 
+        const proximo = listaOrdenada[0];
         await remove(ref(db, `listaEspera/${proximo.id}`));
         await push(ref(db, 'confirmados'), { ...proximo, id: null });
     }
 }
 
-function renderUI() {
-    document.getElementById('statusIndicator').textContent = '✅ Conectado';
-    document.getElementById('confirmedCount').textContent = confirmados.length;
-    document.getElementById('vacancyCount').textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
-    document.getElementById('waitlistCount').textContent = listaEspera.length;
+// Remoção Manual (Apenas não-membros/convidados)
+window.apagarManual = (id, isWait) => {
+    if(confirm("Remover este registro?")) executarRemocao(id, isWait);
+};
 
-    const mapearLista = (p, i, isWait) => {
-        const isMembro = jogadoresMembros.includes(p.nome) && !p.isGuest;
-        const tagClass = p.isGuest ? 'guest' : (isMembro ? 'member' : 'wait');
-        const tagText = p.isGuest ? 'CONVIDADO' : (isMembro ? 'MEMBRO' : 'ESPERA');
+function atualizarTudo() {
+    document.getElementById('statusIndicator').textContent = '✅ Sincronizado';
+    document.getElementById('confirmedCount').textContent = confirmados.length;
+    document.getElementById('vacancyCount').textContent = Math.max(0, LIMITE - confirmados.length);
+    document.getElementById('waitlistCount').textContent = espera.length;
+
+    const renderPlayer = (p, i, isWait) => {
+        const dt = new Date(p.dataHora);
+        const dataFormatada = dt.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        const horaFormatada = dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
         
-        // Só mostra botão de excluir se NÃO for membro oficial
-        const btnDelete = !isMembro ? `<button class="remove-btn" onclick="removerJogador('${p.id}', ${isWait})">❌</button>` : '';
+        const isMembro = membrosOficiais.includes(p.nome) && !p.isGuest;
+        const badgeClass = p.isGuest ? 'guest' : (isMembro ? 'member' : 'wait');
+        const badgeText = p.isGuest ? 'CONVIDADO' : (isMembro ? 'MEMBRO' : 'ESPERA');
+        
+        const btnRemover = !isMembro ? `<button class="remove-btn" onclick="apagarManual('${p.id}', ${isWait})">❌</button>` : '';
 
         return `
-        <li class="player-item">
-            <div class="player-info">
-                <div class="player-number">${i+1}º</div>
-                <div class="player-details">
-                    <strong>${p.nome}</strong>
-                    <small>${p.guestOf ? 'Convidado de '+p.guestOf : ''}</small>
+            <li class="player-item">
+                <div class="player-info">
+                    <div class="player-number">${i+1}º</div>
+                    <div class="player-details">
+                        <strong>${p.nome}</strong>
+                        <small>📅 ${dataFormatada} às ${horaFormatada} ${p.membroResponsavel ? '• Ref: '+p.membroResponsavel : ''}</small>
+                    </div>
+                    <span class="player-badge ${badgeClass}">${badgeText}</span>
                 </div>
-                <span class="player-badge ${tagClass}">${tagText}</span>
-            </div>
-            ${btnDelete}
-        </li>`;
+                ${btnRemover}
+            </li>`;
     };
 
-    document.getElementById('confirmedList').innerHTML = confirmados.map((p, i) => mapearLista(p, i, false)).join('') || '<li class="empty-state">Vazio</li>';
-    
-    // Ordenar espera: Membros primeiro
-    const esperaOrdenada = [...listaEspera].sort((a,b) => {
-        const am = jogadoresMembros.includes(a.nome) && !a.isGuest;
-        const bm = jogadoresMembros.includes(b.nome) && !b.isGuest;
-        return (bm - am) || (new Date(a.data) - new Date(b.data));
+    document.getElementById('confirmedList').innerHTML = confirmados
+        .sort((a,b) => new Date(a.dataHora) - new Date(b.dataHora))
+        .map((p, i) => renderPlayer(p, i, false)).join('') || '<li class="empty-state">Nenhum confirmado</li>';
+
+    const esperaOrdenada = [...espera].sort((a,b) => {
+        const am = membrosOficiais.includes(a.nome) && !a.isGuest;
+        const bm = membrosOficiais.includes(b.nome) && !b.isGuest;
+        return (bm - am) || (new Date(a.dataHora) - new Date(b.dataHora));
     });
-    
-    document.getElementById('waitlistList').innerHTML = esperaOrdenada.map((p, i) => mapearLista(p, i, true)).join('') || '<li class="empty-state">Vazio</li>';
+
+    document.getElementById('waitlistList').innerHTML = esperaOrdenada
+        .map((p, i) => renderPlayer(p, i, true)).join('') || '<li class="empty-state">Fila vazia</li>';
+        
+    verificarRegraQuarta();
 }
 
-// Promoção de Quarta-feira
-async function verificarQuartaFeira() {
+// REGRA QUARTA-FEIRA 10H
+function verificarRegraQuarta() {
     const agora = new Date();
-    if(agora.getDay() === 3 && agora.getHours() >= 10) {
-        if(confirmados.length < LIMITE_VAGAS && listaEspera.some(p => jogadoresMembros.includes(p.nome) && !p.isGuest)) {
-            const m = listaEspera.find(p => jogadoresMembros.includes(p.nome) && !p.isGuest);
-            await executarRemocao(m.id, true);
+    // Verifica se hoje é Quarta (3) e se já passou das 10:00
+    if (agora.getDay() === 3 && agora.getHours() >= 10) {
+        // Se houver vaga e houver membros na espera
+        if (confirmados.length < LIMITE) {
+            const proxMembro = espera.find(p => membrosOficiais.includes(p.nome) && !p.isGuest);
+            if (proxMembro) {
+                executarRemocao(proxMembro.id, true);
+            }
         }
     }
 }
