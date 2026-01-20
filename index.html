@@ -15,9 +15,6 @@ body{font-family:'Segoe UI',Tahoma;background:#0d1b0d;color:#fff;min-height:100v
 header{text-align:center;background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;margin-bottom:30px}
 h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .subtitle{margin-top:10px}
-.config-banner{background:#1a3d1a;border:2px solid #d4a121;border-radius:10px;padding:15px;margin-bottom:20px;text-align:center}
-.config-banner.error{background:#3d1a1a;border-color:#c72c48}
-.config-status{font-size:0.9em;margin-top:5px;opacity:0.9}
 .info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:25px}
 .info-card{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;text-align:center}
 .info-card h2{font-family:'Anton';font-size:2.5em;color:#d4a121}
@@ -42,17 +39,24 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .modal-content{background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;width:90%;max-width:500px}
 .form-group{margin-bottom:15px}
 .form-group label{color:#d4a121;font-weight:bold;display:block;margin-bottom:5px}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
-.form-group textarea{min-height:100px;font-family:monospace;font-size:0.85em}
+.form-group input,.form-group select{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
 .modal-buttons{display:flex;gap:10px;margin-top:20px}
 .modal-btn{flex:1;padding:10px;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
 .modal-btn.confirm{background:#d4a121;color:#000}
 .modal-btn.cancel{background:#c72c48;color:#fff}
 .loading{text-align:center;padding:20px;opacity:0.7}
+.status-indicator{position:fixed;top:10px;right:10px;background:#2d5016;padding:8px 15px;border-radius:20px;font-size:0.85em;border:1px solid #d4a121}
+.status-indicator.connected{background:#1a3d1a;border-color:#4CAF50}
+.status-indicator.error{background:#3d1a1a;border-color:#c72c48}
+@media(max-width:768px){
+.info-cards{grid-template-columns:1fr}
+}
 </style>
 </head>
 
 <body>
+
+<div class="status-indicator" id="statusIndicator">🔄 Conectando...</div>
 
 <div class="logo-top">
 <img src="logo pdq.png" onerror="this.style.display='none'">
@@ -64,14 +68,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <h1>POKER DE QUINTA</h1>
 <div class="subtitle">📅 1ª Etapa - 29/01/2026</div>
 </header>
-
-<div class="config-banner" id="configBanner">
-<div id="configMessage">⚙️ Configure o Firebase para começar</div>
-<div class="config-status" id="configStatus"></div>
-<button class="add-btn" onclick="openConfigModal()" style="margin-top:10px;max-width:300px;margin-left:auto;margin-right:auto">🔧 Configurar Firebase</button>
-</div>
-
-<div id="appContent" style="display:none">
 
 <div class="info-cards">
 <div class="info-card"><h2 id="confirmedCount">0</h2>Confirmados</div>
@@ -96,34 +92,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </ul>
 </div>
 
-</div>
-
-</div>
-
-<!-- Modal Configuração Firebase -->
-<div class="modal" id="configModal">
-<div class="modal-content">
-<h2>⚙️ Configuração Firebase</h2>
-<p style="margin-bottom:15px;opacity:0.8">Cole aqui as configurações do seu projeto Firebase:</p>
-
-<div class="form-group">
-<label>Firebase Config (JSON)</label>
-<textarea id="firebaseConfigInput" placeholder='{
-  "apiKey": "sua-api-key",
-  "authDomain": "seu-projeto.firebaseapp.com",
-  "databaseURL": "https://seu-projeto.firebaseio.com",
-  "projectId": "seu-projeto",
-  "storageBucket": "seu-projeto.appspot.com",
-  "messagingSenderId": "123456789",
-  "appId": "1:123456789:web:abc123"
-}'></textarea>
-</div>
-
-<div class="modal-buttons">
-<button class="modal-btn cancel" onclick="closeConfigModal()">Cancelar</button>
-<button class="modal-btn confirm" onclick="saveFirebaseConfig()">Salvar e Conectar</button>
-</div>
-</div>
 </div>
 
 <!-- Modal Confirmação -->
@@ -160,7 +128,18 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <script type="module">
 // Import Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getDatabase, ref, set, onValue, remove, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { getDatabase, ref, set, onValue, remove, push, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+// Configuração do Firebase (já embutida)
+const firebaseConfig = {
+  apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
+  authDomain: "poker-de-quinta.firebaseapp.com",
+  databaseURL: "https://poker-de-quinta-default-rtdb.firebaseio.com",
+  projectId: "poker-de-quinta",
+  storageBucket: "poker-de-quinta.firebasestorage.app",
+  messagingSenderId: "776724152456",
+  appId: "1:776724152456:web:fbffde9a1c1a7628c61f3d"
+};
 
 const LIMITE_VAGAS = 20;
 const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
@@ -168,10 +147,10 @@ const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi",
 let db;
 let confirmados = [];
 let listaEspera = [];
-let firebaseInitialized = false;
 
 const modal = document.getElementById('modal');
 const selectJogador = document.getElementById('playerName');
+const statusIndicator = document.getElementById('statusIndicator');
 
 // Preencher select de jogadores
 jogadores.forEach(j => {
@@ -180,76 +159,46 @@ jogadores.forEach(j => {
   selectJogador.appendChild(o);
 });
 
-// Verificar configuração salva
-window.addEventListener('DOMContentLoaded', () => {
-  const savedConfig = localStorage.getItem('firebaseConfig');
-  if (savedConfig) {
-    try {
-      const config = JSON.parse(savedConfig);
-      initFirebase(config);
-    } catch (e) {
-      console.error('Erro ao carregar configuração:', e);
+// Inicializar Firebase
+try {
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+  
+  statusIndicator.textContent = '✅ Conectado';
+  statusIndicator.classList.add('connected');
+  
+  // Escutar mudanças em tempo real
+  const confirmadosRef = ref(db, 'confirmados');
+  const esperaRef = ref(db, 'listaEspera');
+  
+  onValue(confirmadosRef, (snapshot) => {
+    confirmados = [];
+    if (snapshot.exists()) {
+      snapshot.forEach((child) => {
+        confirmados.push(child.val());
+      });
     }
-  }
-});
-
-window.openConfigModal = () => {
-  document.getElementById('configModal').classList.add('active');
-};
-
-window.closeConfigModal = () => {
-  document.getElementById('configModal').classList.remove('active');
-};
-
-window.saveFirebaseConfig = () => {
-  const configText = document.getElementById('firebaseConfigInput').value.trim();
-  try {
-    const config = JSON.parse(configText);
-    localStorage.setItem('firebaseConfig', configText);
-    initFirebase(config);
-    closeConfigModal();
-  } catch (e) {
-    alert('❌ Configuração inválida! Verifique o JSON.');
-  }
-};
-
-function initFirebase(config) {
-  try {
-    const app = initializeApp(config);
-    db = getDatabase(app);
-    firebaseInitialized = true;
-    
-    document.getElementById('configBanner').style.display = 'none';
-    document.getElementById('appContent').style.display = 'block';
-    
-    // Escutar mudanças em tempo real
-    const confirmadosRef = ref(db, 'confirmados');
-    const esperaRef = ref(db, 'listaEspera');
-    
-    onValue(confirmadosRef, (snapshot) => {
-      confirmados = snapshot.val() ? Object.values(snapshot.val()) : [];
-      atualizar();
-      verificarQuartaFeira();
-    });
-    
-    onValue(esperaRef, (snapshot) => {
-      listaEspera = snapshot.val() ? Object.values(snapshot.val()) : [];
-      atualizar();
-    });
-    
-  } catch (e) {
-    document.getElementById('configBanner').classList.add('error');
-    document.getElementById('configMessage').textContent = '❌ Erro na configuração do Firebase';
-    document.getElementById('configStatus').textContent = e.message;
-    firebaseInitialized = false;
-  }
+    atualizar();
+    verificarQuartaFeira();
+  });
+  
+  onValue(esperaRef, (snapshot) => {
+    listaEspera = [];
+    if (snapshot.exists()) {
+      snapshot.forEach((child) => {
+        listaEspera.push(child.val());
+      });
+    }
+    atualizar();
+  });
+  
+} catch (e) {
+  statusIndicator.textContent = '❌ Erro de conexão';
+  statusIndicator.classList.add('error');
+  console.error('Erro Firebase:', e);
 }
 
-btnConfirmar.onclick = () => {
-  if (!firebaseInitialized) return alert('Configure o Firebase primeiro!');
-  modal.classList.add('active');
-};
-
+btnConfirmar.onclick = () => modal.classList.add('active');
 btnCancelar.onclick = () => modal.classList.remove('active');
 
 isGuest.onchange = e => {
@@ -257,8 +206,6 @@ isGuest.onchange = e => {
 };
 
 btnConfirmarModal.onclick = async () => {
-  if (!firebaseInitialized) return alert('Firebase não configurado!');
-  
   if (!confirm('Você está se inscrevendo na etapa do Poker de Quinta.\nLeia o Regulamento.')) return;
 
   const nome = playerName.value;
@@ -318,8 +265,6 @@ function formatarData(iso) {
 }
 
 window.remover = async (id, isWait) => {
-  if (!firebaseInitialized) return;
-  
   const lista = isWait ? listaEspera : confirmados;
   const player = lista.find(p => p.id === id);
   if (!player) return;
@@ -420,8 +365,6 @@ btnExportar.onclick = () => {
 };
 
 async function verificarQuartaFeira() {
-  if (!firebaseInitialized) return;
-  
   const agora = new Date();
   const dataEvento = new Date('2026-01-29');
   const quartaAntes = new Date(dataEvento);
@@ -434,24 +377,27 @@ async function verificarQuartaFeira() {
     if (ultimaExec !== hoje) {
       try {
         // Primeiro: puxar MEMBROS
-        while (confirmados.length < LIMITE_VAGAS && listaEspera.length > 0) {
-          const idx = listaEspera.findIndex(p => jogadores.includes(p.nome) && !p.isGuest);
+        let listaAtualizada = [...listaEspera];
+        while (confirmados.length < LIMITE_VAGAS && listaAtualizada.length > 0) {
+          const idx = listaAtualizada.findIndex(p => jogadores.includes(p.nome) && !p.isGuest);
           if (idx !== -1) {
-            const membro = listaEspera[idx];
+            const membro = listaAtualizada[idx];
             await remove(ref(db, `listaEspera/${membro.id}`));
             const novoRef = push(ref(db, 'confirmados'));
             await set(novoRef, { ...membro, id: novoRef.key });
+            listaAtualizada.splice(idx, 1);
           } else {
             break;
           }
         }
         
         // Depois: puxar CONVIDADOS se ainda houver vagas
-        while (confirmados.length < LIMITE_VAGAS && listaEspera.length > 0) {
-          const convidado = listaEspera[0];
+        while (confirmados.length < LIMITE_VAGAS && listaAtualizada.length > 0) {
+          const convidado = listaAtualizada[0];
           await remove(ref(db, `listaEspera/${convidado.id}`));
           const novoRef = push(ref(db, 'confirmados'));
           await set(novoRef, { ...convidado, id: novoRef.key });
+          listaAtualizada.shift();
         }
         
         localStorage.setItem('ultimaExecQuarta', hoje);
