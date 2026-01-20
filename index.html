@@ -4,14 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Confirmação de Presença - 1ª Etapa</title>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Roboto',Tahoma;background:#0d1b0d;color:#fff;min-height:100vh}
+.countdown-banner{background:#102810;border:3px solid #d4a121;border-radius:15px;padding:30px 20px;margin:20px auto;max-width:1000px;text-align:center}
+.countdown-banner.hidden{display:none}
+.countdown-title{font-family:'Anton';color:#d4a121;font-size:1.8em;letter-spacing:2px;margin-bottom:20px}
+.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;max-width:600px;margin:0 auto}
+.countdown-box{background:rgba(255,255,255,0.05);border:2px solid #d4a121;border-radius:12px;padding:20px 10px}
+.countdown-value{font-family:'Anton';font-size:3em;color:#d4a121;line-height:1}
+.countdown-label{font-size:0.9em;color:#fff;margin-top:8px;text-transform:uppercase;opacity:0.9}
+.countdown-message{margin-top:20px;font-size:1.1em;opacity:0.9;line-height:1.6}
+@media(max-width:600px){.countdown-grid{grid-template-columns:repeat(2,1fr)}.countdown-value{font-size:2.5em}}
 .logo-top{text-align:center;padding:20px}
 .logo-top img{max-width:200px}
 .container{max-width:1000px;margin:auto;padding:20px}
+.container.locked{opacity:0.5;pointer-events:none}
 header{text-align:center;background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;margin-bottom:30px}
 h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .subtitle{margin-top:10px}
@@ -49,26 +58,28 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .status-indicator{position:fixed;top:10px;right:10px;background:#2d5016;padding:8px 15px;border-radius:20px;font-size:0.85em;border:1px solid #d4a121}
 .status-indicator.connected{background:#1a3d1a;border-color:#4CAF50}
 .status-indicator.error{background:#3d1a1a;border-color:#c72c48}
-@media(max-width:768px){
-.info-cards{grid-template-columns:1fr}
-}
+@media(max-width:768px){.info-cards{grid-template-columns:1fr}}
 </style>
 </head>
-
 <body>
 
 <div class="status-indicator" id="statusIndicator">🔄 Conectando...</div>
 
-<div class="logo-top">
-<img src="logo pdq.png" onerror="this.style.display='none'">
+<div class="countdown-banner" id="countdownBanner">
+<div class="countdown-title">🔒 INSCRIÇÕES ABRIRÃO EM:</div>
+<div class="countdown-grid">
+<div class="countdown-box"><div class="countdown-value" id="countDays">00</div><div class="countdown-label">Dias</div></div>
+<div class="countdown-box"><div class="countdown-value" id="countHours">00</div><div class="countdown-label">Horas</div></div>
+<div class="countdown-box"><div class="countdown-value" id="countMinutes">00</div><div class="countdown-label">Minutos</div></div>
+<div class="countdown-box"><div class="countdown-value" id="countSeconds">00</div><div class="countdown-label">Segundos</div></div>
+</div>
+<div class="countdown-message">📅 As inscrições para a 1ª Etapa do Poker de Quinta<br>abrem dia <strong>26/01/2025 às 07:00</strong></div>
 </div>
 
-<div class="container">
+<div class="logo-top"><img src="logo pdq.png" onerror="this.style.display='none'"></div>
 
-<header>
-<h1>LISTA DE PRESENÇA POKER DE QUINTA</h1>
-<div class="subtitle">📅 1ª Etapa - 29/01/2026</div>
-</header>
+<div class="container" id="mainContainer">
+<header><h1>LISTA DE PRESENÇA POKER DE QUINTA</h1><div class="subtitle">📅 1ª Etapa - 29/01/2026</div></header>
 
 <div class="info-cards">
 <div class="info-card"><h2 id="confirmedCount">0</h2>Confirmados</div>
@@ -80,423 +91,20 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <button class="cancel-btn-main" id="btnCancelarWhatsApp">❌ CANCELAR MINHA INSCRIÇÃO</button>
 <button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR CSV</button>
 
-<div class="section">
-<h3>✅ CONFIRMADOS</h3>
-<ul id="confirmedList" class="player-list">
-<li class="loading">Carregando dados...</li>
-</ul>
-</div>
-
-<div class="section">
-<h3>⏳ LISTA DE ESPERA</h3>
-<ul id="waitlistList" class="player-list">
-<li class="loading">Carregando dados...</li>
-</ul>
-</div>
-
+<div class="section"><h3>✅ CONFIRMADOS</h3><ul id="confirmedList" class="player-list"><li class="loading">Carregando dados...</li></ul></div>
+<div class="section"><h3>⏳ LISTA DE ESPERA</h3><ul id="waitlistList" class="player-list"><li class="loading">Carregando dados...</li></ul></div>
 </div>
 
 <button class="add-btn" id="btnModoAdmin" style="position:fixed;bottom:10px;right:10px;width:auto;padding:8px 15px;background:rgba(13,27,13,0.3);border:1px solid rgba(212,161,33,0.1);opacity:0.15;font-size:0.7em;transition:opacity 0.3s">🔐</button>
 
-<div class="modal" id="modalAdmin">
-<div class="modal-content">
-<h2 style="color: #8b0000;">🔐 Modo Administrador</h2>
-<p style="margin: 15px 0; opacity: 0.8;">Digite a senha de administrador para acessar funções exclusivas:</p>
-<div class="form-group">
-<label>Senha Admin</label>
-<input type="password" id="senhaAdmin" placeholder="Digite a senha">
-</div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnFecharAdmin">Cancelar</button>
-<button class="modal-btn confirm" id="btnAcessarAdmin" style="background:#8b0000; color:#fff">Acessar</button>
-</div>
-</div>
-</div>
+<div class="modal" id="modalAdmin"><div class="modal-content"><h2 style="color:#8b0000">🔐 Modo Administrador</h2><p style="margin:15px 0;opacity:0.8">Digite a senha de administrador:</p><div class="form-group"><label>Senha Admin</label><input type="password" id="senhaAdmin" placeholder="Digite a senha"></div><div class="modal-buttons"><button class="modal-btn cancel" id="btnFecharAdmin">Cancelar</button><button class="modal-btn confirm" id="btnAcessarAdmin" style="background:#8b0000;color:#fff">Acessar</button></div></div></div>
 
-<div class="modal" id="modalBemVindo">
-<div class="modal-content">
-<h2 style="color: #d4a121;">📋 Bem-vindo ao Poker de Quinta!</h2>
-<p style="margin: 15px 0; line-height: 1.6;">
-Esta é a página oficial de inscrição do <strong>Poker de Quinta</strong>.<br><br>
-✅ Para se inscrever, clique no botão <strong>"CONFIRMAR PRESENÇA"</strong>.<br><br>
-❌ Se precisar cancelar sua inscrição, clique no botão <strong>"CANCELAR MINHA INSCRIÇÃO"</strong> que abrirá o WhatsApp para você solicitar a remoção da lista.
-</p>
-<div class="modal-buttons">
-<button class="modal-btn confirm" id="btnEntendi" style="width:100%">Entendi!</button>
-</div>
-</div>
-</div>
+<div class="modal" id="modalBemVindo"><div class="modal-content"><h2 style="color:#d4a121">📋 Bem-vindo ao Poker de Quinta!</h2><p style="margin:15px 0;line-height:1.6">✅ Para se inscrever, clique no botão <strong>"CONFIRMAR PRESENÇA"</strong>.<br><br>❌ Para cancelar, clique no botão <strong>"CANCELAR MINHA INSCRIÇÃO"</strong>.</p><div class="modal-buttons"><button class="modal-btn confirm" id="btnEntendi" style="width:100%">Entendi!</button></div></div></div>
 
-<div class="modal" id="modal">
-<div class="modal-content">
-<h2>Confirmar Presença</h2>
-<div class="form-group">
-<label>Jogador</label>
-<select id="playerName"></select>
-</div>
-<div class="form-group">
-<input type="checkbox" id="isGuest"> Adicionar convidado
-</div>
-<div class="form-group" id="guestNameGroup" style="display:none">
-<label>Nome do Convidado</label>
-<input id="guestName">
-</div>
-<div class="form-group" id="guestPhoneGroup" style="display:none">
-<label>Telefone do Convidado</label>
-<input id="guestPhone">
-</div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnCancelar">Cancelar</button>
-<button class="modal-btn confirm" id="btnConfirmarModal">Confirmar</button>
-</div>
-</div>
-</div>
-
-<div class="modal" id="modalCancelar">
-<div class="modal-content">
-<h2 style="color: #c72c48;">Cancelar Inscrição</h2>
-<p style="margin: 10px 0; font-size: 0.9em; opacity: 0.8;">Seu nome será removido e o organizador será notificado via WhatsApp.</p>
-<div class="form-group">
-<label>Selecione seu Nome</label>
-<select id="cancelPlayerName"></select>
-</div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnFecharCancelar">Voltar</button>
-<button class="modal-btn confirm" id="btnExecutarCancelamento" style="background:#c72c48; color:#fff">Confirmar Saída</button>
-</div>
-</div>
-</div>
+<div class="modal" id="modal"><div class="modal-content"><h2>Confirmar Presença</h2><div class="form-group"><label>Jogador</label><select id="playerName"></select></div><div class="form-group"><input type="checkbox" id="isGuest"> Adicionar convidado</div><div class="form-group" id="guestNameGroup" style="display:none"><label>Nome do Convidado</label><input id="guestName"></div><div class="form-group" id="guestPhoneGroup" style="display:none"><label>Telefone do Convidado</label><input id="guestPhone"></div><div class="modal-buttons"><button class="modal-btn cancel" id="btnCancelar">Cancelar</button><button class="modal-btn confirm" id="btnConfirmarModal">Confirmar</button></div></div></div>
 
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getDatabase, ref, set, onValue, remove, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
-  authDomain: "poker-de-quinta.firebaseapp.com",
-  databaseURL: "https://poker-de-quinta-default-rtdb.firebaseio.com",
-  projectId: "poker-de-quinta",
-  storageBucket: "poker-de-quinta.firebasestorage.app",
-  messagingSenderId: "776724152456",
-  appId: "1:776724152456:web:fbffde9a1c1a7628c61f3d"
-};
-
-const LIMITE_VAGAS = 20;
-const TELEFONE_ORGANIZADOR = "5541987210685";
-const SENHA_ADMIN = "poker2026"; // ALTERE ESTA SENHA
-const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
-
-let db;
-let confirmados = [];
-let listaEspera = [];
-let modoAdmin = false;
-
-const modal = document.getElementById('modal');
-const modalBemVindo = document.getElementById('modalBemVindo');
-const modalAdmin = document.getElementById('modalAdmin');
-const selectJogador = document.getElementById('playerName');
-const statusIndicator = document.getElementById('statusIndicator');
-const senhaAdminInput = document.getElementById('senhaAdmin');
-
-// Mostrar popup de boas-vindas ao carregar a página
-window.addEventListener('load', () => {
-  modalBemVindo.classList.add('active');
-});
-
-btnEntendi.onclick = () => {
-  modalBemVindo.classList.remove('active');
-};
-
-// Preencher selects com opção padrão
-const opcaoPadrao1 = document.createElement('option');
-opcaoPadrao1.value = '';
-opcaoPadrao1.textContent = '-- Selecione seu nome --';
-opcaoPadrao1.disabled = true;
-opcaoPadrao1.selected = true;
-selectJogador.appendChild(opcaoPadrao1);
-
-jogadores.forEach(j => {
-  const o1 = document.createElement('option');
-  o1.value = o1.textContent = j;
-  selectJogador.appendChild(o1);
-});
-
-try {
-  const app = initializeApp(firebaseConfig);
-  db = getDatabase(app);
-  statusIndicator.textContent = '✅ Conectado';
-  statusIndicator.classList.add('connected');
-  
-  onValue(ref(db, 'confirmados'), (snapshot) => {
-    confirmados = [];
-    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push(child.val()); });
-    atualizar();
-    verificarQuartaFeira();
-  });
-  
-  onValue(ref(db, 'listaEspera'), (snapshot) => {
-    listaEspera = [];
-    if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push(child.val()); });
-    atualizar();
-  });
-} catch (e) {
-  statusIndicator.textContent = '❌ Erro de conexão';
-  statusIndicator.classList.add('error');
-}
-
-// Funções de Modal
-btnConfirmar.onclick = () => modal.classList.add('active');
-btnCancelar.onclick = () => modal.classList.remove('active');
-
-// Modal Admin
-btnModoAdmin.onclick = () => {
-  if (modoAdmin) {
-    modoAdmin = false;
-    btnModoAdmin.innerHTML = '🔐';
-    btnModoAdmin.style.background = 'rgba(13,27,13,0.3)';
-    btnModoAdmin.style.border = '1px solid rgba(212,161,33,0.1)';
-    btnModoAdmin.style.opacity = '0.15';
-    btnModoAdmin.style.fontSize = '0.7em';
-    alert('Modo Admin desativado!');
-    atualizar();
-  } else {
-    modalAdmin.classList.add('active');
-    senhaAdminInput.value = '';
-    senhaAdminInput.focus();
-  }
-};
-
-// Hover no botão admin para ficar mais visível
-btnModoAdmin.addEventListener('mouseenter', () => {
-  if (!modoAdmin) btnModoAdmin.style.opacity = '0.5';
-});
-
-btnModoAdmin.addEventListener('mouseleave', () => {
-  if (!modoAdmin) btnModoAdmin.style.opacity = '0.15';
-});
-
-btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
-
-btnAcessarAdmin.onclick = () => {
-  if (senhaAdminInput.value === SENHA_ADMIN) {
-    modoAdmin = true;
-    modalAdmin.classList.remove('active');
-    btnModoAdmin.innerHTML = '🔓 ADMIN';
-    btnModoAdmin.style.background = '#4CAF50';
-    btnModoAdmin.style.border = '2px solid #2d7a2d';
-    btnModoAdmin.style.opacity = '1';
-    btnModoAdmin.style.fontSize = '0.85em';
-    alert('✅ Modo Admin ativado! Agora você pode remover qualquer jogador.');
-    atualizar();
-  } else {
-    alert('❌ Senha incorreta!');
-    senhaAdminInput.value = '';
-    senhaAdminInput.focus();
-  }
-};
-
-// Permitir Enter para acessar admin
-senhaAdminInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') btnAcessarAdmin.click();
-});
-
-// Botão de cancelamento via WhatsApp
-btnCancelarWhatsApp.onclick = () => {
-  const mensagem = encodeURIComponent(
-    'Olá! Gostaria de cancelar minha inscrição no Poker de Quinta.\n\n' +
-    'Meu nome: [DIGITE SEU NOME AQUI]\n\n' +
-    'Obrigado!'
-  );
-  window.open(`https://wa.me/5541987210685?text=${mensagem}`, '_blank');
-};
-
-isGuest.onchange = e => {
-  guestNameGroup.style.display = guestPhoneGroup.style.display = e.target.checked ? 'block' : 'none';
-};
-
-// Confirmar Presença
-btnConfirmarModal.onclick = async () => {
-  const nome = playerName.value;
-  
-  if (!nome) {
-    return alert('Por favor, selecione seu nome!');
-  }
-  
-  if (!confirm('Você está se inscrevendo na etapa do Poker de Quinta.')) return;
-  if (!isGuest.checked && (confirmados.find(p => p.nome === nome) || listaEspera.find(p => p.nome === nome))) {
-    return alert('Este jogador já está inscrito!');
-  }
-  const agora = new Date().toISOString();
-  try {
-    if (!isGuest.checked) {
-      const lista = confirmados.length < LIMITE_VAGAS ? 'confirmados' : 'listaEspera';
-      const novoRef = push(ref(db, lista));
-      await set(novoRef, { id: novoRef.key, nome, isGuest: false, data: agora });
-    }
-    if (isGuest.checked) {
-      if (!guestName.value) return alert('Informe o nome do convidado');
-      const novoRef = push(ref(db, 'listaEspera'));
-      await set(novoRef, { id: novoRef.key, nome: guestName.value, telefone: guestPhone.value, isGuest: true, guestOf: nome, data: agora });
-    }
-    modal.classList.remove('active');
-  } catch (e) { alert('Erro: ' + e.message); }
-};
-
-// Função para notificar via WhatsApp (corrigida para mobile)
-function notificarCancelamento(nomeJogador, statusAnterior) {
-  const dataHora = new Date().toLocaleString('pt-BR');
-  const statusTexto = statusAnterior === 'confirmado' ? 'CONFIRMADOS' : 'LISTA DE ESPERA';
-  
-  const mensagem = `🚨 CANCELAMENTO - Poker de Quinta
-
-Jogador: ${nomeJogador}
-Status anterior: ${statusTexto}
-Data/Hora: ${dataHora}
-
-O jogador cancelou sua inscrição.`;
-
-  // Codifica a mensagem para URL
-  const mensagemCodificada = encodeURIComponent(mensagem);
-  const urlWhatsApp = `https://wa.me/${TELEFONE_ORGANIZADOR}?text=${mensagemCodificada}`;
-  
-  // Abre em nova aba/janela
-  window.open(urlWhatsApp, '_blank');
-}
-
-// Função de remover jogadores (agora funciona em modo admin)
-window.removerJogador = async (id, isWait) => {
-  try {
-    const listaAtual = isWait ? listaEspera : confirmados;
-    const player = listaAtual.find(p => p.id === id);
-    
-    if (!player) return;
-    
-    // Se não for convidado e não estiver em modo admin, bloqueia
-    if (!player.isGuest && !modoAdmin) {
-      alert('⚠️ Apenas convidados podem ser removidos. Para remover membros, ative o Modo Admin.');
-      return;
-    }
-    
-    if (!confirm(`Remover ${player.nome}?`)) return;
-
-    const path = isWait ? 'listaEspera' : 'confirmados';
-    await remove(ref(db, `${path}/${id}`));
-    
-    // Remove convidados associados se estava nos confirmados
-    if (!isWait && !player.isGuest) {
-      const convidados = listaEspera.filter(p => p.guestOf === player.nome);
-      for (const conv of convidados) {
-        await remove(ref(db, `listaEspera/${conv.id}`));
-      }
-      
-      // Promove próximo da lista de espera SOMENTE SE FOR QUARTA-FEIRA APÓS AS 10h
-      const agora = new Date();
-      const diaSemana = agora.getDay();
-      const hora = agora.getHours();
-      
-      if (diaSemana === 3 && hora >= 10) {
-        const proximo = listaEspera.find(p => jogadores.includes(p.nome) && !p.isGuest);
-        if (proximo) {
-          await remove(ref(db, `listaEspera/${proximo.id}`));
-          const novoRef = push(ref(db, 'confirmados'));
-          await set(novoRef, { ...proximo, id: novoRef.key });
-        }
-      }
-    }
-    
-    // Notifica organizador se for modo admin removendo membro
-    if (!player.isGuest && modoAdmin) {
-      notificarCancelamento(player.nome, isWait ? 'espera' : 'confirmado');
-    }
-    
-  } catch (e) { 
-    console.error(e);
-    alert('Erro ao remover: ' + e.message);
-  }
-};
-
-function formatarData(iso) {
-  const d = new Date(iso);
-  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-}
-
-function atualizar() {
-  confirmedCount.textContent = confirmados.length;
-  vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
-  waitlistCount.textContent = listaEspera.length;
-
-  confirmedList.innerHTML = confirmados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
-  confirmados.forEach((p, i) => {
-    const isMembro = jogadores.includes(p.nome);
-    const isConvidado = p.isGuest;
-    
-    // Botão X aparece para CONVIDADOS sempre, ou para TODOS se estiver em modo admin
-    const mostrarBotao = isConvidado || modoAdmin;
-    const btnRemover = mostrarBotao ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
-    
-    confirmedList.innerHTML += `<li class="player-item">
-        <div class="player-info"><div class="player-number">${i+1}º</div>
-        <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${formatarData(p.data)}</small></div></div>
-        ${isMembro ? '<span class="player-badge member">MEMBRO</span>' : ''}
-        ${isConvidado ? '<span class="player-badge guest">CONVIDADO</span>' : ''}
-        ${btnRemover}</li>`;
-  });
-
-  waitlistList.innerHTML = listaEspera.length ? '' : '<li class="empty-state">Nenhum jogador</li>';
-  listaEspera.forEach((p, i) => {
-    const isMembro = jogadores.includes(p.nome);
-    const isConvidado = p.isGuest;
-    
-    // Botão X aparece para CONVIDADOS sempre, ou para TODOS se estiver em modo admin
-    const mostrarBotao = isConvidado || modoAdmin;
-    const btnRemover = mostrarBotao ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
-    
-    const badge = isConvidado ? 'guest' : (isMembro ? 'member' : 'wait');
-    const badgeText = isConvidado ? 'CONVIDADO' : 'ESPERA';
-    
-    waitlistList.innerHTML += `<li class="player-item">
-        <div class="player-info"><div class="player-number">${i+1}º</div>
-        <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${formatarData(p.data)}</small>
-        ${p.guestOf ? `<small>👤 De: ${p.guestOf}</small>` : ''}</div></div>
-        <span class="player-badge ${badge}">${badgeText}</span>
-        ${btnRemover}</li>`;
-  });
-}
-
-btnExportar.onclick = () => {
-  let csv = 'Posição,Nome,Status\n';
-  confirmados.forEach((p, i) => csv += `${i + 1},${p.nome},CONFIRMADO\n`);
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'poker_lista.csv';
-  link.click();
-};
-
-async function verificarQuartaFeira() {
-  const agora = new Date();
-  const diaSemana = agora.getDay();
-  const hora = agora.getHours();
-  
-  // Só executa na quarta-feira (dia 3) APÓS as 10h
-  if (diaSemana === 3 && hora >= 10) {
-    // Lógica original de promoção automática de membros
-    const listaMembrosPendentes = listaEspera.filter(p => jogadores.includes(p.nome) && !p.isGuest);
-    
-    for (const membro of listaMembrosPendentes) {
-      if (confirmados.length < LIMITE_VAGAS) {
-        try {
-          await remove(ref(db, `listaEspera/${membro.id}`));
-          const novoRef = push(ref(db, 'confirmados'));
-          await set(novoRef, { ...membro, id: novoRef.key });
-        } catch (e) {
-          console.error('Erro ao promover membro:', e);
-        }
-      }
-    }
-  }
-}
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';import{getDatabase,ref,set,onValue,remove,push}from'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';const TARGET_DATE=new Date('2025-01-26T07:00:00').getTime();const LIMITE_VAGAS=20;const SENHA_ADMIN="poker2026";const jogadores=["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];let db,confirmados=[],listaEspera=[],modoAdmin=false,inscricoesAbertas=false;const selectJogador=document.getElementById('playerName');const opcaoPadrao=document.createElement('option');opcaoPadrao.value='';opcaoPadrao.textContent='-- Selecione seu nome --';opcaoPadrao.disabled=true;opcaoPadrao.selected=true;selectJogador.appendChild(opcaoPadrao);jogadores.forEach(j=>{const o=document.createElement('option');o.value=o.textContent=j;selectJogador.appendChild(o)});function updateCountdown(){const agora=new Date().getTime();const distancia=TARGET_DATE-agora;if(distancia<0){document.getElementById('countdownBanner').classList.add('hidden');document.getElementById('mainContainer').classList.remove('locked');inscricoesAbertas=true;return}mainContainer.classList.add('locked');inscricoesAbertas=false;const dias=Math.floor(distancia/(1000*60*60*24));const horas=Math.floor((distancia%(1000*60*60*24))/(1000*60*60));const minutos=Math.floor((distancia%(1000*60*60))/(1000*60));const segundos=Math.floor((distancia%(1000*60))/1000);document.getElementById('countDays').textContent=String(dias).padStart(2,'0');document.getElementById('countHours').textContent=String(horas).padStart(2,'0');document.getElementById('countMinutes').textContent=String(minutos).padStart(2,'0');document.getElementById('countSeconds').textContent=String(segundos).padStart(2,'0')}updateCountdown();setInterval(updateCountdown,1000);window.addEventListener('load',()=>{if(inscricoesAbertas)modalBemVindo.classList.add('active')});btnEntendi.onclick=()=>modalBemVindo.classList.remove('active');try{const app=initializeApp({apiKey:"AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",authDomain:"poker-de-quinta.firebaseapp.com",databaseURL:"https://poker-de-quinta-default-rtdb.firebaseio.com",projectId:"poker-de-quinta",storageBucket:"poker-de-quinta.firebasestorage.app",messagingSenderId:"776724152456",appId:"1:776724152456:web:fbffde9a1c1a7628c61f3d"});db=getDatabase(app);statusIndicator.textContent='✅ Conectado';statusIndicator.classList.add('connected');onValue(ref(db,'confirmados'),(snapshot)=>{confirmados=[];if(snapshot.exists())snapshot.forEach(child=>{confirmados.push(child.val())});atualizar();verificarQuartaFeira()});onValue(ref(db,'listaEspera'),(snapshot)=>{listaEspera=[];if(snapshot.exists())snapshot.forEach(child=>{listaEspera.push(child.val())});atualizar()})}catch(e){statusIndicator.textContent='❌ Erro de conexão';statusIndicator.classList.add('error')}btnConfirmar.onclick=()=>{if(!inscricoesAbertas){alert('⏰ As inscrições ainda não estão abertas! Aguarde até 26/01/2025 às 07:00');return}modal.classList.add('active')};btnCancelar.onclick=()=>modal.classList.remove('active');btnModoAdmin.onclick=()=>{if(modoAdmin){modoAdmin=false;btnModoAdmin.innerHTML='🔐';btnModoAdmin.style.background='rgba(13,27,13,0.3)';btnModoAdmin.style.border='1px solid rgba(212,161,33,0.1)';btnModoAdmin.style.opacity='0.15';btnModoAdmin.style.fontSize='0.7em';alert('Modo Admin desativado!');atualizar()}else{modalAdmin.classList.add('active');senhaAdmin.value='';senhaAdmin.focus()}};btnModoAdmin.addEventListener('mouseenter',()=>{if(!modoAdmin)btnModoAdmin.style.opacity='0.5'});btnModoAdmin.addEventListener('mouseleave',()=>{if(!modoAdmin)btnModoAdmin.style.opacity='0.15'});btnFecharAdmin.onclick=()=>modalAdmin.classList.remove('active');btnAcessarAdmin.onclick=()=>{if(senhaAdmin.value===SENHA_ADMIN){modoAdmin=true;modalAdmin.classList.remove('active');btnModoAdmin.innerHTML='🔓 ADMIN';btnModoAdmin.style.background='#4CAF50';btnModoAdmin.style.border='2px solid #2d7a2d';btnModoAdmin.style.opacity='1';btnModoAdmin.style.fontSize='0.85em';alert('✅ Modo Admin ativado!');atualizar()}else{alert('❌ Senha incorreta!');senhaAdmin.value='';senhaAdmin.focus()}};senhaAdmin.addEventListener('keypress',(e)=>{if(e.key==='Enter')btnAcessarAdmin.click()});btnCancelarWhatsApp.onclick=()=>{if(!inscricoesAbertas){alert('⏰ As inscrições ainda não estão abertas!');return}window.open(`https://wa.me/5541987210685?text=${encodeURIComponent('Olá! Gostaria de cancelar minha inscrição no Poker de Quinta.\n\nMeu nome: [DIGITE SEU NOME AQUI]\n\nObrigado!')}`,'_blank')};isGuest.onchange=e=>{guestNameGroup.style.display=guestPhoneGroup.style.display=e.target.checked?'block':'none'};btnConfirmarModal.onclick=async()=>{if(!inscricoesAbertas){alert('⏰ As inscrições ainda não estão abertas!');return}const nome=playerName.value;if(!nome)return alert('Por favor, selecione seu nome!');if(!confirm('Você está se inscrevendo na etapa do Poker de Quinta.'))return;if(!isGuest.checked&&(confirmados.find(p=>p.nome===nome)||listaEspera.find(p=>p.nome===nome)))return alert('Este jogador já está inscrito!');const agora=new Date().toISOString();try{if(!isGuest.checked){const lista=confirmados.length<LIMITE_VAGAS?'confirmados':'listaEspera';const novoRef=push(ref(db,lista));await set(novoRef,{id:novoRef.key,nome,isGuest:false,data:agora})}if(isGuest.checked){if(!guestName.value)return alert('Informe o nome do convidado');const novoRef=push(ref(db,'listaEspera'));await set(novoRef,{id:novoRef.key,nome:guestName.value,telefone:guestPhone.value,isGuest:true,guestOf:nome,data:agora})}modal.classList.remove('active')}catch(e){alert('Erro: '+e.message)}};window.removerJogador=async(id,isWait)=>{try{const listaAtual=isWait?listaEspera:confirmados;const player=listaAtual.find(p=>p.id===id);if(!player)return;if(!player.isGuest&&!modoAdmin){alert('⚠️ Apenas convidados podem ser removidos. Para remover membros, ative o Modo Admin.');return}if(!confirm(`Remover ${player.nome}?`))return;const path=isWait?'listaEspera':'confirmados';await remove(ref(db,`${path}/${id}`));if(!isWait&&!player.isGuest){const convidados=listaEspera.filter(p=>p.guestOf===player.nome);for(const conv of convidados)await remove(ref(db,`listaEspera/${conv.id}`));const agora=new Date();if(agora.getDay()===3&&agora.getHours()>=10){const proximo=listaEspera.find(p=>jogadores.includes(p.nome)&&!p.isGuest);if(proximo){await remove(ref(db,`listaEspera/${proximo.id}`));const novoRef=push(ref(db,'confirmados'));await set(novoRef,{...proximo,id:novoRef.key})}}}}catch(e){console.error(e);alert('Erro ao remover: '+e.message)}};function formatarData(iso){const d=new Date(iso);return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}function atualizar(){confirmedCount.textContent=confirmados.length;vacancyCount.textContent=Math.max(0,LIMITE_VAGAS-confirmados.length);waitlistCount.textContent=listaEspera.length;confirmedList.innerHTML=confirmados.length?'':'<li class="empty-state">Nenhuma confirmação</li>';confirmados.forEach((p,i)=>{const isMembro=jogadores.includes(p.nome);const isConvidado=p.isGuest;const mostrarBotao=isConvidado||modoAdmin;const btnRemover=mostrarBotao?`<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>`:'';confirmedList.innerHTML+=`<li class="player-item"><div class="player-info"><div class="player-number">${i+1}º</div><div class="player-details"><strong>${p.nome}</strong><small>🕒 ${formatarData(p.data)}</small></div></div>${isMembro?'<span class="player-badge member">MEMBRO</span>':''}${isConvidado?'<span class="player-badge guest">CONVIDADO</span>':''}${btnRemover}</li>`});waitlistList.innerHTML=listaEspera.length?'':'<li class="empty-state">Nenhum jogador</li>';listaEspera.forEach((p,i)=>{const isMembro=jogadores.includes(p.nome);const isConvidado=p.isGuest;const mostrarBotao=isConvidado||modoAdmin;const btnRemover=mostrarBotao?`<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>`:'';const badge=isConvidado?'guest':(isMembro?'member':'wait');const badgeText=isConvidado?'CONVIDADO':'ESPERA';waitlistList.innerHTML+=`<li class="player-item"><div class="player-info"><div class="player-number">${i+1}º</div><div class="player-details"><strong>${p.nome}</strong><small>🕒 ${formatarData(p.data)}</small>${p.guestOf?`<small>👤 De: ${p.guestOf}</small>`:''}</div></div><span class="player-badge ${badge}">${badgeText}</span>${btnRemover}</li>`})}btnExportar.onclick=()=>{let csv='Posição,Nome,Status\n';confirmados.forEach((p,i)=>csv+=`${i+1},${p.nome},CONFIRMADO\n`);const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='poker_lista.csv';link.click()};async function verificarQuartaFeira(){const agora=new Date();if(agora.getDay()===3&&agora.getHours()>=10){const listaMembrosPendentes=listaEspera.filter(p=>jogadores.includes(p.nome)&&!p.isGuest);for(const membro of listaMembrosPendentes){if(confirmados.length<LIMITE_VAGAS){try{await remove(ref(db,`listaEspera/${membro.id}`));const novoRef=push(ref(db,'confirmados'));await set(novoRef,{...membro,id:novoRef.key})}catch(e){console.error('Erro ao promover membro:',e)}}}}}
 </script>
 </body>
 </html>
-
