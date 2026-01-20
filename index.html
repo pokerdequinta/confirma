@@ -8,7 +8,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@300;400;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Roboto', sans-serif;background:#0d1b0d;color:#fff;min-height:100vh} /* Fonte Roboto */
+body{font-family:'Roboto', sans-serif;background:#0d1b0d;color:#fff;min-height:100vh}
 .logo-top{text-align:center;padding:20px}
 .logo-top img{max-width:200px}
 .container{max-width:1000px;margin:auto;padding:20px}
@@ -16,7 +16,7 @@ header{text-align:center;background:#102810;border:2px solid #d4a121;border-radi
 h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .subtitle{margin-top:10px}
 
-/* O SEU PONTILHADO DO CRONÔMETRO */
+/* BORDA PONTILHADA NO CRONÔMETRO */
 #countdownContainer {
     background: #1a3d1a;
     border: 2px dashed #d4a121;
@@ -84,7 +84,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </header>
 
 <div id="countdownContainer">
-    <span class="timer-header">As Inscrições abrem dia 26/01 às 07:00</span>
+    <span class="timer-header">As Inscrições abrem dia 20/01 às 15:35</span>
     <div id="timer">Calculando tempo...</div>
 </div>
 
@@ -166,19 +166,18 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getDatabase, ref, set, onValue, remove, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
-// SUA CONFIGURAÇÃO ORIGINAL DO FIREBASE
 const firebaseConfig = {
-  apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
-  authDomain: "poker-de-quinta.firebaseapp.com",
-  databaseURL: "https://poker-de-quinta-default-rtdb.firebaseio.com",
-  projectId: "poker-de-quinta",
-  storageBucket: "poker-de-quinta.firebasestorage.app",
-  messagingSenderId: "776724152456",
-  appId: "1:776724152456:web:fbffde9a1c1a7628c61f3d"
+  apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
+  authDomain: "poker-de-quinta.firebaseapp.com",
+  databaseURL: "https://poker-de-quinta-default-rtdb.firebaseio.com",
+  projectId: "poker-de-quinta",
+  storageBucket: "poker-de-quinta.firebasestorage.app",
+  messagingSenderId: "776724152456",
+  appId: "1:776724152456:web:fbffde9a1c1a7628c61f3d"
 };
 
 const LIMITE_VAGAS = 20;
-const DATA_ABERTURA = new Date('2026-01-26T07:00:00').getTime(); // DATA DEFINIDA
+const DATA_ABERTURA = new Date('2026-01-20T15:35:00').getTime(); // HOJE ÀS 15:35
 const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
 let db;
@@ -186,7 +185,6 @@ let confirmados = [];
 let listaEspera = [];
 let modoAdmin = false;
 
-// LÓGICA DO CRONÔMETRO
 function atualizarCronometro() {
     const agora = new Date().getTime();
     const dist = DATA_ABERTURA - agora;
@@ -208,34 +206,32 @@ function atualizarCronometro() {
 const timerInterval = setInterval(atualizarCronometro, 1000);
 atualizarCronometro();
 
-// INICIALIZAÇÃO FIREBASE ORIGINAL
 try {
-  const app = initializeApp(firebaseConfig);
-  db = getDatabase(app);
-  statusIndicator.textContent = '✅ Conectado';
-  statusIndicator.classList.add('connected');
-  
-  onValue(ref(db, 'confirmados'), (snapshot) => {
-    confirmados = [];
-    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
-    atualizar();
-  });
-  
-  onValue(ref(db, 'listaEspera'), (snapshot) => {
-    listaEspera = [];
-    if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
-    atualizar();
-  });
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+  statusIndicator.textContent = '✅ Conectado';
+  statusIndicator.classList.add('connected');
+  
+  onValue(ref(db, 'confirmados'), (snapshot) => {
+    confirmados = [];
+    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
+    atualizar();
+  });
+  
+  onValue(ref(db, 'listaEspera'), (snapshot) => {
+    listaEspera = [];
+    if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
+    atualizar();
+  });
 } catch (e) {
-  statusIndicator.textContent = '❌ Erro de conexão';
+  statusIndicator.textContent = '❌ Erro de conexão';
 }
 
-// RESTANTE DAS SUAS FUNÇÕES ORIGINAIS
 const selectJogador = document.getElementById('playerName');
 jogadores.sort().forEach(j => {
-  const o = document.createElement('option');
-  o.value = o.textContent = j;
-  selectJogador.appendChild(o);
+  const o = document.createElement('option');
+  o.value = o.textContent = j;
+  selectJogador.appendChild(o);
 });
 
 btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
@@ -249,78 +245,78 @@ btnCancelar.onclick = () => modal.classList.remove('active');
 isGuest.onchange = e => guestNameGroup.style.display = e.target.checked ? 'block' : 'none';
 
 btnConfirmarModal.onclick = async () => {
-  const nome = selectJogador.value;
-  if (!nome) return alert('Selecione seu nome!');
-  const agora = new Date().toISOString();
-  try {
-    if (!isGuest.checked) {
-      const lista = confirmados.length < LIMITE_VAGAS ? 'confirmados' : 'listaEspera';
-      await push(ref(db, lista), { nome, isGuest: false, data: agora });
-    } else {
+  const nome = selectJogador.value;
+  if (!nome) return alert('Selecione seu nome!');
+  const agora = new Date().toISOString();
+  try {
+    if (!isGuest.checked) {
+      const lista = confirmados.length < LIMITE_VAGAS ? 'confirmados' : 'listaEspera';
+      await push(ref(db, lista), { nome, isGuest: false, data: agora });
+    } else {
       const gNome = document.getElementById('guestName').value;
-      await push(ref(db, 'listaEspera'), { nome: gNome, isGuest: true, guestOf: nome, data: agora });
-    }
-    modal.classList.remove('active');
-  } catch (e) { alert('Erro: ' + e.message); }
+      await push(ref(db, 'listaEspera'), { nome: gNome, isGuest: true, guestOf: nome, data: agora });
+    }
+    modal.classList.remove('active');
+  } catch (e) { alert('Erro: ' + e.message); }
 };
 
 btnCancelarWhatsApp.onclick = () => {
-  const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ');
-  window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
+  const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ');
+  window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
 };
 
 function atualizar() {
-  confirmedCount.textContent = confirmados.length;
-  vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
-  waitlistCount.textContent = listaEspera.length;
+  confirmedCount.textContent = confirmados.length;
+  vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
+  waitlistCount.textContent = listaEspera.length;
 
-  confirmedList.innerHTML = confirmados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
-  confirmados.forEach((p, i) => {
-    const btnRemover = (p.isGuest || modoAdmin) ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
-    confirmedList.innerHTML += `<li class="player-item">
-        <div class="player-info"><div class="player-number">${i+1}º</div>
-        <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${new Date(p.data).toLocaleTimeString()}</small></div></div>
-        <span class="player-badge ${p.isGuest ? 'guest' : 'member'}">${p.isGuest ? 'CONVIDADO' : 'MEMBRO'}</span>
-        ${btnRemover}</li>`;
-  });
+  confirmedList.innerHTML = confirmados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
+  confirmados.forEach((p, i) => {
+    const btnRemover = (p.isGuest || modoAdmin) ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
+    confirmedList.innerHTML += `<li class="player-item">
+        <div class="player-info"><div class="player-number">${i+1}º</div>
+        <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${new Date(p.data).toLocaleTimeString()}</small></div></div>
+        <span class="player-badge ${p.isGuest ? 'guest' : 'member'}">${p.isGuest ? 'CONVIDADO' : 'MEMBRO'}</span>
+        ${btnRemover}</li>`;
+  });
 
-  waitlistList.innerHTML = listaEspera.length ? '' : '<li class="empty-state">Fila vazia</li>';
-  listaEspera.forEach((p, i) => {
-    const btnRemover = (p.isGuest || modoAdmin) ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
-    waitlistList.innerHTML += `<li class="player-item">
-        <div class="player-info"><div class="player-number">${i+1}º</div>
-        <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${new Date(p.data).toLocaleTimeString()}</small></div></div>
-        <span class="player-badge wait">ESPERA</span>
-        ${btnRemover}</li>`;
-  });
+  waitlistList.innerHTML = listaEspera.length ? '' : '<li class="empty-state">Fila vazia</li>';
+  listaEspera.forEach((p, i) => {
+    const btnRemover = (p.isGuest || modoAdmin) ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
+    waitlistList.innerHTML += `<li class="player-item">
+        <div class="player-info"><div class="player-number">${i+1}º</div>
+        <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${new Date(p.data).toLocaleTimeString()}</small></div></div>
+        <span class="player-badge wait">ESPERA</span>
+        ${btnRemover}</li>`;
+  });
 }
 
 window.removerJogador = async (id, isWait) => {
-  if(!confirm('Remover?')) return;
-  const path = isWait ? 'listaEspera' : 'confirmados';
-  await remove(ref(db, `${path}/${id}`));
+  if(!confirm('Remover?')) return;
+  const path = isWait ? 'listaEspera' : 'confirmados';
+  await remove(ref(db, `${path}/${id}`));
 };
 
 btnModoAdmin.onclick = () => modalAdmin.classList.add('active');
 btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
 btnAcessarAdmin.onclick = () => {
-  if (document.getElementById('senhaAdmin').value === "poker2026") {
-    modoAdmin = true;
-    modalAdmin.classList.remove('active');
-    btnModoAdmin.style.background = '#4CAF50';
+  if (document.getElementById('senhaAdmin').value === "poker2026") {
+    modoAdmin = true;
+    modalAdmin.classList.remove('active');
+    btnModoAdmin.style.background = '#4CAF50';
     alert("Admin Ativado");
-    atualizar();
-  }
+    atualizar();
+  }
 };
 
 btnExportar.onclick = () => {
-  let csv = 'Nome,Status\n';
-  confirmados.forEach(p => csv += `${p.nome},CONFIRMADO\n`);
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'lista.csv';
-  link.click();
+  let csv = 'Nome,Status\n';
+  confirmados.forEach(p => csv += `${p.nome},CONFIRMADO\n`);
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'lista.csv';
+  link.click();
 };
 </script>
 </body>
