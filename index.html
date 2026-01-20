@@ -19,10 +19,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .info-card{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;text-align:center}
 .info-card h2{font-family:'Anton';font-size:2.5em;color:#d4a121}
 
-/* Botões Principais */
 .add-btn{width:100%;padding:15px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:10px;color:#000}
 .cancel-btn-main{width:100%;padding:15px;background:#c72c48;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px;color:#fff}
-.export-btn{background:#2d5016;color:#fff;margin-bottom:20px}
+.export-btn{background:#2d5016;margin-top:10px; color:#fff}
 
 .section{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;margin-bottom:25px}
 .player-list{list-style:none}
@@ -38,7 +37,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .remove-btn{background:#c72c48;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
 .empty-state{text-align:center;opacity:.7;padding:30px}
 
-/* Modais */
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);justify-content:center;align-items:center;z-index:1000}
 .modal.active{display:flex}
 .modal-content{background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;width:90%;max-width:500px}
@@ -52,8 +50,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 .status-indicator{position:fixed;top:10px;right:10px;background:#2d5016;padding:8px 15px;border-radius:20px;font-size:0.85em;border:1px solid #d4a121}
 .status-indicator.connected{background:#1a3d1a;border-color:#4CAF50}
-.status-indicator.error{background:#3d1a1a;border-color:#c72c48}
-
 @media(max-width:768px){ .info-cards{grid-template-columns:1fr} }
 </style>
 </head>
@@ -103,14 +99,8 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
             <input type="checkbox" id="isGuest"> Adicionar convidado
         </div>
         <div id="guestFields" style="display:none">
-            <div class="form-group">
-                <label>Nome do Convidado</label>
-                <input id="guestName">
-            </div>
-            <div class="form-group">
-                <label>Telefone do Convidado</label>
-                <input id="guestPhone">
-            </div>
+            <div class="form-group"><label>Nome do Convidado</label><input id="guestName"></div>
+            <div class="form-group"><label>Telefone do Convidado</label><input id="guestPhone"></div>
         </div>
         <div class="modal-buttons">
             <button class="modal-btn cancel" id="btnCancelar">Cancelar</button>
@@ -122,9 +112,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="modal" id="modalCancelar">
     <div class="modal-content">
         <h2 style="color: #c72c48;">Cancelar Inscrição</h2>
-        <p style="margin: 10px 0; font-size: 0.9em; opacity: 0.8;">
-            Seu nome será removido e você enviará uma mensagem de aviso no WhatsApp.
-        </p>
+        <p style="margin: 10px 0; font-size: 0.9em; opacity: 0.8;">Você sairá da lista e enviará um WhatsApp ao organizador.</p>
         <div class="form-group">
             <label>Selecione seu Nome</label>
             <select id="cancelPlayerName"></select>
@@ -159,94 +147,80 @@ const db = getDatabase(app);
 let confirmados = [];
 let listaEspera = [];
 
-// Popular Selects
 const selectInscricao = document.getElementById('playerName');
 const selectCancel = document.getElementById('cancelPlayerName');
-jogadores.sort().forEach(j => {
-    const opt1 = new Option(j, j);
-    const opt2 = new Option(j, j);
-    selectInscricao.add(opt1);
-    selectCancel.add(opt2);
+jogadores.forEach(j => {
+    selectInscricao.add(new Option(j, j));
+    selectCancel.add(new Option(j, j));
 });
 
-// Listener Firebase
 onValue(ref(db, 'confirmados'), (snapshot) => {
     confirmados = [];
-    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({ ...child.val(), id: child.key }); });
+    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
     atualizarUI();
     verificarQuartaFeira();
 });
 
 onValue(ref(db, 'listaEspera'), (snapshot) => {
     listaEspera = [];
-    if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({ ...child.val(), id: child.key }); });
+    if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
     atualizarUI();
 });
 
-// Lógica de Modais
 btnConfirmar.onclick = () => document.getElementById('modal').classList.add('active');
 btnCancelar.onclick = () => document.getElementById('modal').classList.remove('active');
 btnAbrirCancelar.onclick = () => document.getElementById('modalCancelar').classList.add('active');
 btnFecharCancelar.onclick = () => document.getElementById('modalCancelar').classList.remove('active');
-
 isGuest.onchange = e => document.getElementById('guestFields').style.display = e.target.checked ? 'block' : 'none';
 
-// Inscrição
 btnConfirmarModal.onclick = async () => {
+    if(!confirm('Confirmar inscrição?')) return;
     const nome = selectInscricao.value;
-    if (!isGuest.checked && (confirmados.some(p => p.nome === nome) || listaEspera.some(p => p.nome === nome))) {
-        return alert("Você já está inscrito!");
-    }
+    if(!isGuest.checked && (confirmados.some(p => p.nome === nome) || listaEspera.some(p => p.nome === nome))) return alert("Já inscrito!");
     
     const agora = new Date().toISOString();
     try {
-        if (!isGuest.checked) {
+        if(!isGuest.checked) {
             const path = confirmados.length < LIMITE_VAGAS ? 'confirmados' : 'listaEspera';
             await push(ref(db, path), { nome, isGuest: false, data: agora });
         } else {
             const gNome = document.getElementById('guestName').value;
-            if (!gNome) return alert("Nome do convidado obrigatório");
+            if(!gNome) return alert("Nome do convidado?");
             await push(ref(db, 'listaEspera'), { nome: gNome, isGuest: true, guestOf: nome, data: agora, telefone: document.getElementById('guestPhone').value });
         }
         document.getElementById('modal').classList.remove('active');
     } catch (e) { alert("Erro ao salvar"); }
 };
 
-// CANCELAMENTO + WHATSAPP
 btnExecutarCancelamento.onclick = async () => {
     const nomeAlvo = selectCancel.value;
-    const pConf = confirmados.find(p => p.nome === nomeAlvo && !p.isGuest);
-    const pEsp = listaEspera.find(p => p.nome === nomeAlvo && !p.isGuest);
-    const player = pConf || pEsp;
-
-    if (!player) return alert("Jogador não encontrado na lista.");
-
+    const player = confirmados.find(p => p.nome === nomeAlvo && !p.isGuest) || listaEspera.find(p => p.nome === nomeAlvo && !p.isGuest);
+    if(!player) return alert("Não encontrado!");
+    
     try {
-        await window.remover(player.id, !!pEsp);
-        
-        const telefone = "5541987210685";
-        const msg = encodeURIComponent(`Olá, estou cancelando minha inscrição no Poker de Quinta. (Jogador: ${nomeAlvo})`);
-        window.open(`https://wa.me/${telefone}?text=${msg}`, '_blank');
-        
+        await window.remover(player.id, listaEspera.some(p => p.id === player.id));
+        const msg = encodeURIComponent(`Olá, estou cancelando minha inscrição (Jogador: ${nomeAlvo})`);
+        window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
         document.getElementById('modalCancelar').classList.remove('active');
-    } catch (e) { alert("Erro ao cancelar"); }
+    } catch (e) { alert("Erro"); }
 };
 
-// Função Remover (Global para os botões da lista)
 window.remover = async (id, isWait) => {
+    if(!confirm("Remover jogador?")) return;
     const path = isWait ? 'listaEspera' : 'confirmados';
-    const playerRemovido = (isWait ? listaEspera : confirmados).find(p => p.id === id);
-    
+    const player = (isWait ? listaEspera : confirmados).find(p => p.id === id);
     await remove(ref(db, `${path}/${id}`));
 
-    if (!isWait && playerRemovido) {
-        // Remove convidados
-        const convs = listaEspera.filter(p => p.guestOf === playerRemovido.nome);
-        for (const c of convs) await remove(ref(db, `listaEspera/${c.id}`));
+    if(!isWait && player) {
+        // Remove convidados do membro
+        const convs = listaEspera.filter(p => p.guestOf === player.nome);
+        for(const c of convs) await remove(ref(db, `listaEspera/${c.id}`));
 
-        // Puxa próximo membro da espera
-        const proximoIdx = listaEspera.findIndex(p => jogadores.includes(p.nome) && !p.isGuest);
-        if (proximoIdx !== -1) {
+        // Puxa o próximo Membro (prioridade) ou Convidado da espera
+        const proximoMembroIdx = listaEspera.findIndex(p => jogadores.includes(p.nome) && !p.isGuest);
+        const proximoIdx = proximoMembroIdx !== -1 ? proximoMembroIdx : 0;
+        
+        if(listaEspera.length > 0) {
             const proximo = listaEspera[proximoIdx];
             await remove(ref(db, `listaEspera/${proximo.id}`));
             await push(ref(db, 'confirmados'), { ...proximo, id: null });
@@ -256,55 +230,74 @@ window.remover = async (id, isWait) => {
 
 function atualizarUI() {
     document.getElementById('statusIndicator').textContent = '✅ Conectado';
-    document.getElementById('statusIndicator').classList.add('connected');
-    
-    document.getElementById('confirmedCount').textContent = confirmados.length;
-    document.getElementById('vacancyCount').textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
-    document.getElementById('waitlistCount').textContent = listaEspera.length;
+    confirmedCount.textContent = confirmados.length;
+    vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
+    waitlistCount.textContent = listaEspera.length;
 
-    const listC = document.getElementById('confirmedList');
-    listC.innerHTML = confirmados.map((p, i) => `
+    const formatTime = (iso) => new Date(iso).toLocaleDateString('pt-BR') + ' ' + new Date(iso).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+
+    // Render Confirmados
+    confirmedList.innerHTML = confirmados.map((p, i) => `
         <li class="player-item">
             <div class="player-info">
                 <div class="player-number">${i+1}º</div>
-                <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${new Date(p.data).toLocaleTimeString()}</small></div>
+                <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${formatTime(p.data)}</small></div>
             </div>
+            ${jogadores.includes(p.nome) ? '<span class="player-badge member">MEMBRO</span>' : ''}
             <button class="remove-btn" onclick="remover('${p.id}', false)">❌</button>
-        </li>`).join('') || '<li class="empty-state">Vazio</li>';
+        </li>`).join('') || '<li class="empty-state">Ninguém confirmado</li>';
 
-    const listE = document.getElementById('waitlistList');
-    listE.innerHTML = listaEspera.map((p, i) => `
+    // Ordenação Lista Espera (Membros primeiro, depois por data)
+    listaEspera.sort((a, b) => {
+        const aM = jogadores.includes(a.nome) && !a.isGuest;
+        const bM = jogadores.includes(b.nome) && !b.isGuest;
+        if (aM && !bM) return -1;
+        if (!aM && bM) return 1;
+        return new Date(a.data) - new Date(b.data);
+    });
+
+    // Render Espera
+    waitlistList.innerHTML = listaEspera.map((p, i) => {
+        const isM = jogadores.includes(p.nome) && !p.isGuest;
+        const bClass = p.isGuest ? 'guest' : (isM ? 'member' : 'wait');
+        const bText = p.isGuest ? 'CONVIDADO' : (isM ? 'MEMBRO' : 'ESPERA');
+        return `
         <li class="player-item">
             <div class="player-info">
                 <div class="player-number">${i+1}º</div>
-                <div class="player-details"><strong>${p.nome}</strong><small>${p.isGuest ? 'Convidado de '+p.guestOf : 'Espera'}</small></div>
+                <div class="player-details">
+                    <strong>${p.nome}</strong><small>🕒 ${formatTime(p.data)}</small>
+                    ${p.guestOf ? `<small>👤 Convidado de ${p.guestOf}</small>` : ''}
+                </div>
             </div>
+            <span class="player-badge ${bClass}">${bText}</span>
             <button class="remove-btn" onclick="remover('${p.id}', true)">❌</button>
-        </li>`).join('') || '<li class="empty-state">Vazio</li>';
+        </li>`}).join('') || '<li class="empty-state">Fila vazia</li>';
 }
 
 async function verificarQuartaFeira() {
     const agora = new Date();
-    if (agora.getDay() === 3 && agora.getHours() >= 10) { // Quarta-feira 10h
-        if (confirmados.length < LIMITE_VAGAS && listaEspera.length > 0) {
-            const proximoMembro = listaEspera.find(p => jogadores.includes(p.nome) && !p.isGuest);
-            if (proximoMembro) {
-                await remove(ref(db, `listaEspera/${proximoMembro.id}`));
-                await push(ref(db, 'confirmados'), { ...proximoMembro, id: null });
-            }
+    const dataEvento = new Date('2026-01-29');
+    const quarta = new Date(dataEvento); quarta.setDate(dataEvento.getDate() - 1); quarta.setHours(10, 0, 0, 0);
+
+    if (agora >= quarta && confirmados.length < LIMITE_VAGAS && listaEspera.length > 0) {
+        const proximoMembro = listaEspera.find(p => jogadores.includes(p.nome) && !p.isGuest);
+        if (proximoMembro) {
+            await remove(ref(db, `listaEspera/${proximoMembro.id}`));
+            await push(ref(db, 'confirmados'), { ...proximoMembro, id: null });
         }
     }
 }
 
 btnExportar.onclick = () => {
-    let csv = "Posicao,Nome,Status\n";
-    confirmados.forEach((p, i) => csv += `${i+1},${p.nome},Confirmado\n`);
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'lista_poker.csv';
-    a.click();
+    let csv = "\uFEFFPosicao,Nome,Status,Data\n";
+    confirmados.forEach((p, i) => csv += `${i+1},${p.nome},Confirmado,${p.data}\n`);
+    listaEspera.forEach((p, i) => csv += `${i+1},${p.nome},Espera,${p.data}\n`);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'lista_poker.csv';
+    link.click();
 };
 </script>
 </body>
