@@ -164,7 +164,21 @@ const selectJogador = document.getElementById('playerName');
 const selectCancelJogador = document.getElementById('cancelPlayerName');
 const statusIndicator = document.getElementById('statusIndicator');
 
-// Preencher selects
+// Preencher selects com opção padrão
+const opcaoPadrao1 = document.createElement('option');
+opcaoPadrao1.value = '';
+opcaoPadrao1.textContent = '-- Selecione seu nome --';
+opcaoPadrao1.disabled = true;
+opcaoPadrao1.selected = true;
+selectJogador.appendChild(opcaoPadrao1);
+
+const opcaoPadrao2 = document.createElement('option');
+opcaoPadrao2.value = '';
+opcaoPadrao2.textContent = '-- Selecione seu nome --';
+opcaoPadrao2.disabled = true;
+opcaoPadrao2.selected = true;
+selectCancelJogador.appendChild(opcaoPadrao2);
+
 jogadores.forEach(j => {
   const o1 = document.createElement('option');
   const o2 = document.createElement('option');
@@ -208,8 +222,13 @@ isGuest.onchange = e => {
 
 // Confirmar Presença
 btnConfirmarModal.onclick = async () => {
-  if (!confirm('Você está se inscrevendo na etapa do Poker de Quinta.')) return;
   const nome = playerName.value;
+  
+  if (!nome) {
+    return alert('Por favor, selecione seu nome!');
+  }
+  
+  if (!confirm('Você está se inscrevendo na etapa do Poker de Quinta.')) return;
   if (!isGuest.checked && (confirmados.find(p => p.nome === nome) || listaEspera.find(p => p.nome === nome))) {
     return alert('Este jogador já está inscrito!');
   }
@@ -253,6 +272,11 @@ O jogador cancelou sua inscrição.`;
 // LÓGICA DE CANCELAMENTO PELO BOTÃO GRANDE
 btnExecutarCancelamento.onclick = async () => {
   const nomeAlvo = selectCancelJogador.value;
+  
+  if (!nomeAlvo) {
+    return alert('Por favor, selecione seu nome!');
+  }
+  
   const playerC = confirmados.find(p => p.nome === nomeAlvo && !p.isGuest);
   const playerE = listaEspera.find(p => p.nome === nomeAlvo && !p.isGuest);
   const player = playerC || playerE;
