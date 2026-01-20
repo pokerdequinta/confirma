@@ -3,53 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Poker de Quinta - 1ª Etapa</title>
+<title>Lista de Confirmações Poker de Quinta - 1ª Etapa</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@300;400;700&display=swap');
+
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma;background:#0d1b0d;color:#fff;min-height:100vh}
+
+body {
+    font-family: 'Roboto', sans-serif; /* Fonte alterada para Roboto */
+    background: #0d1b0d;
+    color: #fff;
+    min-height: 100vh;
+}
+
 .logo-top{text-align:center;padding:20px}
-.logo-top img{max-width:200px}
 .container{max-width:1000px;margin:auto;padding:20px}
-header{text-align:center;background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;margin-bottom:30px}
-h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
-.subtitle{margin-top:10px}
-.info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:25px}
-.info-card{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;text-align:center}
-.info-card h2{font-family:'Anton';font-size:2.5em;color:#d4a121}
 
-.add-btn{width:100%;padding:15px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:10px;color:#000}
-.cancel-btn-main{width:100%;padding:15px;background:#c72c48;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px;color:#fff}
+header {
+    text-align: center;
+    background: #102810;
+    border: 2px solid #d4a121;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
 
-.section{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;margin-bottom:25px}
-.player-list{list-style:none}
-.player-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);padding:15px;border-radius:10px;margin-bottom:10px;gap:10px}
-.player-info{display:flex;gap:15px;align-items:center}
-.player-number{font-family:'Anton';color:#d4a121;min-width:30px}
-.player-details{display:flex;flex-direction:column;flex-grow:1}
-.player-details strong{font-size:1.1em}
-.player-details small{color:#d4a121;font-size:0.85em;margin-top:2px}
-.player-badge{padding:4px 10px;border-radius:20px;font-size:0.75em;font-weight:bold;white-space:nowrap}
-.wait{background:#c72c48;color:#fff}
-.guest{background:#4CAF50;color:#000}
-.member{background:#1E90FF;color:#fff}
+h1 { font-family: 'Anton', sans-serif; color: #d4a121; letter-spacing: 3px; }
+.subtitle { margin-top: 10px; font-weight: 300; }
 
-.remove-btn{background:#c72c48;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:bold}
-.empty-state{text-align:center;opacity:.7;padding:30px}
+.info-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+.info-card { background: #102810; border: 2px solid #d4a121; border-radius: 12px; padding: 20px; text-align: center; }
+.info-card h2 { font-family: 'Anton'; font-size: 2.5em; color: #d4a121; }
 
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);justify-content:center;align-items:center;z-index:1000}
-.modal.active{display:flex}
-.modal-content{background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;width:90%;max-width:500px}
-.form-group{margin-bottom:15px}
-.form-group label{color:#d4a121;font-weight:bold;display:block;margin-bottom:5px}
-.form-group input,.form-group select{width:100%;padding:12px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
-.modal-buttons{display:flex;gap:10px;margin-top:20px}
-.modal-btn{flex:1;padding:12px;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
-.modal-btn.confirm{background:#d4a121;color:#000}
-.modal-btn.cancel{background:#c72c48;color:#fff}
+.add-btn { width: 100%; padding: 15px; background: #d4a121; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: #000; font-family: 'Roboto'; }
+.cancel-btn-main { width: 100%; padding: 15px; background: #c72c48; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 20px; color: #fff; font-family: 'Roboto'; }
 
-.status-indicator{position:fixed;top:10px;right:10px;background:#2d5016;padding:8px 15px;border-radius:20px;font-size:0.85em;border:1px solid #d4a121}
+.section { background: #102810; border: 2px solid #d4a121; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+.player-list { list-style: none; }
+.player-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,.05); padding: 15px; border-radius: 10px; margin-bottom: 10px; gap: 10px; }
+.player-info { display: flex; gap: 15px; align-items: center; flex-grow: 1; }
+.player-number { font-family: 'Anton'; color: #d4a121; min-width: 30px; }
+.player-details { display: flex; flex-direction: column; }
+.player-details strong { font-size: 1.1em; }
+.player-details small { color: #d4a121; font-size: 0.85em; margin-top: 2px; }
+
+.player-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 700; white-space: nowrap; }
+.wait { background: #c72c48; color: #fff; }
+.guest { background: #4CAF50; color: #000; }
+.member { background: #1E90FF; color: #fff; }
+
+.remove-btn { background: #c72c48; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+.empty-state { text-align: center; opacity: .7; padding: 30px; }
+
+/* Modais */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); justify-content: center; align-items: center; z-index: 1000; }
+.modal.active { display: flex; }
+.modal-content { background: #102810; border: 2px solid #d4a121; border-radius: 15px; padding: 30px; width: 90%; max-width: 500px; }
+.form-group { margin-bottom: 15px; }
+.form-group label { color: #d4a121; font-weight: bold; display: block; margin-bottom: 5px; }
+.form-group input, .form-group select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2d5016; background: #1a3d1a; color: #fff; font-family: 'Roboto'; }
+.modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+.modal-btn { flex: 1; padding: 12px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-family: 'Roboto'; }
+.modal-btn.confirm { background: #d4a121; color: #000; }
+.modal-btn.cancel { background: #c72c48; color: #fff; }
+
+.status-indicator { position: fixed; top: 10px; right: 10px; background: #2d5016; padding: 8px 15px; border-radius: 20px; font-size: 0.85em; border: 1px solid #d4a121; }
 </style>
 </head>
 <body>
@@ -110,7 +129,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="modal" id="modalCancelar">
     <div class="modal-content">
         <h2 style="color: #c72c48;">Cancelar Inscrição</h2>
-        <p style="margin: 10px 0; font-size: 0.9em; color: #ccc;">Atenção: Ao confirmar, o sistema abrirá seu WhatsApp para notificar o organizador da sua desistência.</p>
+        <p style="margin: 10px 0; font-size: 0.9em; color: #ccc;">O sistema abrirá seu WhatsApp para notificar o organizador.</p>
         <div class="form-group">
             <label>Qual nome deseja retirar?</label>
             <select id="cancelNameSelect"></select>
@@ -145,7 +164,7 @@ const db = getDatabase(app);
 let confirmados = [];
 let espera = [];
 
-// Preencher Listas de Seleção
+// Popular Listas
 const pSelect = document.getElementById('playerNameSelect');
 const cSelect = document.getElementById('cancelNameSelect');
 membrosOficiais.sort().forEach(m => {
@@ -153,7 +172,7 @@ membrosOficiais.sort().forEach(m => {
     cSelect.add(new Option(m, m));
 });
 
-// Sincronização
+// Sync Firebase
 onValue(ref(db, 'confirmados'), (snapshot) => {
     confirmados = [];
     snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
@@ -166,20 +185,20 @@ onValue(ref(db, 'listaEspera'), (snapshot) => {
     atualizarTudo();
 });
 
-// Controle de Modais
+// Modais
 btnConfirmar.onclick = () => document.getElementById('modal').classList.add('active');
 btnFecharInscricao.onclick = () => document.getElementById('modal').classList.remove('active');
 btnAbrirCancelar.onclick = () => document.getElementById('modalCancelar').classList.add('active');
 btnFecharCancel.onclick = () => document.getElementById('modalCancelar').classList.remove('active');
 isGuestCheck.onchange = e => document.getElementById('guestFields').style.display = e.target.checked ? 'block' : 'none';
 
-// Salvar Inscrição
+// Salvar
 btnSalvarInscricao.onclick = async () => {
     const isGuest = isGuestCheck.checked;
     const nome = isGuest ? document.getElementById('guestNameInput').value.trim() : pSelect.value;
     
-    if(!nome) return alert("Por favor, informe o nome.");
-    if([...confirmados, ...espera].some(p => p.nome.toLowerCase() === nome.toLowerCase())) return alert("Este jogador já está na lista!");
+    if(!nome) return alert("Informe o nome.");
+    if([...confirmados, ...espera].some(p => p.nome.toLowerCase() === nome.toLowerCase())) return alert("Já está na lista!");
 
     const payload = {
         nome: nome,
@@ -189,15 +208,16 @@ btnSalvarInscricao.onclick = async () => {
     };
 
     try {
-        // Regra: Membros vão direto pros confirmados se houver vaga. Convidados SEMPRE vão pra espera.
         const destino = (!isGuest && confirmados.length < LIMITE) ? 'confirmados' : 'listaEspera';
         await push(ref(db, destino), payload);
         document.getElementById('modal').classList.remove('active');
         document.getElementById('guestNameInput').value = "";
-    } catch (e) { alert("Erro ao salvar no banco."); }
+        isGuestCheck.checked = false;
+        document.getElementById('guestFields').style.display = 'none';
+    } catch (e) { alert("Erro ao salvar."); }
 };
 
-// Cancelamento com Notificação
+// Cancelamento
 btnExecutarCancelamento.onclick = async () => {
     const nomeAlvo = cSelect.value;
     const player = confirmados.find(p => p.nome === nomeAlvo) || espera.find(p => p.nome === nomeAlvo);
@@ -206,45 +226,41 @@ btnExecutarCancelamento.onclick = async () => {
 
     if(confirm(`Confirmar cancelamento de ${nomeAlvo}?`)) {
         const isNaEspera = espera.some(p => p.id === player.id);
-        
-        // Remove do banco
         await executarRemocao(player.id, isNaEspera);
 
-        // Notificação WhatsApp
         const celularDono = "5541987210685";
-        const texto = encodeURIComponent(`⚠️ CANCELAMENTO: O jogador ${nomeAlvo} acabou de cancelar sua inscrição na 1ª Etapa.`);
+        const texto = encodeURIComponent(`⚠️ CANCELAMENTO: O jogador ${nomeAlvo} retirou o nome da lista.`);
         window.open(`https://wa.me/${celularDono}?text=${texto}`, '_blank');
         
         document.getElementById('modalCancelar').classList.remove('active');
     }
 };
 
-// Função de Remoção com Lógica de Fila
+// Lógica de Remoção Rígida (Apenas Membros Oficiais sobem da espera)
 async function executarRemocao(id, isWait) {
     const playerSaindo = (isWait ? espera : confirmados).find(p => p.id === id);
     const path = isWait ? 'listaEspera' : 'confirmados';
     
     await remove(ref(db, `${path}/${id}`));
 
-    // Se saiu alguém dos confirmados, puxa o próximo da espera
+    // Se liberou vaga nos confirmados
     if(!isWait && espera.length > 0) {
-        // Prioridade 1: Membros oficiais na espera
-        // Prioridade 2: Ordem de inscrição
-        const listaOrdenada = [...espera].sort((a,b) => {
-            const am = membrosOficiais.includes(a.nome) && !a.isGuest;
-            const bm = membrosOficiais.includes(b.nome) && !b.isGuest;
-            return (bm - am) || (new Date(a.dataHora) - new Date(b.dataHora));
-        });
+        // BUSCA APENAS MEMBROS OFICIAIS NA ESPERA
+        const membrosNaEspera = espera
+            .filter(p => membrosOficiais.includes(p.nome) && !p.isGuest)
+            .sort((a,b) => new Date(a.dataHora) - new Date(b.dataHora));
 
-        const proximo = listaOrdenada[0];
-        await remove(ref(db, `listaEspera/${proximo.id}`));
-        await push(ref(db, 'confirmados'), { ...proximo, id: null });
+        if (membrosNaEspera.length > 0) {
+            const proximoMembro = membrosNaEspera[0];
+            await remove(ref(db, `listaEspera/${proximoMembro.id}`));
+            await push(ref(db, 'confirmados'), { ...proximoMembro, id: null });
+        }
+        // Se houver apenas convidados, a vaga fica aberta.
     }
 }
 
-// Remoção Manual (Apenas não-membros/convidados)
 window.apagarManual = (id, isWait) => {
-    if(confirm("Remover este registro?")) executarRemocao(id, isWait);
+    if(confirm("Remover este convidado?")) executarRemocao(id, isWait);
 };
 
 function atualizarTudo() {
@@ -255,12 +271,12 @@ function atualizarTudo() {
 
     const renderPlayer = (p, i, isWait) => {
         const dt = new Date(p.dataHora);
-        const dataFormatada = dt.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-        const horaFormatada = dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        const df = dt.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        const hf = dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
         
         const isMembro = membrosOficiais.includes(p.nome) && !p.isGuest;
         const badgeClass = p.isGuest ? 'guest' : (isMembro ? 'member' : 'wait');
-        const badgeText = p.isGuest ? 'CONVIDADO' : (isMembro ? 'MEMBRO' : 'ESPERA');
+        const badgeText = p.isGuest ? 'CONVIDADO' : 'MEMBRO';
         
         const btnRemover = !isMembro ? `<button class="remove-btn" onclick="apagarManual('${p.id}', ${isWait})">❌</button>` : '';
 
@@ -270,7 +286,7 @@ function atualizarTudo() {
                     <div class="player-number">${i+1}º</div>
                     <div class="player-details">
                         <strong>${p.nome}</strong>
-                        <small>📅 ${dataFormatada} às ${horaFormatada} ${p.membroResponsavel ? '• Ref: '+p.membroResponsavel : ''}</small>
+                        <small>📅 ${df} às ${hf} ${p.membroResponsavel ? '• Ref: '+p.membroResponsavel : ''}</small>
                     </div>
                     <span class="player-badge ${badgeClass}">${badgeText}</span>
                 </div>
@@ -294,18 +310,12 @@ function atualizarTudo() {
     verificarRegraQuarta();
 }
 
-// REGRA QUARTA-FEIRA 10H
 function verificarRegraQuarta() {
     const agora = new Date();
-    // Verifica se hoje é Quarta (3) e se já passou das 10:00
-    if (agora.getDay() === 3 && agora.getHours() >= 10) {
-        // Se houver vaga e houver membros na espera
-        if (confirmados.length < LIMITE) {
-            const proxMembro = espera.find(p => membrosOficiais.includes(p.nome) && !p.isGuest);
-            if (proxMembro) {
-                executarRemocao(proxMembro.id, true);
-            }
-        }
+    // Hoje é quarta (3)? Passou das 10h? Tem vaga?
+    if (agora.getDay() === 3 && agora.getHours() >= 10 && confirmados.length < LIMITE) {
+        const proxM = espera.find(p => membrosOficiais.includes(p.nome) && !p.isGuest);
+        if (proxM) executarRemocao(proxM.id, true);
     }
 }
 </script>
