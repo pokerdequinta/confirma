@@ -8,7 +8,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Roboto',Tahoma;background:#0d1b0d;color:#fff;min-height:100vh}
+body{font-family:'Segoe UI',Tahoma;background:#0d1b0d;color:#fff;min-height:100vh}
 .logo-top{text-align:center;padding:20px}
 .logo-top img{max-width:200px}
 .container{max-width:1000px;margin:auto;padding:20px}
@@ -66,7 +66,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="container">
 
 <header>
-<h1>LISTA DE CONFIRMADOS POKER DE QUINTA</h1>
+<h1>POKER DE QUINTA</h1>
 <div class="subtitle">📅 1ª Etapa - 29/01/2026</div>
 </header>
 
@@ -77,7 +77,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </div>
 
 <button class="add-btn" id="btnConfirmar">➕ CONFIRMAR PRESENÇA</button>
-<button class="cancel-btn-main" id="btnAbrirCancelar">❌ CANCELAR MINHA INSCRIÇÃO</button>
+<button class="cancel-btn-main" id="btnCancelarWhatsApp">❌ CANCELAR MINHA INSCRIÇÃO</button>
 <button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR CSV</button>
 
 <div class="section">
@@ -94,6 +94,20 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </ul>
 </div>
 
+</div>
+
+<div class="modal" id="modalBemVindo">
+<div class="modal-content">
+<h2 style="color: #d4a121;">📋 Bem-vindo ao Poker de Quinta!</h2>
+<p style="margin: 15px 0; line-height: 1.6;">
+Esta é a página oficial de inscrição do <strong>Poker de Quinta</strong>.<br><br>
+✅ Para se inscrever, clique no botão <strong>"CONFIRMAR PRESENÇA"</strong>.<br><br>
+❌ Se precisar cancelar sua inscrição, clique no botão <strong>"CANCELAR MINHA INSCRIÇÃO"</strong> que abrirá o WhatsApp para você solicitar a remoção da lista.
+</p>
+<div class="modal-buttons">
+<button class="modal-btn confirm" id="btnEntendi" style="width:100%">Entendi!</button>
+</div>
+</div>
 </div>
 
 <div class="modal" id="modal">
@@ -159,10 +173,18 @@ let confirmados = [];
 let listaEspera = [];
 
 const modal = document.getElementById('modal');
-const modalCancelar = document.getElementById('modalCancelar');
+const modalBemVindo = document.getElementById('modalBemVindo');
 const selectJogador = document.getElementById('playerName');
-const selectCancelJogador = document.getElementById('cancelPlayerName');
 const statusIndicator = document.getElementById('statusIndicator');
+
+// Mostrar popup de boas-vindas ao carregar a página
+window.addEventListener('load', () => {
+  modalBemVindo.classList.add('active');
+});
+
+btnEntendi.onclick = () => {
+  modalBemVindo.classList.remove('active');
+};
 
 // Preencher selects com opção padrão
 const opcaoPadrao1 = document.createElement('option');
@@ -172,19 +194,10 @@ opcaoPadrao1.disabled = true;
 opcaoPadrao1.selected = true;
 selectJogador.appendChild(opcaoPadrao1);
 
-const opcaoPadrao2 = document.createElement('option');
-opcaoPadrao2.value = '';
-opcaoPadrao2.textContent = '-- Selecione seu nome --';
-opcaoPadrao2.disabled = true;
-opcaoPadrao2.selected = true;
-selectCancelJogador.appendChild(opcaoPadrao2);
-
 jogadores.forEach(j => {
   const o1 = document.createElement('option');
-  const o2 = document.createElement('option');
-  o1.value = o1.textContent = o2.value = o2.textContent = j;
+  o1.value = o1.textContent = j;
   selectJogador.appendChild(o1);
-  selectCancelJogador.appendChild(o2);
 });
 
 try {
@@ -213,8 +226,16 @@ try {
 // Funções de Modal
 btnConfirmar.onclick = () => modal.classList.add('active');
 btnCancelar.onclick = () => modal.classList.remove('active');
-btnAbrirCancelar.onclick = () => modalCancelar.classList.add('active');
-btnFecharCancelar.onclick = () => modalCancelar.classList.remove('active');
+
+// Botão de cancelamento via WhatsApp
+btnCancelarWhatsApp.onclick = () => {
+  const mensagem = encodeURIComponent(
+    'Olá! Gostaria de cancelar minha inscrição no Poker de Quinta.\n\n' +
+    'Meu nome: [DIGITE SEU NOME AQUI]\n\n' +
+    'Obrigado!'
+  );
+  window.open(`https://wa.me/5541987210685?text=${mensagem}`, '_blank');
+};
 
 isGuest.onchange = e => {
   guestNameGroup.style.display = guestPhoneGroup.style.display = e.target.checked ? 'block' : 'none';
@@ -268,61 +289,6 @@ O jogador cancelou sua inscrição.`;
   // Abre em nova aba/janela
   window.open(urlWhatsApp, '_blank');
 }
-
-// LÓGICA DE CANCELAMENTO PELO BOTÃO GRANDE
-btnExecutarCancelamento.onclick = async () => {
-  const nomeAlvo = selectCancelJogador.value;
-  
-  if (!nomeAlvo) {
-    return alert('Por favor, selecione seu nome!');
-  }
-  
-  const playerC = confirmados.find(p => p.nome === nomeAlvo && !p.isGuest);
-  const playerE = listaEspera.find(p => p.nome === nomeAlvo && !p.isGuest);
-  const player = playerC || playerE;
-
-  if (!player) return alert("Você não foi encontrado na lista de inscritos.");
-  if (!confirm(`Confirmar cancelamento de ${nomeAlvo}?`)) return;
-
-  try {
-    const statusAtual = playerC ? 'confirmado' : 'espera';
-    
-    // Remove do banco
-    const path = playerC ? 'confirmados' : 'listaEspera';
-    await remove(ref(db, `${path}/${player.id}`));
-    
-    // Remove convidados associados se estava nos confirmados
-    if (playerC) {
-      const convidados = listaEspera.filter(p => p.guestOf === player.nome);
-      for (const conv of convidados) {
-        await remove(ref(db, `listaEspera/${conv.id}`));
-      }
-      
-      // Promove próximo da lista de espera SOMENTE SE FOR QUARTA-FEIRA APÓS AS 10h
-      const agora = new Date();
-      const diaSemana = agora.getDay(); // 0=domingo, 3=quarta
-      const hora = agora.getHours();
-      
-      // Só promove automaticamente na quarta-feira (dia 3) após as 10h
-      if (diaSemana === 3 && hora >= 10) {
-        const proximo = listaEspera.find(p => jogadores.includes(p.nome) && !p.isGuest);
-        if (proximo) {
-          await remove(ref(db, `listaEspera/${proximo.id}`));
-          const novoRef = push(ref(db, 'confirmados'));
-          await set(novoRef, { ...proximo, id: novoRef.key });
-        }
-      }
-    }
-    
-    // Notifica organizador
-    notificarCancelamento(nomeAlvo, statusAtual);
-    
-    modalCancelar.classList.remove('active');
-    alert('Cancelamento realizado! O organizador foi notificado.');
-  } catch (e) { 
-    alert("Erro ao cancelar: " + e.message); 
-  }
-};
 
 // Função de remover CONVIDADOS (somente convidados podem ser removidos pelo botão X)
 window.removerConvidado = async (id, isWait) => {
