@@ -79,7 +79,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <button class="add-btn" id="btnConfirmar">➕ CONFIRMAR PRESENÇA</button>
 <button class="cancel-btn-main" id="btnCancelarWhatsApp">❌ CANCELAR MINHA INSCRIÇÃO</button>
 <button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR CSV</button>
-<button class="add-btn" id="btnModoAdmin" style="background:#8b0000;color:#fff">🔐 MODO ADMIN</button>
 
 <div class="section">
 <h3>✅ CONFIRMADOS</h3>
@@ -96,6 +95,8 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </div>
 
 </div>
+
+<button class="add-btn" id="btnModoAdmin" style="position:fixed;bottom:10px;right:10px;width:auto;padding:8px 15px;background:rgba(13,27,13,0.3);border:1px solid rgba(212,161,33,0.1);opacity:0.15;font-size:0.7em;transition:opacity 0.3s">🔐</button>
 
 <div class="modal" id="modalAdmin">
 <div class="modal-content">
@@ -251,8 +252,11 @@ btnCancelar.onclick = () => modal.classList.remove('active');
 btnModoAdmin.onclick = () => {
   if (modoAdmin) {
     modoAdmin = false;
-    btnModoAdmin.textContent = '🔐 MODO ADMIN';
-    btnModoAdmin.style.background = '#8b0000';
+    btnModoAdmin.innerHTML = '🔐';
+    btnModoAdmin.style.background = 'rgba(13,27,13,0.3)';
+    btnModoAdmin.style.border = '1px solid rgba(212,161,33,0.1)';
+    btnModoAdmin.style.opacity = '0.15';
+    btnModoAdmin.style.fontSize = '0.7em';
     alert('Modo Admin desativado!');
     atualizar();
   } else {
@@ -262,14 +266,26 @@ btnModoAdmin.onclick = () => {
   }
 };
 
+// Hover no botão admin para ficar mais visível
+btnModoAdmin.addEventListener('mouseenter', () => {
+  if (!modoAdmin) btnModoAdmin.style.opacity = '0.5';
+});
+
+btnModoAdmin.addEventListener('mouseleave', () => {
+  if (!modoAdmin) btnModoAdmin.style.opacity = '0.15';
+});
+
 btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
 
 btnAcessarAdmin.onclick = () => {
   if (senhaAdminInput.value === SENHA_ADMIN) {
     modoAdmin = true;
     modalAdmin.classList.remove('active');
-    btnModoAdmin.textContent = '🔓 MODO ADMIN ATIVO';
+    btnModoAdmin.innerHTML = '🔓 ADMIN';
     btnModoAdmin.style.background = '#4CAF50';
+    btnModoAdmin.style.border = '2px solid #2d7a2d';
+    btnModoAdmin.style.opacity = '1';
+    btnModoAdmin.style.fontSize = '0.85em';
     alert('✅ Modo Admin ativado! Agora você pode remover qualquer jogador.');
     atualizar();
   } else {
