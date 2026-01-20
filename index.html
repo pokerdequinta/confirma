@@ -8,7 +8,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@300;400;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Roboto', sans-serif;background:#0d1b0d;color:#fff;min-height:100vh}
+body{font-family:'Roboto', sans-serif;background:#0d1b0d;color:#fff;min-height:100vh} /* Fonte Roboto */
 .logo-top{text-align:center;padding:20px}
 .logo-top img{max-width:200px}
 .container{max-width:1000px;margin:auto;padding:20px}
@@ -16,24 +16,24 @@ header{text-align:center;background:#102810;border:2px solid #d4a121;border-radi
 h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .subtitle{margin-top:10px}
 
-/* Estilo do Cronômetro */
+/* O SEU PONTILHADO DO CRONÔMETRO */
 #countdownContainer {
-    background: rgba(212, 161, 33, 0.1);
-    border: 2px solid #d4a121;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 25px;
+    background: #1a3d1a;
+    border: 2px dashed #d4a121;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
     text-align: center;
 }
-.timer-header { font-family: 'Anton'; font-size: 1.2em; color: #fff; text-transform: uppercase; margin-bottom: 8px; display: block; }
-#timer { font-family: 'Anton'; font-size: 2.2em; color: #d4a121; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+.timer-header { font-family: 'Anton'; font-size: 1.2em; color: #fff; margin-bottom: 5px; display: block; }
+#timer { font-family: 'Anton'; font-size: 1.8em; color: #d4a121; }
 
 .info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:25px}
 .info-card{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;text-align:center}
 .info-card h2{font-family:'Anton';font-size:2.5em;color:#d4a121}
-.add-btn{width:100%;padding:15px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:10px;color:#000; font-family: 'Roboto';}
-.cancel-btn-main{width:100%;padding:15px;background:#c72c48;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px;color:#fff; font-family: 'Roboto';}
-.add-btn:disabled{opacity:0.5;cursor:not-allowed; background: #444; color: #888}
+.add-btn{width:100%;padding:15px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:10px;color:#000}
+.cancel-btn-main{width:100%;padding:15px;background:#c72c48;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px;color:#fff}
+.add-btn:disabled{opacity:0.5;cursor:not-allowed}
 .export-btn{background:#2d5016;color:#fff}
 .section{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;margin-bottom:25px}
 .player-list{list-style:none}
@@ -41,7 +41,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .player-info{display:flex;gap:15px;align-items:center}
 .player-number{font-family:'Anton';color:#d4a121}
 .player-details{display:flex;flex-direction:column}
-.player-details small{opacity:.85; color: #d4a121}
+.player-details small{opacity:.85}
 .player-badge{background:#d4a121;color:#000;padding:4px 10px;border-radius:20px;font-size:.8em;font-weight:bold}
 .wait{background:#c72c48;color:#fff}
 .guest{background:#4CAF50;color:#000}
@@ -53,13 +53,18 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .modal-content{background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;width:90%;max-width:500px}
 .form-group{margin-bottom:15px}
 .form-group label{color:#d4a121;font-weight:bold;display:block;margin-bottom:5px}
-.form-group input,.form-group select{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff; font-family: 'Roboto';}
+.form-group input,.form-group select{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
 .modal-buttons{display:flex;gap:10px;margin-top:20px}
-.modal-btn{flex:1;padding:10px;font-weight:bold;border:none;border-radius:8px;cursor:pointer; font-family: 'Roboto';}
+.modal-btn{flex:1;padding:10px;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
 .modal-btn.confirm{background:#d4a121;color:#000}
 .modal-btn.cancel{background:#c72c48;color:#fff}
+.loading{text-align:center;padding:20px;opacity:0.7}
 .status-indicator{position:fixed;top:10px;right:10px;background:#2d5016;padding:8px 15px;border-radius:20px;font-size:0.85em;border:1px solid #d4a121}
-@media(max-width:768px){ .info-cards{grid-template-columns:1fr} }
+.status-indicator.connected{background:#1a3d1a;border-color:#4CAF50}
+.status-indicator.error{background:#3d1a1a;border-color:#c72c48}
+@media(max-width:768px){
+.info-cards{grid-template-columns:1fr}
+}
 </style>
 </head>
 
@@ -80,7 +85,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 <div id="countdownContainer">
     <span class="timer-header">As Inscrições abrem dia 26/01 às 07:00</span>
-    <div id="timer">00d 00h 00m 00s</div>
+    <div id="timer">Calculando tempo...</div>
 </div>
 
 <div class="info-cards">
@@ -95,22 +100,30 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 <div class="section">
 <h3>✅ CONFIRMADOS</h3>
-<ul id="confirmedList" class="player-list"></ul>
+<ul id="confirmedList" class="player-list">
+<li class="loading">Carregando dados...</li>
+</ul>
 </div>
 
 <div class="section">
 <h3>⏳ LISTA DE ESPERA</h3>
-<ul id="waitlistList" class="player-list"></ul>
+<ul id="waitlistList" class="player-list">
+<li class="loading">Carregando dados...</li>
+</ul>
 </div>
 
 </div>
 
-<button class="add-btn" id="btnModoAdmin" style="position:fixed;bottom:10px;right:10px;width:auto;padding:8px 15px;background:rgba(13,27,13,0.3);border:1px solid rgba(212,161,33,0.1);opacity:0.15;font-size:0.7em;">🔐</button>
+<button class="add-btn" id="btnModoAdmin" style="position:fixed;bottom:10px;right:10px;width:auto;padding:8px 15px;background:rgba(13,27,13,0.3);border:1px solid rgba(212,161,33,0.1);opacity:0.15;font-size:0.7em;transition:opacity 0.3s">🔐</button>
 
 <div class="modal" id="modalAdmin">
 <div class="modal-content">
 <h2 style="color: #8b0000;">🔐 Modo Administrador</h2>
-<div class="form-group"><label>Senha Admin</label><input type="password" id="senhaAdmin"></div>
+<p style="margin: 15px 0; opacity: 0.8;">Digite a senha de administrador para acessar funções exclusivas:</p>
+<div class="form-group">
+<label>Senha Admin</label>
+<input type="password" id="senhaAdmin" placeholder="Digite a senha">
+</div>
 <div class="modal-buttons">
 <button class="modal-btn cancel" id="btnFecharAdmin">Cancelar</button>
 <button class="modal-btn confirm" id="btnAcessarAdmin" style="background:#8b0000; color:#fff">Acessar</button>
@@ -121,17 +134,27 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="modal" id="modalBemVindo">
 <div class="modal-content">
 <h2 style="color: #d4a121;">📋 Bem-vindo ao Poker de Quinta!</h2>
-<p style="margin: 15px 0; line-height: 1.6;">Esta é a página oficial de inscrição do Poker de Quinta.</p>
-<div class="modal-buttons"><button class="modal-btn confirm" id="btnEntendi" style="width:100%">Entendi!</button></div>
+<p style="margin: 15px 0; line-height: 1.6;">Esta é a página oficial de inscrição do <strong>Poker de Quinta</strong>.</p>
+<div class="modal-buttons">
+<button class="modal-btn confirm" id="btnEntendi" style="width:100%">Entendi!</button>
+</div>
 </div>
 </div>
 
 <div class="modal" id="modal">
 <div class="modal-content">
 <h2>Confirmar Presença</h2>
-<div class="form-group"><label>Jogador</label><select id="playerName"></select></div>
-<div class="form-group"><input type="checkbox" id="isGuest"> Adicionar convidado</div>
-<div id="guestNameGroup" style="display:none" class="form-group"><label>Nome do Convidado</label><input id="guestName"></div>
+<div class="form-group">
+<label>Jogador</label>
+<select id="playerName"></select>
+</div>
+<div class="form-group">
+<input type="checkbox" id="isGuest"> Adicionar convidado
+</div>
+<div class="form-group" id="guestNameGroup" style="display:none">
+<label>Nome do Convidado</label>
+<input id="guestName">
+</div>
 <div class="modal-buttons">
 <button class="modal-btn cancel" id="btnCancelar">Cancelar</button>
 <button class="modal-btn confirm" id="btnConfirmarModal">Confirmar</button>
@@ -143,6 +166,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getDatabase, ref, set, onValue, remove, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
+// SUA CONFIGURAÇÃO ORIGINAL DO FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
   authDomain: "poker-de-quinta.firebaseapp.com",
@@ -154,19 +178,19 @@ const firebaseConfig = {
 };
 
 const LIMITE_VAGAS = 20;
-const DATA_ABERTURA = new Date('2026-01-26T07:00:00').getTime();
+const DATA_ABERTURA = new Date('2026-01-26T07:00:00').getTime(); // DATA DEFINIDA
 const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+let db;
 let confirmados = [];
 let listaEspera = [];
 let modoAdmin = false;
 
-// CRONÔMETRO
+// LÓGICA DO CRONÔMETRO
 function atualizarCronometro() {
     const agora = new Date().getTime();
     const dist = DATA_ABERTURA - agora;
+
     if (dist > 0) {
         const d = Math.floor(dist / (1000 * 60 * 60 * 24));
         const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -178,135 +202,125 @@ function atualizarCronometro() {
         document.getElementById("countdownContainer").style.display = "none";
         document.getElementById("btnConfirmar").disabled = false;
         document.getElementById("btnConfirmar").textContent = "➕ CONFIRMAR PRESENÇA";
-        clearInterval(timerInt);
+        clearInterval(timerInterval);
     }
 }
-const timerInt = setInterval(atualizarCronometro, 1000);
+const timerInterval = setInterval(atualizarCronometro, 1000);
 atualizarCronometro();
 
-// POPULAR JOGADORES
+// INICIALIZAÇÃO FIREBASE ORIGINAL
+try {
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+  statusIndicator.textContent = '✅ Conectado';
+  statusIndicator.classList.add('connected');
+  
+  onValue(ref(db, 'confirmados'), (snapshot) => {
+    confirmados = [];
+    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
+    atualizar();
+  });
+  
+  onValue(ref(db, 'listaEspera'), (snapshot) => {
+    listaEspera = [];
+    if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
+    atualizar();
+  });
+} catch (e) {
+  statusIndicator.textContent = '❌ Erro de conexão';
+}
+
+// RESTANTE DAS SUAS FUNÇÕES ORIGINAIS
 const selectJogador = document.getElementById('playerName');
 jogadores.sort().forEach(j => {
-    const opt = document.createElement('option');
-    opt.value = opt.textContent = j;
-    selectJogador.appendChild(opt);
+  const o = document.createElement('option');
+  o.value = o.textContent = j;
+  selectJogador.appendChild(o);
 });
 
-// SYNC FIREBASE
-onValue(ref(db, 'confirmados'), (snapshot) => {
-    confirmados = [];
-    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
-    atualizar();
-});
-
-onValue(ref(db, 'listaEspera'), (snapshot) => {
-    listaEspera = [];
-    if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
-    atualizar();
-});
-
-// AÇÕES
 btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
-window.onload = () => modalBemVindo.classList.add('active');
+window.addEventListener('load', () => modalBemVindo.classList.add('active'));
 
 btnConfirmar.onclick = () => {
     if (new Date().getTime() < DATA_ABERTURA && !modoAdmin) return alert("A lista ainda não abriu!");
     modal.classList.add('active');
 };
 btnCancelar.onclick = () => modal.classList.remove('active');
-
 isGuest.onchange = e => guestNameGroup.style.display = e.target.checked ? 'block' : 'none';
 
 btnConfirmarModal.onclick = async () => {
-    const nome = selectJogador.value;
-    if (!nome) return alert("Selecione seu nome!");
-    const agora = new Date().toISOString();
-    try {
-        if (!isGuest.checked) {
-            const destino = confirmados.length < LIMITE_VAGAS ? 'confirmados' : 'listaEspera';
-            await push(ref(db, destino), { nome, isGuest: false, data: agora });
-        } else {
-            const gNome = document.getElementById('guestName').value;
-            if(!gNome) return alert("Nome do convidado?");
-            await push(ref(db, 'listaEspera'), { nome: gNome, isGuest: true, guestOf: nome, data: agora });
-        }
-        modal.classList.remove('active');
-    } catch (e) { alert("Erro ao salvar"); }
+  const nome = selectJogador.value;
+  if (!nome) return alert('Selecione seu nome!');
+  const agora = new Date().toISOString();
+  try {
+    if (!isGuest.checked) {
+      const lista = confirmados.length < LIMITE_VAGAS ? 'confirmados' : 'listaEspera';
+      await push(ref(db, lista), { nome, isGuest: false, data: agora });
+    } else {
+      const gNome = document.getElementById('guestName').value;
+      await push(ref(db, 'listaEspera'), { nome: gNome, isGuest: true, guestOf: nome, data: agora });
+    }
+    modal.classList.remove('active');
+  } catch (e) { alert('Erro: ' + e.message); }
 };
 
 btnCancelarWhatsApp.onclick = () => {
-    const msg = encodeURIComponent("Olá! Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ");
-    window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
+  const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ');
+  window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
 };
 
 function atualizar() {
-    document.getElementById('statusIndicator').textContent = '✅ Conectado';
-    document.getElementById('confirmedCount').textContent = confirmados.length;
-    document.getElementById('vacancyCount').textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
-    document.getElementById('waitlistCount').textContent = listaEspera.length;
+  confirmedCount.textContent = confirmados.length;
+  vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
+  waitlistCount.textContent = listaEspera.length;
 
-    const render = (p, i, wait) => {
-        const dt = new Date(p.data);
-        const timeStr = dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-        const isMembro = jogadores.includes(p.nome) && !p.isGuest;
-        const btnRemover = (p.isGuest || modoAdmin) ? `<button class="remove-btn" onclick="removerJogador('${p.id}',${wait})">❌</button>` : '';
+  confirmedList.innerHTML = confirmados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
+  confirmados.forEach((p, i) => {
+    const btnRemover = (p.isGuest || modoAdmin) ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
+    confirmedList.innerHTML += `<li class="player-item">
+        <div class="player-info"><div class="player-number">${i+1}º</div>
+        <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${new Date(p.data).toLocaleTimeString()}</small></div></div>
+        <span class="player-badge ${p.isGuest ? 'guest' : 'member'}">${p.isGuest ? 'CONVIDADO' : 'MEMBRO'}</span>
+        ${btnRemover}</li>`;
+  });
 
-        return `<li class="player-item">
-            <div class="player-info">
-                <div class="player-number">${i+1}º</div>
-                <div class="player-details">
-                    <strong>${p.nome}</strong>
-                    <small>🕒 ${timeStr} ${p.guestOf ? '(Ref: '+p.guestOf+')' : ''}</small>
-                </div>
-            </div>
-            <span class="player-badge ${p.isGuest ? 'guest' : (isMembro && !wait ? 'member' : 'wait')}">
-                ${p.isGuest ? 'CONVIDADO' : (wait ? 'ESPERA' : 'MEMBRO')}
-            </span>
-            ${btnRemover}
-        </li>`;
-    };
-
-    document.getElementById('confirmedList').innerHTML = confirmados.map((p, i) => render(p, i, false)).join('') || '<li class="empty-state">Vazio</li>';
-    document.getElementById('waitlistList').innerHTML = listaEspera.map((p, i) => render(p, i, true)).join('') || '<li class="empty-state">Vazio</li>';
+  waitlistList.innerHTML = listaEspera.length ? '' : '<li class="empty-state">Fila vazia</li>';
+  listaEspera.forEach((p, i) => {
+    const btnRemover = (p.isGuest || modoAdmin) ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
+    waitlistList.innerHTML += `<li class="player-item">
+        <div class="player-info"><div class="player-number">${i+1}º</div>
+        <div class="player-details"><strong>${p.nome}</strong><small>🕒 ${new Date(p.data).toLocaleTimeString()}</small></div></div>
+        <span class="player-badge wait">ESPERA</span>
+        ${btnRemover}</li>`;
+  });
 }
 
-// REMOVER JOGADOR
 window.removerJogador = async (id, isWait) => {
-    if(!confirm("Remover este jogador?")) return;
-    const path = isWait ? 'listaEspera' : 'confirmados';
-    await remove(ref(db, `${path}/${id}`));
-    
-    // Se saiu dos confirmados, promove o primeiro MEMBRO da espera
-    if(!isWait && listaEspera.length > 0) {
-        const proxMembro = listaEspera.find(p => jogadores.includes(p.nome) && !p.isGuest);
-        if(proxMembro) {
-            await remove(ref(db, `listaEspera/${proxMembro.id}`));
-            await push(ref(db, 'confirmados'), { ...proxMembro, id: null });
-        }
-    }
+  if(!confirm('Remover?')) return;
+  const path = isWait ? 'listaEspera' : 'confirmados';
+  await remove(ref(db, `${path}/${id}`));
 };
 
-// ADMIN (Simplificado para o seu código)
 btnModoAdmin.onclick = () => modalAdmin.classList.add('active');
 btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
 btnAcessarAdmin.onclick = () => {
-    if(document.getElementById('senhaAdmin').value === "poker2026") {
-        modoAdmin = true;
-        modalAdmin.classList.remove('active');
-        btnModoAdmin.style.background = "#4CAF50";
-        alert("Modo Admin Ativado!");
-        atualizar();
-    }
+  if (document.getElementById('senhaAdmin').value === "poker2026") {
+    modoAdmin = true;
+    modalAdmin.classList.remove('active');
+    btnModoAdmin.style.background = '#4CAF50';
+    alert("Admin Ativado");
+    atualizar();
+  }
 };
 
 btnExportar.onclick = () => {
-    let csv = 'Nome,Status\n';
-    confirmados.forEach(p => csv += `${p.nome},CONFIRMADO\n`);
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'lista_poker.csv';
-    link.click();
+  let csv = 'Nome,Status\n';
+  confirmados.forEach(p => csv += `${p.nome},CONFIRMADO\n`);
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'lista.csv';
+  link.click();
 };
 </script>
 </body>
