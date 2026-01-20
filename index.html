@@ -79,6 +79,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <button class="add-btn" id="btnConfirmar">➕ CONFIRMAR PRESENÇA</button>
 <button class="cancel-btn-main" id="btnAbrirCancelar">❌ CANCELAR MINHA INSCRIÇÃO</button>
 <button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR CSV</button>
+<button class="add-btn" id="btnLimparBanco" style="background:#8b0000;color:#fff">🗑️ LIMPAR BANCO DE DADOS</button>
 
 <div class="section">
 <h3>✅ CONFIRMADOS</h3>
@@ -298,12 +299,19 @@ btnExecutarCancelamento.onclick = async () => {
         await remove(ref(db, `listaEspera/${conv.id}`));
       }
       
-      // Promove próximo da lista de espera
-      const proximo = listaEspera.find(p => jogadores.includes(p.nome) && !p.isGuest);
-      if (proximo) {
-        await remove(ref(db, `listaEspera/${proximo.id}`));
-        const novoRef = push(ref(db, 'confirmados'));
-        await set(novoRef, { ...proximo, id: novoRef.key });
+      // Promove próximo da lista de espera SOMENTE SE FOR QUARTA-FEIRA APÓS AS 10h
+      const agora = new Date();
+      const diaSemana = agora.getDay(); // 0=domingo, 3=quarta
+      const hora = agora.getHours();
+      
+      // Só promove automaticamente na quarta-feira (dia 3) após as 10h
+      if (diaSemana === 3 && hora >= 10) {
+        const proximo = listaEspera.find(p => jogadores.includes(p.nome) && !p.isGuest);
+        if (proximo) {
+          await remove(ref(db, `listaEspera/${proximo.id}`));
+          const novoRef = push(ref(db, 'confirmados'));
+          await set(novoRef, { ...proximo, id: novoRef.key });
+        }
       }
     }
     
@@ -344,6 +352,35 @@ window.removerConvidado = async (id, isWait) => {
     alert('Erro ao remover: ' + e.message);
   }
 };
+
+// Função para limpar todo o banco de dados
+window.limparBancoDeDados = async () => {
+  if (!confirm('⚠️ ATENÇÃO! Esta ação irá APAGAR TODOS os jogadores confirmados e da lista de espera. Deseja continuar?')) {
+    return;
+  }
+  
+  if (!confirm('Tem certeza absoluta? Esta ação NÃO pode ser desfeita!')) {
+    return;
+  }
+  
+  try {
+    // Remove todos os confirmados
+    for (const player of confirmados) {
+      await remove(ref(db, `confirmados/${player.id}`));
+    }
+    
+    // Remove todos da lista de espera
+    for (const player of listaEspera) {
+      await remove(ref(db, `listaEspera/${player.id}`));
+    }
+    
+    alert('✅ Banco de dados limpo com sucesso!');
+  } catch (e) {
+    alert('Erro ao limpar banco: ' + e.message);
+  }
+};
+
+btnLimparBanco.onclick = limparBancoDeDados;
 
 function formatarData(iso) {
   const d = new Date(iso);
@@ -402,7 +439,27 @@ btnExportar.onclick = () => {
 };
 
 async function verificarQuartaFeira() {
-  // Mantida a lógica original de promoção automática de membros na quarta-feira
+  const agora = new Date();
+  const diaSemana = agora.getDay();
+  const hora = agora.getHours();
+  
+  // Só executa na quarta-feira (dia 3) APÓS as 10h
+  if (diaSemana === 3 && hora >= 10) {
+    // Lógica original de promoção automática de membros
+    const listaMembrosPendentes = listaEspera.filter(p => jogadores.includes(p.nome) && !p.isGuest);
+    
+    for (const membro of listaMembrosPendentes) {
+      if (confirmados.length < LIMITE_VAGAS) {
+        try {
+          await remove(ref(db, `listaEspera/${membro.id}`));
+          const novoRef = push(ref(db, 'confirmados'));
+          await set(novoRef, { ...membro, id: novoRef.key });
+        } catch (e) {
+          console.error('Erro ao promover membro:', e);
+        }
+      }
+    }
+  }
 }
 </script>
 </body>
