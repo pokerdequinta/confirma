@@ -186,7 +186,7 @@ const firebaseConfig = {
 };
 
 const LIMITE_VAGAS = 20;
-const DATA_ABERTURA = new Date('2026-01-22T10:21:00').getTime();
+const DATA_ABERTURA = new Date('2026-01-22T10:35:00').getTime();
 const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
 let db;
@@ -381,11 +381,67 @@ window.removerJogador = async (id, isWait) => {
   try {
     const path = isWait ? 'listaEspera' : 'confirmados';
     await remove(ref(db, `${path}/${id}`));
+    
+    // Se removeu dos confirmados, promover da lista de espera
+    if (!isWait) {
+      await promoverDaListaDeEspera();
+    }
+    
     alert('Jogador removido com sucesso!');
   } catch (e) {
     alert('Erro ao remover: ' + e.message);
   }
 };
+
+// Função para promover automaticamente da lista de espera
+async function promoverDaListaDeEspera() {
+  try {
+    // Verificar quantos confirmados existem
+    const snapshotConfirmados = await get(ref(db, 'confirmados'));
+    const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
+    
+    // Se tiver vaga disponível
+    if (totalConfirmados < LIMITE_VAGAS) {
+      // Buscar lista de espera atual
+      const snapshotEspera = await get(ref(db, 'listaEspera'));
+      
+      if (snapshotEspera.exists()) {
+        let candidatos = [];
+        snapshotEspera.forEach(child => {
+          candidatos.push({...child.val(), id: child.key});
+        });
+        
+        // Ordenar: membros primeiro (isGuest=false), depois por timestamp
+        const membros = candidatos.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        const convidados = candidatos.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        const listaOrdenada = [...membros, ...convidados];
+        
+        if (listaOrdenada.length > 0) {
+          // Pegar o primeiro da fila
+          const promovido = listaOrdenada[0];
+          
+          // Adicionar aos confirmados
+          await push(ref(db, 'confirmados'), {
+            nome: promovido.nome,
+            isGuest: promovido.isGuest,
+            guestOf: promovido.guestOf || null,
+            data: promovido.data,
+            timestamp: promovido.timestamp,
+            promovido: true,
+            dataPromocao: new Date().toISOString()
+          });
+          
+          // Remover da lista de espera
+          await remove(ref(db, `listaEspera/${promovido.id}`));
+          
+          console.log(`✅ ${promovido.nome} foi promovido automaticamente para confirmados!`);
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao promover da lista de espera:', e);
+  }
+}
 
 btnModoAdmin.onclick = () => modalAdmin.classList.add('active');
 btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
@@ -428,4 +484,3 @@ btnExportar.onclick = () => {
 </script>
 </body>
 </html>
-
