@@ -186,7 +186,7 @@ const firebaseConfig = {
 };
 
 const LIMITE_VAGAS = 20;
-const DATA_ABERTURA = new Date('2026-01-22T10:35:00').getTime();
+const DATA_ABERTURA = new Date('2026-01-26T07:00:00').getTime();
 const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Igor","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
 let db;
@@ -360,6 +360,8 @@ function atualizar() {
   waitlistList.innerHTML = listaEsperaOrdenada.length ? '' : '<li class="empty-state">Fila vazia</li>';
   listaEsperaOrdenada.forEach((p, i) => {
     const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
+    const btnPromover = modoAdmin && confirmados.length < LIMITE_VAGAS ? 
+      `<button class="remove-btn" style="background:#4CAF50" onclick="promoverJogadorManual('${p.id}')">↗️ PROMOVER</button>` : '';
     const guestInfo = p.isGuest && p.guestOf ? ` (Convidado de ${p.guestOf})` : '';
     const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge wait">MEMBRO</span>';
     const prioridade = !p.isGuest && i < membrosEspera.length ? '<span class="priority-indicator">PRIORIDADE</span>' : '';
@@ -370,6 +372,7 @@ function atualizar() {
         <div style="display:flex;gap:5px;align-items:center">
           ${badge}
           ${prioridade}
+          ${btnPromover}
           ${btnRemover}
         </div>
         </li>`;
@@ -411,20 +414,17 @@ async function promoverDaListaDeEspera() {
           candidatos.push({...child.val(), id: child.key});
         });
         
-        // Ordenar: membros primeiro (isGuest=false), depois por timestamp
+        // APENAS MEMBROS são promovidos automaticamente
         const membros = candidatos.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-        const convidados = candidatos.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-        const listaOrdenada = [...membros, ...convidados];
         
-        if (listaOrdenada.length > 0) {
-          // Pegar o primeiro da fila
-          const promovido = listaOrdenada[0];
+        if (membros.length > 0) {
+          // Pegar o primeiro MEMBRO da fila
+          const promovido = membros[0];
           
           // Adicionar aos confirmados
           await push(ref(db, 'confirmados'), {
             nome: promovido.nome,
-            isGuest: promovido.isGuest,
-            guestOf: promovido.guestOf || null,
+            isGuest: false,
             data: promovido.data,
             timestamp: promovido.timestamp,
             promovido: true,
@@ -434,7 +434,9 @@ async function promoverDaListaDeEspera() {
           // Remover da lista de espera
           await remove(ref(db, `listaEspera/${promovido.id}`));
           
-          console.log(`✅ ${promovido.nome} foi promovido automaticamente para confirmados!`);
+          console.log(`✅ ${promovido.nome} (MEMBRO) foi promovido automaticamente para confirmados!`);
+        } else {
+          console.log('ℹ️ Há vaga disponível, mas apenas convidados na fila. Promoção manual necessária.');
         }
       }
     }
@@ -442,6 +444,54 @@ async function promoverDaListaDeEspera() {
     console.error('Erro ao promover da lista de espera:', e);
   }
 }
+
+// Função para promover jogador manualmente (ADMIN)
+window.promoverJogadorManual = async (id) => {
+  try {
+    // Verificar se há vaga
+    const snapshotConfirmados = await get(ref(db, 'confirmados'));
+    const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
+    
+    if (totalConfirmados >= LIMITE_VAGAS) {
+      return alert('❌ Não há vagas disponíveis!\n\nRemova um jogador dos confirmados primeiro.');
+    }
+    
+    // Buscar dados do jogador na lista de espera
+    const snapshot = await get(ref(db, `listaEspera/${id}`));
+    
+    if (!snapshot.exists()) {
+      return alert('Jogador não encontrado!');
+    }
+    
+    const jogador = snapshot.val();
+    
+    // Confirmar promoção
+    const tipoJogador = jogador.isGuest ? 'CONVIDADO' : 'MEMBRO';
+    if (!confirm(`Promover ${jogador.nome} (${tipoJogador}) para confirmados?`)) {
+      return;
+    }
+    
+    // Adicionar aos confirmados
+    await push(ref(db, 'confirmados'), {
+      nome: jogador.nome,
+      isGuest: jogador.isGuest,
+      guestOf: jogador.guestOf || null,
+      data: jogador.data,
+      timestamp: jogador.timestamp,
+      promovido: true,
+      promocaoManual: true,
+      dataPromocao: new Date().toISOString()
+    });
+    
+    // Remover da lista de espera
+    await remove(ref(db, `listaEspera/${id}`));
+    
+    alert(`✅ ${jogador.nome} foi promovido para confirmados!`);
+    
+  } catch (e) {
+    alert('Erro ao promover: ' + e.message);
+  }
+};
 
 btnModoAdmin.onclick = () => modalAdmin.classList.add('active');
 btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
