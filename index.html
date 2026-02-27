@@ -364,7 +364,7 @@ function atualizar() {
   const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
   const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera];
 
-  waitlistList.innerHTML = listaEsperaOrdenada.length ? '' : '<li class="empty-state">Fila vazia</li>';
+  waitlistList.innerHTML = listaEsperaOrdenada.length ? '' : '<li class="empty-state">Lista vazia</li>';
   listaEsperaOrdenada.forEach((p, i) => {
     const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
     const btnPromover = modoAdmin && confirmados.length < LIMITE_VAGAS ? 
@@ -541,3 +541,4 @@ btnExportar.onclick = () => {
 </script>
 </body>
 </html>
+
