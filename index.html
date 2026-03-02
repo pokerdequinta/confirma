@@ -122,15 +122,31 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="modal" id="modalAdmin">
 <div class="modal-content">
 <h2 style="color: #8b0000;">🔐 Modo Administrador</h2>
-<p style="margin: 15px 0; opacity: 0.8;">Digite a senha de administrador para acessar funções exclusivas:</p>
-<div class="form-group">
-<label>Senha Admin</label>
-<input type="password" id="senhaAdmin" placeholder="Digite a senha">
+
+<!-- NOVA SEÇÃO: Adicionar Jogador -->
+<div style="border-bottom: 1px solid #d4a121; margin: 20px 0; padding-bottom: 20px;">
+    <h3 style="color: #d4a121; margin-bottom: 15px;">➕ Adicionar Novo Jogador</h3>
+    <div class="form-group">
+        <label>Nome do Jogador</label>
+        <input type="text" id="novoJogadorNome" placeholder="Digite o nome completo" style="background: #1a3d1a;">
+    </div>
+    <button class="modal-btn confirm" id="btnAdicionarJogador" style="background: #4CAF50; color: #fff; width: 100%;">Adicionar Jogador</button>
+    <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">O jogador será adicionado à lista permanente e poderá se inscrever normalmente.</p>
 </div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnFecharAdmin">Cancelar</button>
-<button class="modal-btn confirm" id="btnAcessarAdmin" style="background:#8b0000; color:#fff">Acessar</button>
+
+<!-- SEÇÃO EXISTENTE: Login Admin -->
+<div>
+    <p style="margin: 15px 0; opacity: 0.8;">Digite a senha de administrador para acessar funções exclusivas:</p>
+    <div class="form-group">
+        <label>Senha Admin</label>
+        <input type="password" id="senhaAdmin" placeholder="Digite a senha">
+    </div>
+    <div class="modal-buttons">
+        <button class="modal-btn cancel" id="btnFecharAdmin">Cancelar</button>
+        <button class="modal-btn confirm" id="btnAcessarAdmin" style="background:#8b0000; color:#fff">Acessar</button>
+    </div>
 </div>
+
 </div>
 </div>
 
@@ -190,7 +206,9 @@ const firebaseConfig = {
 const LIMITE_VAGAS = 20;
 const DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
 const DATA_EVENTO = new Date('2026-03-26');
-const jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Kastelo","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
+
+// Mudamos de const para let para permitir adicionar novos jogadores
+let jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Kastelo","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
 let db;
 let confirmados = [];
@@ -236,21 +254,65 @@ try {
     if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
     atualizar();
   });
+
+  // Carregar lista de jogadores do Firebase
+  carregarJogadoresDoFirebase();
+  
 } catch (e) {
   statusIndicator.textContent = '❌ Erro de conexão';
   statusIndicator.classList.add('error');
 }
 
-const selectJogador = document.getElementById('playerName');
-const optDefault = document.createElement('option');
-optDefault.value = '';
-optDefault.textContent = 'Selecione seu nome...';
-selectJogador.appendChild(optDefault);
-jogadores.sort().forEach(j => {
-  const o = document.createElement('option');
-  o.value = o.textContent = j;
-  selectJogador.appendChild(o);
-});
+// Função para carregar jogadores do Firebase
+async function carregarJogadoresDoFirebase() {
+    try {
+        const snapshot = await get(ref(db, 'jogadores'));
+        if (snapshot.exists()) {
+            jogadores = snapshot.val();
+        }
+        // Atualizar o select após carregar
+        atualizarSelectJogadores();
+    } catch (e) {
+        console.error('Erro ao carregar jogadores:', e);
+        // Mesmo com erro, inicializa o select com a lista padrão
+        atualizarSelectJogadores();
+    }
+}
+
+// Função para salvar jogadores no Firebase
+async function salvarJogadoresNoFirebase() {
+    try {
+        await set(ref(db, 'jogadores'), jogadores);
+        console.log('Lista de jogadores salva no Firebase');
+    } catch (e) {
+        console.error('Erro ao salvar jogadores:', e);
+    }
+}
+
+// Função para atualizar o select de jogadores
+function atualizarSelectJogadores() {
+    const select = document.getElementById('playerName');
+    
+    // Limpar select (mantendo apenas a primeira opção)
+    select.innerHTML = '';
+    
+    // Adicionar opção padrão
+    const optDefault = document.createElement('option');
+    optDefault.value = '';
+    optDefault.textContent = 'Selecione seu nome...';
+    select.appendChild(optDefault);
+    
+    // Adicionar jogadores ordenados
+    jogadores.sort().forEach(j => {
+        const option = document.createElement('option');
+        option.value = j;
+        option.textContent = j;
+        select.appendChild(option);
+    });
+}
+
+// Inicializar o select com os jogadores
+atualizarSelectJogadores();
 
 btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
 window.addEventListener('load', () => modalBemVindo.classList.add('active'));
@@ -261,19 +323,19 @@ btnConfirmar.onclick = () => {
 };
 btnCancelar.onclick = () => {
   modal.classList.remove('active');
-  selectJogador.value = '';
-  isGuest.checked = false;
-  guestNameGroup.style.display = 'none';
+  document.getElementById('playerName').value = '';
+  document.getElementById('isGuest').checked = false;
+  document.getElementById('guestNameGroup').style.display = 'none';
   document.getElementById('guestName').value = '';
 };
-isGuest.onchange = e => guestNameGroup.style.display = e.target.checked ? 'block' : 'none';
+document.getElementById('isGuest').onchange = e => document.getElementById('guestNameGroup').style.display = e.target.checked ? 'block' : 'none';
 
 btnConfirmarModal.onclick = async () => {
-  const nome = selectJogador.value;
+  const nome = document.getElementById('playerName').value;
   if (!nome) return alert('Selecione seu nome!');
   
   // Verificar se já está inscrito (membro)
-  if (!isGuest.checked) {
+  if (!document.getElementById('isGuest').checked) {
     const jaInscrito = [...confirmados, ...listaEspera].some(p => !p.isGuest && p.nome === nome);
     if (jaInscrito) {
       return alert('Você já está inscrito!');
@@ -283,7 +345,7 @@ btnConfirmarModal.onclick = async () => {
   const agora = new Date().toISOString();
   
   try {
-    if (!isGuest.checked) {
+    if (!document.getElementById('isGuest').checked) {
       // MEMBRO - verificar vagas em tempo real
       const snapshot = await get(ref(db, 'confirmados'));
       const totalAtual = snapshot.exists() ? snapshot.size : 0;
@@ -323,9 +385,9 @@ btnConfirmarModal.onclick = async () => {
     }
     
     modal.classList.remove('active');
-    selectJogador.value = '';
-    isGuest.checked = false;
-    guestNameGroup.style.display = 'none';
+    document.getElementById('playerName').value = '';
+    document.getElementById('isGuest').checked = false;
+    document.getElementById('guestNameGroup').style.display = 'none';
     document.getElementById('guestName').value = '';
     
   } catch (e) { 
@@ -339,13 +401,14 @@ btnCancelarWhatsApp.onclick = () => {
 };
 
 function atualizar() {
-  confirmedCount.textContent = confirmados.length;
-  vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
-  waitlistCount.textContent = listaEspera.length;
+  document.getElementById('confirmedCount').textContent = confirmados.length;
+  document.getElementById('vacancyCount').textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
+  document.getElementById('waitlistCount').textContent = listaEspera.length;
 
   // LISTA DE CONFIRMADOS - ordenar por timestamp
   const confirmadosOrdenados = [...confirmados].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
   
+  const confirmedList = document.getElementById('confirmedList');
   confirmedList.innerHTML = confirmadosOrdenados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
   confirmadosOrdenados.forEach((p, i) => {
     const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
@@ -364,6 +427,7 @@ function atualizar() {
   const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
   const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera];
 
+  const waitlistList = document.getElementById('waitlistList');
   waitlistList.innerHTML = listaEsperaOrdenada.length ? '' : '<li class="empty-state">Lista vazia</li>';
   listaEsperaOrdenada.forEach((p, i) => {
     const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
@@ -500,15 +564,47 @@ window.promoverJogadorManual = async (id) => {
   }
 };
 
-btnModoAdmin.onclick = () => modalAdmin.classList.add('active');
-btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
-btnAcessarAdmin.onclick = () => {
+// NOVA FUNÇÃO: Adicionar jogador via admin
+document.getElementById('btnAdicionarJogador').onclick = async function() {
+    const novoJogador = document.getElementById('novoJogadorNome').value.trim();
+    
+    if (!novoJogador) {
+        alert('❌ Digite o nome do jogador!');
+        return;
+    }
+    
+    // Verificar se já existe (case insensitive)
+    const existe = jogadores.some(j => j.toLowerCase() === novoJogador.toLowerCase());
+    if (existe) {
+        alert('❌ Este jogador já existe na lista!');
+        return;
+    }
+    
+    // Adicionar à lista
+    jogadores.push(novoJogador);
+    jogadores.sort(); // Ordenar alfabeticamente
+    
+    // Salvar no Firebase
+    await salvarJogadoresNoFirebase();
+    
+    // Atualizar o select
+    atualizarSelectJogadores();
+    
+    // Limpar campo
+    document.getElementById('novoJogadorNome').value = '';
+    
+    alert(`✅ Jogador "${novoJogador}" adicionado com sucesso!\n\nAgora ele aparecerá na lista de seleção.`);
+};
+
+btnModoAdmin.onclick = () => document.getElementById('modalAdmin').classList.add('active');
+document.getElementById('btnFecharAdmin').onclick = () => document.getElementById('modalAdmin').classList.remove('active');
+document.getElementById('btnAcessarAdmin').onclick = () => {
   if (document.getElementById('senhaAdmin').value === "poker2026") {
     modoAdmin = true;
-    modalAdmin.classList.remove('active');
-    btnModoAdmin.style.background = '#4CAF50';
-    btnModoAdmin.style.opacity = '1';
-    alert("✅ Modo Administrador Ativado!\n\nVocê agora pode remover jogadores.");
+    document.getElementById('modalAdmin').classList.remove('active');
+    document.getElementById('btnModoAdmin').style.background = '#4CAF50';
+    document.getElementById('btnModoAdmin').style.opacity = '1';
+    alert("✅ Modo Administrador Ativado!\n\nVocê agora pode remover e promover jogadores.");
     atualizar();
   } else {
     alert('❌ Senha incorreta!');
@@ -521,10 +617,9 @@ btnExportar.onclick = () => {
     csv += `${i+1},${p.nome},CONFIRMADO,${new Date(p.data).toLocaleString('pt-BR')}\n`;
   });
   
-  const listaEsperaOrdenada = [
-    ...listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)),
-    ...listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
-  ];
+  const membrosEspera = listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera];
   
   listaEsperaOrdenada.forEach((p, i) => {
     const tipo = p.isGuest ? 'CONVIDADO' : 'ESPERA';
@@ -541,4 +636,3 @@ btnExportar.onclick = () => {
 </script>
 </body>
 </html>
-
