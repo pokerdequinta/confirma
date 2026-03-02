@@ -65,6 +65,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .admin-section{display:none; border-top: 1px solid #d4a121; margin-top: 20px; padding-top: 20px;}
 .admin-section.active{display:block;}
 .success-message{color:#4CAF50; font-size:0.9em; margin-top:10px; display:none;}
+.player-list-compact{max-height:200px; overflow-y:auto; border:1px solid #2d5016; border-radius:8px; padding:10px; margin-bottom:15px;}
+.player-list-compact .player-item{background:rgba(255,255,255,.02); padding:8px; margin-bottom:5px;}
+.remove-player-btn{background:#c72c48; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.8em;}
 @media(max-width:768px){
 .info-cards{grid-template-columns:1fr}
 }
@@ -146,17 +149,28 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
         <p style="color: #4CAF50; font-weight: bold;">✅ Modo Admin Ativado</p>
     </div>
 
+    <!-- ADICIONAR JOGADOR -->
     <h3 style="color: #d4a121; margin-bottom: 15px;">➕ Adicionar Novo Jogador</h3>
     <div class="form-group">
         <label>Nome do Jogador</label>
         <input type="text" id="novoJogadorNome" placeholder="Digite o nome completo" style="background: #1a3d1a;">
     </div>
-    <button class="modal-btn confirm" id="btnAdicionarJogador" style="background: #4CAF50; color: #fff; width: 100%;">Adicionar Jogador</button>
-    <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">O jogador será adicionado à lista permanente e poderá se inscrever normalmente.</p>
+    <button class="modal-btn confirm" id="btnAdicionarJogador" style="background: #4CAF50; color: #fff; width: 100%; margin-bottom: 20px;">Adicionar Jogador</button>
     <div id="successMessage" class="success-message">✅ Jogador adicionado com sucesso!</div>
+
+    <!-- REMOVER JOGADOR -->
+    <h3 style="color: #d4a121; margin: 20px 0 15px;">❌ Remover Jogador da Lista</h3>
+    <div class="form-group">
+        <label>Selecione o jogador para remover</label>
+        <select id="removerJogadorSelect" style="background: #1a3d1a; margin-bottom: 10px;">
+            <option value="">Carregando jogadores...</option>
+        </select>
+    </div>
+    <button class="modal-btn cancel" id="btnRemoverJogador" style="background: #c72c48; color: #fff; width: 100%;">Remover Jogador</button>
+    <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">⚠️ Esta ação remove permanentemente o jogador da lista de inscrições.</p>
     
-    <div style="margin-top: 20px;">
-        <button class="modal-btn cancel" id="btnSairAdmin" style="width:100%;">🔒 Sair do Modo Admin</button>
+    <div style="margin-top: 30px;">
+        <button class="modal-btn cancel" id="btnSairAdmin" style="width:100%; background: #8b0000;">🔒 Sair do Modo Admin</button>
     </div>
 </div>
 
@@ -283,12 +297,14 @@ async function carregarJogadoresDoFirebase() {
         if (snapshot.exists()) {
             jogadores = snapshot.val();
         }
-        // Atualizar o select após carregar
+        // Atualizar os selects após carregar
         atualizarSelectJogadores();
+        atualizarSelectRemoverJogadores();
     } catch (e) {
         console.error('Erro ao carregar jogadores:', e);
-        // Mesmo com erro, inicializa o select com a lista padrão
+        // Mesmo com erro, inicializa os selects com a lista padrão
         atualizarSelectJogadores();
+        atualizarSelectRemoverJogadores();
     }
 }
 
@@ -302,11 +318,12 @@ async function salvarJogadoresNoFirebase() {
     }
 }
 
-// Função para atualizar o select de jogadores
+// Função para atualizar o select de jogadores (para confirmar presença)
 function atualizarSelectJogadores() {
     const select = document.getElementById('playerName');
+    if (!select) return;
     
-    // Limpar select (mantendo apenas a primeira opção)
+    // Limpar select
     select.innerHTML = '';
     
     // Adicionar opção padrão
@@ -324,8 +341,40 @@ function atualizarSelectJogadores() {
     });
 }
 
-// Inicializar o select com os jogadores
+// Função para atualizar o select de remover jogadores (admin)
+function atualizarSelectRemoverJogadores() {
+    const select = document.getElementById('removerJogadorSelect');
+    if (!select) return;
+    
+    // Limpar select
+    select.innerHTML = '';
+    
+    if (jogadores.length === 0) {
+        const optDefault = document.createElement('option');
+        optDefault.value = '';
+        optDefault.textContent = 'Nenhum jogador disponível';
+        select.appendChild(optDefault);
+        return;
+    }
+    
+    // Adicionar opção padrão
+    const optDefault = document.createElement('option');
+    optDefault.value = '';
+    optDefault.textContent = 'Selecione um jogador para remover...';
+    select.appendChild(optDefault);
+    
+    // Adicionar jogadores ordenados
+    jogadores.sort().forEach(j => {
+        const option = document.createElement('option');
+        option.value = j;
+        option.textContent = j;
+        select.appendChild(option);
+    });
+}
+
+// Inicializar os selects
 atualizarSelectJogadores();
+atualizarSelectRemoverJogadores();
 
 btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
 window.addEventListener('load', () => modalBemVindo.classList.add('active'));
@@ -600,6 +649,10 @@ document.getElementById('btnAcessarAdmin').onclick = () => {
         document.getElementById('btnModoAdmin').style.background = '#4CAF50';
         document.getElementById('btnModoAdmin').style.opacity = '1';
         document.getElementById('successMessage').style.display = 'none';
+        
+        // Atualizar o select de remover jogadores
+        atualizarSelectRemoverJogadores();
+        
         atualizar();
     } else {
         document.getElementById('loginError').style.display = 'block';
@@ -637,16 +690,94 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
     // Salvar no Firebase
     await salvarJogadoresNoFirebase();
     
-    // Atualizar o select
+    // Atualizar os selects
     atualizarSelectJogadores();
+    atualizarSelectRemoverJogadores();
     
     // Limpar campo e mostrar mensagem de sucesso
     document.getElementById('novoJogadorNome').value = '';
     const successMsg = document.getElementById('successMessage');
     successMsg.style.display = 'block';
+    successMsg.textContent = `✅ Jogador "${novoJogador}" adicionado com sucesso!`;
     setTimeout(() => {
         successMsg.style.display = 'none';
     }, 3000);
+};
+
+// Função para remover jogador
+document.getElementById('btnRemoverJogador').onclick = async function() {
+    const select = document.getElementById('removerJogadorSelect');
+    const jogadorRemover = select.value;
+    
+    if (!jogadorRemover) {
+        alert('❌ Selecione um jogador para remover!');
+        return;
+    }
+    
+    // Verificar se o jogador está inscrito em algum lugar
+    const inscritoConfirmados = confirmados.some(p => !p.isGuest && p.nome === jogadorRemover);
+    const inscritoEspera = listaEspera.some(p => !p.isGuest && p.nome === jogadorRemover);
+    
+    let mensagem = `Tem certeza que deseja remover "${jogadorRemover}" da lista permanente?`;
+    if (inscritoConfirmados || inscritoEspera) {
+        mensagem = `⚠️ ATENÇÃO: "${jogadorRemover}" está inscrito `;
+        if (inscritoConfirmados) mensagem += 'na lista de CONFIRMADOS ';
+        if (inscritoEspera) mensagem += 'na lista de ESPERA ';
+        mensagem += '.\n\nRemovendo o jogador, ele também será removido das listas de inscrição.\n\nContinuar?';
+    }
+    
+    if (!confirm(mensagem)) return;
+    
+    try {
+        // Remover das listas de inscrição se estiver presente
+        const promises = [];
+        
+        // Remover dos confirmados
+        const jogadorConfirmado = confirmados.find(p => !p.isGuest && p.nome === jogadorRemover);
+        if (jogadorConfirmado) {
+            promises.push(remove(ref(db, `confirmados/${jogadorConfirmado.id}`)));
+        }
+        
+        // Remover da lista de espera
+        const jogadorEspera = listaEspera.find(p => !p.isGuest && p.nome === jogadorRemover);
+        if (jogadorEspera) {
+            promises.push(remove(ref(db, `listaEspera/${jogadorEspera.id}`)));
+        }
+        
+        // Aguardar todas as remoções
+        await Promise.all(promises);
+        
+        // Remover da lista permanente
+        jogadores = jogadores.filter(j => j !== jogadorRemover);
+        
+        // Salvar no Firebase
+        await salvarJogadoresNoFirebase();
+        
+        // Atualizar os selects
+        atualizarSelectJogadores();
+        atualizarSelectRemoverJogadores();
+        
+        // Limpar select
+        select.value = '';
+        
+        // Mostrar mensagem de sucesso
+        const successMsg = document.getElementById('successMessage');
+        successMsg.style.display = 'block';
+        successMsg.textContent = `✅ Jogador "${jogadorRemover}" removido com sucesso!`;
+        successMsg.style.color = '#c72c48';
+        setTimeout(() => {
+            successMsg.style.display = 'none';
+            successMsg.style.color = '#4CAF50';
+        }, 3000);
+        
+        // Se removeu dos confirmados, tentar promover da espera
+        if (jogadorConfirmado) {
+            await promoverDaListaDeEspera();
+        }
+        
+    } catch (e) {
+        alert('Erro ao remover jogador: ' + e.message);
+    }
 };
 
 btnExportar.onclick = () => {
