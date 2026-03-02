@@ -286,19 +286,136 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     animation: pulse 1.5s infinite;
 }
 
-.etapa-destaque {
-    background: #1a3d1a;
-    border: 2px solid #d4a121;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 20px;
-    text-align: center;
+/* NOVOS ESTILOS PARA O SELECT COM FOTO */
+.custom-select-wrapper {
+    position: relative;
+    width: 100%;
 }
 
-.etapa-destaque h3 {
-    color: #d4a121;
-    font-family: 'Anton';
-    font-size: 1.5em;
+.custom-select {
+    background: #1a3d1a;
+    border: 2px solid #d4a121;
+    border-radius: 8px;
+    padding: 12px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+}
+
+.custom-select:hover {
+    border-color: #4CAF50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+}
+
+.custom-select .selected-player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.player-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #d4a121;
+    object-fit: cover;
+    background: #1a3d1a;
+}
+
+.player-avatar-small {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #d4a121;
+    object-fit: cover;
+}
+
+.custom-select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1a3d1a;
+    border: 2px solid #d4a121;
+    border-radius: 8px;
+    margin-top: 5px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.custom-select-dropdown.show {
+    display: block;
+}
+
+.custom-select-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+    border-bottom: 1px solid rgba(212, 161, 33, 0.2);
+}
+
+.custom-select-option:hover {
+    background: #2a5a2a;
+}
+
+.custom-select-option.selected {
+    background: #d4a121;
+    color: #000;
+}
+
+.custom-select-option.selected .player-name {
+    color: #000;
+    font-weight: bold;
+}
+
+.player-name {
+    color: #fff;
+    font-size: 14px;
+}
+
+/* Esconder o select original */
+#playerName {
+    display: none;
+}
+
+.avatar-upload {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.avatar-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #d4a121;
+    object-fit: cover;
+}
+
+.avatar-upload-btn {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.avatar-upload-btn:hover {
+    background: #45a049;
 }
 
 @media(max-width:768px){
@@ -375,6 +492,13 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
             
             <h4 style="color: #d4a121; margin: 10px 0;">Adicionar Jogador</h4>
             <input type="text" id="novoJogadorNome" placeholder="Nome do jogador" class="admin-input">
+            
+            <div class="avatar-upload">
+                <img id="avatarPreview" class="avatar-preview" src="https://via.placeholder.com/60/1a3d1a/d4a121?text=?" alt="Avatar">
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                <button class="avatar-upload-btn" id="btnUploadAvatar">📸 Escolher Foto</button>
+            </div>
+            
             <button class="admin-btn primary" id="btnAdicionarJogador" style="background: #4CAF50;">
                 <span style="margin-right: 8px;">➕</span> ADICIONAR
             </button>
@@ -491,12 +615,25 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </div>
 </div>
 
+<!-- NOVO MODAL DE CONFIRMAÇÃO COM SELECT PERSONALIZADO -->
 <div class="modal" id="modal">
 <div class="modal-content">
 <h2>Confirmar Presença</h2>
 <div class="form-group">
 <label>Jogador</label>
+<!-- Select original escondido -->
 <select id="playerName"></select>
+<!-- Select personalizado com fotos -->
+<div class="custom-select-wrapper">
+    <div class="custom-select" id="customSelect">
+        <div class="selected-player" id="selectedPlayerDisplay">
+            <img class="player-avatar" id="selectedPlayerAvatar" src="https://via.placeholder.com/40/1a3d1a/d4a121?text=?" alt="Avatar">
+            <span id="selectedPlayerName">Selecione seu nome...</span>
+        </div>
+        <span style="margin-left: auto;">▼</span>
+    </div>
+    <div class="custom-select-dropdown" id="customSelectDropdown"></div>
+</div>
 </div>
 <div class="form-group">
 <input type="checkbox" id="isGuest"> Adicionar convidado
@@ -528,6 +665,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getDatabase, ref, set, onValue, remove, push, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
@@ -541,7 +679,7 @@ const firebaseConfig = {
 
 const LIMITE_VAGAS = 20;
 
-// Datas das etapas - 3ª etapa é a primeira e atual
+// Datas das etapas
 const ETAPAS = [
     { numero: 3, data: new Date('2026-03-26'), abertura: new Date('2026-03-23T07:00:00') },
     { numero: 4, data: new Date('2026-04-30'), abertura: new Date('2026-04-27T07:00:00') },
@@ -557,16 +695,64 @@ const ETAPAS = [
 ];
 
 let db;
+let storage;
 let confirmados = [];
 let listaEspera = [];
 let modoAdmin = false;
 let timerInterval;
 
-// FORÇANDO a 3ª etapa como a atual - IGNORANDO o Firebase inicialmente
+// FORÇANDO a 3ª etapa como a atual
 let NUMERO_ETAPA = 3;
 let DATA_EVENTO = new Date('2026-03-26');
 let DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
 let INSCRICOES_ABERTAS = false;
+
+// Lista de jogadores com fotos
+let jogadores = [
+    { nome: "Amarildo", avatar: "" },
+    { nome: "Boy", avatar: "" },
+    { nome: "Buiu", avatar: "" },
+    { nome: "Caio", avatar: "" },
+    { nome: "Charles", avatar: "" },
+    { nome: "Cleversson", avatar: "" },
+    { nome: "Davi", avatar: "" },
+    { nome: "Gera", avatar: "" },
+    { nome: "Diego", avatar: "" },
+    { nome: "Dos Anjos", avatar: "" },
+    { nome: "Eduardo", avatar: "" },
+    { nome: "Fernando", avatar: "" },
+    { nome: "Gregory", avatar: "" },
+    { nome: "Gaspar", avatar: "" },
+    { nome: "Guilherme", avatar: "" },
+    { nome: "Guti", avatar: "" },
+    { nome: "Kastelo", avatar: "" },
+    { nome: "Izidio", avatar: "" },
+    { nome: "Jean", avatar: "" },
+    { nome: "Jean Rebuy", avatar: "" },
+    { nome: "Junior", avatar: "" },
+    { nome: "Leo", avatar: "" },
+    { nome: "Loreto", avatar: "" },
+    { nome: "Lucas", avatar: "" },
+    { nome: "Matheus", avatar: "" },
+    { nome: "Maykon", avatar: "" },
+    { nome: "Neto", avatar: "" },
+    { nome: "Nil", avatar: "" },
+    { nome: "Peterson", avatar: "" },
+    { nome: "Rafael", avatar: "" },
+    { nome: "Ricardo Amarante", avatar: "" },
+    { nome: "Ricardo Linhares", avatar: "" },
+    { nome: "Ricardo Matoso", avatar: "" },
+    { nome: "Robson", avatar: "" },
+    { nome: "Sergio", avatar: "" },
+    { nome: "Solano", avatar: "" },
+    { nome: "Tigre", avatar: "" },
+    { nome: "Van Van", avatar: "" },
+    { nome: "Waltinho", avatar: "" },
+    { nome: "Wesley", avatar: "" }
+];
+
+// Variável para armazenar a foto temporária
+let fotoTemp = null;
 
 // Função para atualizar o cronômetro
 function atualizarCronometro() {
@@ -606,7 +792,6 @@ async function salvarConfiguracoes() {
 function verificarAberturaAutomatica() {
     const agora = new Date().getTime();
     
-    // Se já passou da data de abertura e as inscrições estão fechadas, abrir automaticamente
     if (agora >= DATA_ABERTURA && !INSCRICOES_ABERTAS) {
         console.log('🔓 Abrindo inscrições automaticamente');
         INSCRICOES_ABERTAS = true;
@@ -644,7 +829,7 @@ async function carregarDadosEtapa() {
     }
 }
 
-// Função para atualizar o status das inscrições na interface
+// Função para atualizar o status das inscrições
 function atualizarStatusInscricoes() {
     const container = document.getElementById('inscricaoStatusContainer');
     const badge = document.getElementById('statusBadge');
@@ -667,7 +852,6 @@ function atualizarStatusInscricoes() {
         btnConfirmar.textContent = '➕ CONFIRMAR PRESENÇA';
         countdownContainer.style.display = 'none';
         
-        // Parar o cronômetro
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
@@ -684,7 +868,6 @@ function atualizarStatusInscricoes() {
         btnConfirmar.textContent = '🔒 INSCRIÇÕES FECHADAS';
         countdownContainer.style.display = 'block';
         
-        // Iniciar o cronômetro
         if (!timerInterval) {
             atualizarCronometro();
             timerInterval = setInterval(atualizarCronometro, 1000);
@@ -701,11 +884,13 @@ async function carregarJogadoresDoFirebase() {
         }
         atualizarSelectJogadores();
         atualizarSelectRemoverJogadores();
+        atualizarCustomSelect();
         if (modoAdmin) atualizarContadoresAdmin();
     } catch (e) {
         console.error('Erro ao carregar jogadores:', e);
         atualizarSelectJogadores();
         atualizarSelectRemoverJogadores();
+        atualizarCustomSelect();
     }
 }
 
@@ -720,7 +905,7 @@ async function salvarJogadoresNoFirebase() {
     }
 }
 
-// Função para atualizar o select de jogadores
+// Função para atualizar o select de jogadores (original)
 function atualizarSelectJogadores() {
     const select = document.getElementById('playerName');
     if (!select) return;
@@ -732,11 +917,58 @@ function atualizarSelectJogadores() {
     optDefault.textContent = 'Selecione seu nome...';
     select.appendChild(optDefault);
     
-    jogadores.sort().forEach(j => {
+    jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(j => {
         const option = document.createElement('option');
-        option.value = j;
-        option.textContent = j;
+        option.value = j.nome;
+        option.textContent = j.nome;
         select.appendChild(option);
+    });
+}
+
+// Função para atualizar o select customizado com fotos
+function atualizarCustomSelect() {
+    const dropdown = document.getElementById('customSelectDropdown');
+    if (!dropdown) return;
+    
+    dropdown.innerHTML = '';
+    
+    jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(j => {
+        const option = document.createElement('div');
+        option.className = 'custom-select-option';
+        option.dataset.value = j.nome;
+        
+        const avatar = document.createElement('img');
+        avatar.className = 'player-avatar-small';
+        avatar.src = j.avatar || 'https://via.placeholder.com/30/1a3d1a/d4a121?text=?';
+        avatar.onerror = () => { avatar.src = 'https://via.placeholder.com/30/1a3d1a/d4a121?text=?'; };
+        
+        const name = document.createElement('span');
+        name.className = 'player-name';
+        name.textContent = j.nome;
+        
+        option.appendChild(avatar);
+        option.appendChild(name);
+        
+        option.onclick = () => selecionarJogadorCustom(j.nome, j.avatar);
+        
+        dropdown.appendChild(option);
+    });
+}
+
+// Função para selecionar jogador no custom select
+function selecionarJogadorCustom(nome, avatarUrl) {
+    document.getElementById('selectedPlayerName').textContent = nome;
+    const avatarImg = document.getElementById('selectedPlayerAvatar');
+    avatarImg.src = avatarUrl || 'https://via.placeholder.com/40/1a3d1a/d4a121?text=?';
+    document.getElementById('playerName').value = nome;
+    document.getElementById('customSelectDropdown').classList.remove('show');
+    
+    // Marcar como selecionado no dropdown
+    document.querySelectorAll('.custom-select-option').forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.dataset.value === nome) {
+            opt.classList.add('selected');
+        }
     });
 }
 
@@ -760,10 +992,10 @@ function atualizarSelectRemoverJogadores() {
     optDefault.textContent = 'Selecione um jogador para remover...';
     select.appendChild(optDefault);
     
-    jogadores.sort().forEach(j => {
+    jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(j => {
         const option = document.createElement('option');
-        option.value = j;
-        option.textContent = j;
+        option.value = j.nome;
+        option.textContent = j.nome;
         select.appendChild(option);
     });
 }
@@ -774,40 +1006,60 @@ function atualizarContadoresAdmin() {
     document.getElementById('totalInscritosCount').textContent = confirmados.length + listaEspera.length;
 }
 
-// INICIALIZAÇÃO - FORÇANDO A 3ª ETAPA
+// INICIALIZAÇÃO
 console.log('Inicializando com a 3ª etapa');
 document.getElementById('etapaInfo').innerHTML = `📅 3ª Etapa - 26/03/2026`;
 document.getElementById('timerHeader').innerHTML = `Abertura das inscrições para a 3ª Etapa`;
-document.getElementById('adminEtapaAtual').innerHTML = `3ª Etapa - 26/03/2026`;
-document.getElementById('adminAberturaAtual').innerHTML = `23/03/2026 07:00`;
 
-atualizarSelectJogadores();
-atualizarSelectRemoverJogadores();
+// Event listeners para o custom select
+document.getElementById('customSelect').onclick = () => {
+    document.getElementById('customSelectDropdown').classList.toggle('show');
+};
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.custom-select-wrapper')) {
+        document.getElementById('customSelectDropdown').classList.remove('show');
+    }
+});
+
+// Upload de avatar
+document.getElementById('btnUploadAvatar').onclick = () => {
+    document.getElementById('avatarUpload').click();
+};
+
+document.getElementById('avatarUpload').onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Preview local
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById('avatarPreview').src = e.target.result;
+        fotoTemp = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
 
 try {
   const app = initializeApp(firebaseConfig);
   db = getDatabase(app);
+  storage = getStorage(app);
   statusIndicator.textContent = '✅ Conectado';
   statusIndicator.classList.add('connected');
   
-  // Carregar dados da 3ª etapa
   carregarDadosEtapa();
   
-  // Carregar configurações do Firebase (mas NÃO alterar a etapa atual)
   onValue(ref(db, 'configuracoes'), (snapshot) => {
       if (snapshot.exists()) {
           const config = snapshot.val();
-          // Só atualiza o status de inscrições, NÃO o número da etapa
           INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
           console.log('Configurações carregadas:', config);
           atualizarStatusInscricoes();
       }
   });
 
-  // Carregar lista de jogadores do Firebase
   carregarJogadoresDoFirebase();
   
-  // Verificar abertura automática a cada minuto
   setInterval(verificarAberturaAutomatica, 60000);
   
 } catch (e) {
@@ -824,16 +1076,22 @@ btnConfirmar.onclick = () => {
         return alert(`As inscrições ainda não abriram!\n\nAbertura automática: ${dataAberturaDate.toLocaleDateString('pt-BR')} às 07:00`);
     }
     modal.classList.add('active');
+    atualizarCustomSelect();
 };
 
 btnCancelar.onclick = () => {
   modal.classList.remove('active');
+  document.getElementById('selectedPlayerName').textContent = 'Selecione seu nome...';
+  document.getElementById('selectedPlayerAvatar').src = 'https://via.placeholder.com/40/1a3d1a/d4a121?text=?';
   document.getElementById('playerName').value = '';
   document.getElementById('isGuest').checked = false;
   document.getElementById('guestNameGroup').style.display = 'none';
   document.getElementById('guestName').value = '';
 };
-document.getElementById('isGuest').onchange = e => document.getElementById('guestNameGroup').style.display = e.target.checked ? 'block' : 'none';
+
+document.getElementById('isGuest').onchange = e => {
+    document.getElementById('guestNameGroup').style.display = e.target.checked ? 'block' : 'none';
+};
 
 btnConfirmarModal.onclick = async () => {
   const nome = document.getElementById('playerName').value;
@@ -885,6 +1143,8 @@ btnConfirmarModal.onclick = async () => {
     }
     
     modal.classList.remove('active');
+    document.getElementById('selectedPlayerName').textContent = 'Selecione seu nome...';
+    document.getElementById('selectedPlayerAvatar').src = 'https://via.placeholder.com/40/1a3d1a/d4a121?text=?';
     document.getElementById('playerName').value = '';
     document.getElementById('isGuest').checked = false;
     document.getElementById('guestNameGroup').style.display = 'none';
@@ -1022,11 +1282,9 @@ document.getElementById('btnAcessarAdmin').onclick = () => {
         document.getElementById('btnModoAdmin').style.opacity = '1';
         document.getElementById('successMessage').style.display = 'none';
         
-        // Atualizar selects do admin
         atualizarSelectRemoverJogadores();
         atualizarContadoresAdmin();
         
-        // Preencher select de próximas etapas (mostrar apenas etapas futuras)
         const selectProximaEtapa = document.getElementById('adminProximaEtapa');
         selectProximaEtapa.innerHTML = '<option value="">Selecione...</option>';
         ETAPAS.forEach(etapa => {
@@ -1038,7 +1296,6 @@ document.getElementById('btnAcessarAdmin').onclick = () => {
             }
         });
         
-        // Atualizar status
         document.getElementById('adminStatusAtual').textContent = INSCRICOES_ABERTAS ? 'Abertas' : 'Fechadas';
         
         atualizar();
@@ -1077,14 +1334,11 @@ document.getElementById('btnAbrirInscricoes').onclick = async () => {
         DATA_ABERTURA = etapaSelecionada.abertura.getTime();
         INSCRICOES_ABERTAS = true;
         
-        // Limpar listas da nova etapa
         await set(ref(db, `etapas/${NUMERO_ETAPA}/confirmados`), null);
         await set(ref(db, `etapas/${NUMERO_ETAPA}/listaEspera`), null);
         
-        // Salvar configurações
         await salvarConfiguracoes();
         
-        // Atualizar UI
         document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
         document.getElementById('timerHeader').innerHTML = `Abertura das inscrições para a ${NUMERO_ETAPA}ª Etapa`;
         
@@ -1122,7 +1376,6 @@ document.getElementById('btnEncerrarInscricoes').onclick = async () => {
     try {
         INSCRICOES_ABERTAS = false;
         
-        // Salvar configurações
         await salvarConfiguracoes();
         
         atualizarStatusInscricoes();
@@ -1139,7 +1392,7 @@ document.getElementById('btnEncerrarInscricoes').onclick = async () => {
     }
 };
 
-// Adicionar jogador
+// Adicionar jogador com foto
 document.getElementById('btnAdicionarJogador').onclick = async function() {
     const novoJogador = document.getElementById('novoJogadorNome').value.trim();
     
@@ -1148,21 +1401,47 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
         return;
     }
     
-    const existe = jogadores.some(j => j.toLowerCase() === novoJogador.toLowerCase());
+    const existe = jogadores.some(j => j.nome.toLowerCase() === novoJogador.toLowerCase());
     if (existe) {
         alert('❌ Este jogador já existe na lista!');
         return;
     }
     
-    jogadores.push(novoJogador);
-    jogadores.sort();
+    let avatarUrl = '';
+    
+    // Se tiver foto temporária, fazer upload
+    if (fotoTemp) {
+        try {
+            // Converter base64 para blob
+            const response = await fetch(fotoTemp);
+            const blob = await response.blob();
+            
+            // Fazer upload para o Storage
+            const avatarRef = storageRef(storage, `avatares/${novoJogador}_${Date.now()}.jpg`);
+            await uploadBytes(avatarRef, blob);
+            avatarUrl = await getDownloadURL(avatarRef);
+        } catch (e) {
+            console.error('Erro ao fazer upload da foto:', e);
+        }
+    }
+    
+    jogadores.push({ 
+        nome: novoJogador, 
+        avatar: avatarUrl 
+    });
+    
+    jogadores.sort((a, b) => a.nome.localeCompare(b.nome));
     
     await salvarJogadoresNoFirebase();
     
     atualizarSelectJogadores();
     atualizarSelectRemoverJogadores();
+    atualizarCustomSelect();
     
     document.getElementById('novoJogadorNome').value = '';
+    document.getElementById('avatarPreview').src = 'https://via.placeholder.com/60/1a3d1a/d4a121?text=?';
+    fotoTemp = null;
+    
     const successMsg = document.getElementById('successMessage');
     successMsg.style.display = 'block';
     successMsg.innerHTML = `✅ Jogador "${novoJogador}" adicionado com sucesso!`;
@@ -1186,11 +1465,12 @@ document.getElementById('btnRemoverJogador').onclick = async function() {
     if (!confirm(`Remover "${jogadorRemover}" da lista permanente?`)) return;
     
     try {
-        jogadores = jogadores.filter(j => j !== jogadorRemover);
+        jogadores = jogadores.filter(j => j.nome !== jogadorRemover);
         await salvarJogadoresNoFirebase();
         
         atualizarSelectJogadores();
         atualizarSelectRemoverJogadores();
+        atualizarCustomSelect();
         
         select.value = '';
         
