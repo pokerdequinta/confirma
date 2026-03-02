@@ -52,7 +52,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .modal-content{background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;width:90%;max-width:500px}
 .form-group{margin-bottom:15px}
 .form-group label{color:#d4a121;font-weight:bold;display:block;margin-bottom:5px}
-.form-group input,.form-group select{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
 .modal-buttons{display:flex;gap:10px;margin-top:20px}
 .modal-btn{flex:1;padding:10px;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
 .modal-btn.confirm{background:#d4a121;color:#000}
@@ -65,9 +65,13 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .admin-section{display:none; border-top: 1px solid #d4a121; margin-top: 20px; padding-top: 20px;}
 .admin-section.active{display:block;}
 .success-message{color:#4CAF50; font-size:0.9em; margin-top:10px; display:none;}
-.player-list-compact{max-height:200px; overflow-y:auto; border:1px solid #2d5016; border-radius:8px; padding:10px; margin-bottom:15px;}
-.player-list-compact .player-item{background:rgba(255,255,255,.02); padding:8px; margin-bottom:5px;}
-.remove-player-btn{background:#c72c48; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.8em;}
+.inscricao-status{background:#1a3d1a; border:1px solid #d4a121; border-radius:8px; padding:15px; margin-bottom:20px; text-align:center;}
+.inscricao-status.aberta{border-color:#4CAF50;}
+.inscricao-status.fechada{border-color:#c72c48;}
+.status-badge{display:inline-block; padding:5px 15px; border-radius:20px; font-weight:bold; margin-bottom:10px;}
+.status-badge.aberta{background:#4CAF50; color:#000;}
+.status-badge.fechada{background:#c72c48; color:#fff;}
+.data-inscricao{font-size:0.9em; opacity:0.8; margin-top:10px;}
 @media(max-width:768px){
 .info-cards{grid-template-columns:1fr}
 }
@@ -86,11 +90,18 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 <header>
 <h1>LISTA DE PRESENÇA POKER DE QUINTA</h1>
-<div class="subtitle">📅 3ª Etapa - 26/03/2026</div>
+<div class="subtitle" id="etapaInfo">📅 3ª Etapa - 26/03/2026</div>
 </header>
 
+<!-- STATUS DAS INSCRIÇÕES -->
+<div id="inscricaoStatusContainer" class="inscricao-status">
+    <div id="statusBadge" class="status-badge">Carregando...</div>
+    <div id="statusMessage"></div>
+    <div id="dataInfo" class="data-inscricao"></div>
+</div>
+
 <div id="countdownContainer">
-    <span class="timer-header">As Inscrições abrem dia 23/03 às 07:00</span>
+    <span class="timer-header" id="timerHeader">As Inscrições abrem dia <span id="dataAberturaDisplay">23/03 às 07:00</span></span>
     <div id="timer">Calculando tempo...</div>
 </div>
 
@@ -149,25 +160,55 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
         <p style="color: #4CAF50; font-weight: bold;">✅ Modo Admin Ativado</p>
     </div>
 
-    <!-- ADICIONAR JOGADOR -->
-    <h3 style="color: #d4a121; margin-bottom: 15px;">➕ Adicionar Novo Jogador</h3>
-    <div class="form-group">
-        <label>Nome do Jogador</label>
-        <input type="text" id="novoJogadorNome" placeholder="Digite o nome completo" style="background: #1a3d1a;">
+    <!-- CONTROLE DE INSCRIÇÕES -->
+    <h3 style="color: #d4a121; margin-bottom: 15px;">🔓 Controle de Inscrições</h3>
+    
+    <div style="background: #0d1b0d; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <p style="margin-bottom: 10px;"><strong>Status atual:</strong> <span id="adminStatusAtual">Carregando...</span></p>
+        <p style="margin-bottom: 15px;"><strong>Etapa atual:</strong> <span id="adminEtapaAtual">3ª Etapa - 26/03/2026</span></p>
     </div>
-    <button class="modal-btn confirm" id="btnAdicionarJogador" style="background: #4CAF50; color: #fff; width: 100%; margin-bottom: 20px;">Adicionar Jogador</button>
-    <div id="successMessage" class="success-message">✅ Jogador adicionado com sucesso!</div>
 
-    <!-- REMOVER JOGADOR -->
-    <h3 style="color: #d4a121; margin: 20px 0 15px;">❌ Remover Jogador da Lista</h3>
     <div class="form-group">
-        <label>Selecione o jogador para remover</label>
-        <select id="removerJogadorSelect" style="background: #1a3d1a; margin-bottom: 10px;">
-            <option value="">Carregando jogadores...</option>
-        </select>
+        <label>Nova Data de Abertura</label>
+        <input type="datetime-local" id="novaDataAbertura" style="background: #1a3d1a;">
     </div>
-    <button class="modal-btn cancel" id="btnRemoverJogador" style="background: #c72c48; color: #fff; width: 100%;">Remover Jogador</button>
-    <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">⚠️ Esta ação remove permanentemente o jogador da lista de inscrições.</p>
+
+    <div class="form-group">
+        <label>Nova Data da Etapa</label>
+        <input type="date" id="novaDataEtapa" style="background: #1a3d1a;">
+    </div>
+
+    <div class="form-group">
+        <label>Número da Próxima Etapa</label>
+        <input type="number" id="numeroProximaEtapa" min="1" value="4" style="background: #1a3d1a;">
+    </div>
+
+    <div class="modal-buttons" style="margin-bottom: 15px;">
+        <button class="modal-btn confirm" id="btnAbrirInscricoes" style="background: #4CAF50; color: #fff;">🔓 ABRIR INSCRIÇÕES</button>
+        <button class="modal-btn cancel" id="btnEncerrarInscricoes" style="background: #c72c48; color: #fff;">🔒 ENCERRAR</button>
+    </div>
+
+    <div style="border-top: 1px solid #d4a121; margin: 20px 0; padding-top: 20px;">
+        <h3 style="color: #d4a121; margin-bottom: 15px;">➕ Gerenciar Jogadores</h3>
+        
+        <!-- ADICIONAR JOGADOR -->
+        <h4 style="color: #fff; margin-bottom: 10px;">Adicionar Novo Jogador</h4>
+        <div class="form-group">
+            <input type="text" id="novoJogadorNome" placeholder="Nome do jogador" style="background: #1a3d1a;">
+        </div>
+        <button class="modal-btn confirm" id="btnAdicionarJogador" style="background: #4CAF50; color: #fff; width: 100%; margin-bottom: 20px;">Adicionar Jogador</button>
+
+        <!-- REMOVER JOGADOR -->
+        <h4 style="color: #fff; margin-bottom: 10px;">Remover Jogador</h4>
+        <div class="form-group">
+            <select id="removerJogadorSelect" style="background: #1a3d1a;">
+                <option value="">Carregando jogadores...</option>
+            </select>
+        </div>
+        <button class="modal-btn cancel" id="btnRemoverJogador" style="background: #c72c48; color: #fff; width: 100%;">Remover Jogador</button>
+    </div>
+    
+    <div id="successMessage" class="success-message" style="margin-top: 15px;"></div>
     
     <div style="margin-top: 30px;">
         <button class="modal-btn cancel" id="btnSairAdmin" style="width:100%; background: #8b0000;">🔒 Sair do Modo Admin</button>
@@ -231,16 +272,113 @@ const firebaseConfig = {
 };
 
 const LIMITE_VAGAS = 20;
-const DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
-const DATA_EVENTO = new Date('2026-03-26');
 
-// Lista de jogadores (agora pode ser modificada)
-let jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Kastelo","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
+// Variáveis de configuração (serão carregadas do Firebase)
+let DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
+let DATA_EVENTO = new Date('2026-03-26');
+let NUMERO_ETAPA = 3;
+let INSCRICOES_ABERTAS = false;
 
 let db;
 let confirmados = [];
 let listaEspera = [];
 let modoAdmin = false;
+let timerInterval;
+
+// Lista de jogadores (agora pode ser modificada)
+let jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Kastelo","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
+
+// Função para carregar configurações do Firebase
+async function carregarConfiguracoes() {
+    try {
+        const snapshot = await get(ref(db, 'configuracoes'));
+        if (snapshot.exists()) {
+            const config = snapshot.val();
+            DATA_ABERTURA = config.dataAbertura || DATA_ABERTURA;
+            DATA_EVENTO = config.dataEvento ? new Date(config.dataEvento) : DATA_EVENTO;
+            NUMERO_ETAPA = config.numeroEtapa || NUMERO_ETAPA;
+            INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
+            
+            // Atualizar display
+            document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+            document.getElementById('adminEtapaAtual').textContent = `${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+            
+            const dataAberturaDate = new Date(DATA_ABERTURA);
+            document.getElementById('dataAberturaDisplay').textContent = 
+                `${dataAberturaDate.toLocaleDateString('pt-BR')} às ${dataAberturaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
+            
+            // Atualizar status das inscrições
+            atualizarStatusInscricoes();
+        }
+    } catch (e) {
+        console.error('Erro ao carregar configurações:', e);
+    }
+}
+
+// Função para salvar configurações no Firebase
+async function salvarConfiguracoes() {
+    try {
+        await set(ref(db, 'configuracoes'), {
+            dataAbertura: DATA_ABERTURA,
+            dataEvento: DATA_EVENTO.toISOString(),
+            numeroEtapa: NUMERO_ETAPA,
+            inscricoesAbertas: INSCRICOES_ABERTAS,
+            ultimaAtualizacao: new Date().toISOString()
+        });
+        console.log('Configurações salvas no Firebase');
+    } catch (e) {
+        console.error('Erro ao salvar configurações:', e);
+    }
+}
+
+// Função para atualizar o status das inscrições na interface
+function atualizarStatusInscricoes() {
+    const container = document.getElementById('inscricaoStatusContainer');
+    const badge = document.getElementById('statusBadge');
+    const message = document.getElementById('statusMessage');
+    const dataInfo = document.getElementById('dataInfo');
+    const btnConfirmar = document.getElementById('btnConfirmar');
+    const countdownContainer = document.getElementById('countdownContainer');
+    
+    if (INSCRICOES_ABERTAS) {
+        container.className = 'inscricao-status aberta';
+        badge.className = 'status-badge aberta';
+        badge.textContent = '✅ INSCRIÇÕES ABERTAS';
+        message.innerHTML = 'As inscrições estão abertas! Clique no botão abaixo para confirmar presença.';
+        dataInfo.innerHTML = `Abertas desde: ${new Date().toLocaleString('pt-BR')}`;
+        
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = '➕ CONFIRMAR PRESENÇA';
+        countdownContainer.style.display = 'none';
+        
+        // Parar o cronômetro se estiver rodando
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    } else {
+        container.className = 'inscricao-status fechada';
+        badge.className = 'status-badge fechada';
+        badge.textContent = '🔒 INSCRIÇÕES ENCERRADAS';
+        
+        const dataAberturaDate = new Date(DATA_ABERTURA);
+        const dataFormatada = dataAberturaDate.toLocaleDateString('pt-BR');
+        const horaFormatada = dataAberturaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        
+        message.innerHTML = `As inscrições para a ${NUMERO_ETAPA}ª Etapa abrirão dia ${dataFormatada} às ${horaFormatada}.`;
+        dataInfo.innerHTML = `Próxima etapa: ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+        
+        btnConfirmar.disabled = true;
+        btnConfirmar.textContent = '🔒 INSCRIÇÕES FECHADAS';
+        countdownContainer.style.display = 'block';
+        
+        // Iniciar o cronômetro
+        if (!timerInterval) {
+            atualizarCronometro();
+            timerInterval = setInterval(atualizarCronometro, 1000);
+        }
+    }
+}
 
 function atualizarCronometro() {
     const agora = new Date().getTime();
@@ -252,17 +390,11 @@ function atualizarCronometro() {
         const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
         const s = Math.floor((dist % (1000 * 60)) / 1000);
         document.getElementById("timer").innerHTML = `${d}d ${h}h ${m}m ${s}s`;
-        document.getElementById("btnConfirmar").disabled = true;
-        document.getElementById("btnConfirmar").textContent = "🔒 INSCRIÇÕES FECHADAS";
-    } else {
-        document.getElementById("countdownContainer").style.display = "none";
-        document.getElementById("btnConfirmar").disabled = false;
-        document.getElementById("btnConfirmar").textContent = "➕ CONFIRMAR PRESENÇA";
-        clearInterval(timerInterval);
+    } else if (!INSCRICOES_ABERTAS) {
+        // Se passou da data de abertura mas inscrições estão fechadas, mostrar mensagem
+        document.getElementById("timer").innerHTML = "Aguardando abertura manual...";
     }
 }
-const timerInterval = setInterval(atualizarCronometro, 1000);
-atualizarCronometro();
 
 try {
   const app = initializeApp(firebaseConfig);
@@ -280,6 +412,30 @@ try {
     listaEspera = [];
     if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
     atualizar();
+  });
+
+  // Carregar configurações
+  onValue(ref(db, 'configuracoes'), (snapshot) => {
+    if (snapshot.exists()) {
+      const config = snapshot.val();
+      DATA_ABERTURA = config.dataAbertura || DATA_ABERTURA;
+      DATA_EVENTO = config.dataEvento ? new Date(config.dataEvento) : DATA_EVENTO;
+      NUMERO_ETAPA = config.numeroEtapa || NUMERO_ETAPA;
+      INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
+      
+      // Atualizar display
+      document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+      if (document.getElementById('adminEtapaAtual')) {
+        document.getElementById('adminEtapaAtual').textContent = `${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+      }
+      
+      const dataAberturaDate = new Date(DATA_ABERTURA);
+      document.getElementById('dataAberturaDisplay').textContent = 
+          `${dataAberturaDate.toLocaleDateString('pt-BR')} às ${dataAberturaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
+      
+      // Atualizar status das inscrições
+      atualizarStatusInscricoes();
+    }
   });
 
   // Carregar lista de jogadores do Firebase
@@ -380,9 +536,13 @@ btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
 window.addEventListener('load', () => modalBemVindo.classList.add('active'));
 
 btnConfirmar.onclick = () => {
-    if (new Date().getTime() < DATA_ABERTURA && !modoAdmin) return alert("A lista ainda não abriu!");
+    if (!INSCRICOES_ABERTAS && !modoAdmin) {
+        const dataAberturaDate = new Date(DATA_ABERTURA);
+        return alert(`As inscrições ainda não abriram!\n\nAbertura: ${dataAberturaDate.toLocaleDateString('pt-BR')} às ${dataAberturaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`);
+    }
     modal.classList.add('active');
 };
+
 btnCancelar.onclick = () => {
   modal.classList.remove('active');
   document.getElementById('playerName').value = '';
@@ -634,6 +794,25 @@ btnModoAdmin.onclick = () => {
     document.getElementById('adminSection').classList.remove('active');
     document.getElementById('senhaAdmin').value = '';
     document.getElementById('loginError').style.display = 'none';
+    
+    // Atualizar status no admin
+    document.getElementById('adminStatusAtual').textContent = INSCRICOES_ABERTAS ? 'Abertas' : 'Fechadas';
+    
+    // Preencher campos com datas atuais
+    const dataAberturaDate = new Date(DATA_ABERTURA);
+    const ano = dataAberturaDate.getFullYear();
+    const mes = String(dataAberturaDate.getMonth() + 1).padStart(2, '0');
+    const dia = String(dataAberturaDate.getDate()).padStart(2, '0');
+    const horas = String(dataAberturaDate.getHours()).padStart(2, '0');
+    const minutos = String(dataAberturaDate.getMinutes()).padStart(2, '0');
+    document.getElementById('novaDataAbertura').value = `${ano}-${mes}-${dia}T${horas}:${minutos}`;
+    
+    const dataEventoAno = DATA_EVENTO.getFullYear();
+    const dataEventoMes = String(DATA_EVENTO.getMonth() + 1).padStart(2, '0');
+    const dataEventoDia = String(DATA_EVENTO.getDate()).padStart(2, '0');
+    document.getElementById('novaDataEtapa').value = `${dataEventoAno}-${dataEventoMes}-${dataEventoDia}`;
+    
+    document.getElementById('numeroProximaEtapa').value = NUMERO_ETAPA + 1;
 };
 
 document.getElementById('btnFecharAdmin').onclick = () => {
@@ -650,8 +829,11 @@ document.getElementById('btnAcessarAdmin').onclick = () => {
         document.getElementById('btnModoAdmin').style.opacity = '1';
         document.getElementById('successMessage').style.display = 'none';
         
-        // Atualizar o select de remover jogadores
+        // Atualizar selects
         atualizarSelectRemoverJogadores();
+        
+        // Atualizar status
+        document.getElementById('adminStatusAtual').textContent = INSCRICOES_ABERTAS ? 'Abertas' : 'Fechadas';
         
         atualizar();
     } else {
@@ -665,6 +847,106 @@ document.getElementById('btnSairAdmin').onclick = () => {
     document.getElementById('btnModoAdmin').style.background = 'rgba(13,27,13,0.3)';
     document.getElementById('btnModoAdmin').style.opacity = '0.15';
     atualizar();
+};
+
+// Função para abrir inscrições
+document.getElementById('btnAbrirInscricoes').onclick = async () => {
+    const novaDataAbertura = document.getElementById('novaDataAbertura').value;
+    const novaDataEtapa = document.getElementById('novaDataEtapa').value;
+    const novoNumero = document.getElementById('numeroProximaEtapa').value;
+    
+    if (!novaDataAbertura || !novaDataEtapa || !novoNumero) {
+        alert('❌ Preencha todos os campos!');
+        return;
+    }
+    
+    if (!confirm('Tem certeza que deseja ABRIR as inscrições?\n\nIsso irá:\n• Ativar o botão de inscrição\n• Remover o cronômetro da página\n• Limpar todas as listas atuais?')) {
+        return;
+    }
+    
+    try {
+        // Atualizar configurações
+        DATA_ABERTURA = new Date(novaDataAbertura).getTime();
+        DATA_EVENTO = new Date(novaDataEtapa);
+        NUMERO_ETAPA = parseInt(novoNumero);
+        INSCRICOES_ABERTAS = true;
+        
+        // Limpar todas as listas
+        await set(ref(db, 'confirmados'), null);
+        await set(ref(db, 'listaEspera'), null);
+        
+        // Salvar configurações
+        await salvarConfiguracoes();
+        
+        // Atualizar interface
+        document.getElementById('adminStatusAtual').textContent = 'Abertas';
+        document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+        
+        // Mostrar mensagem de sucesso
+        const successMsg = document.getElementById('successMessage');
+        successMsg.style.display = 'block';
+        successMsg.textContent = '✅ Inscrições abertas com sucesso!';
+        successMsg.style.color = '#4CAF50';
+        setTimeout(() => {
+            successMsg.style.display = 'none';
+        }, 3000);
+        
+        // Fechar modal admin
+        setTimeout(() => {
+            document.getElementById('modalAdmin').classList.remove('active');
+        }, 1500);
+        
+    } catch (e) {
+        alert('Erro ao abrir inscrições: ' + e.message);
+    }
+};
+
+// Função para encerrar inscrições
+document.getElementById('btnEncerrarInscricoes').onclick = async () => {
+    const novaDataAbertura = document.getElementById('novaDataAbertura').value;
+    const novaDataEtapa = document.getElementById('novaDataEtapa').value;
+    const novoNumero = document.getElementById('numeroProximaEtapa').value;
+    
+    if (!novaDataAbertura || !novaDataEtapa || !novoNumero) {
+        alert('❌ Preencha os campos com as informações da PRÓXIMA etapa!');
+        return;
+    }
+    
+    if (!confirm('Tem certeza que deseja ENCERRAR as inscrições?\n\nIsso irá:\n• Desativar o botão de inscrição\n• Mostrar o cronômetro para a próxima etapa\n• As listas atuais serão MANTIDAS para consulta')) {
+        return;
+    }
+    
+    try {
+        // Atualizar configurações para a próxima etapa
+        DATA_ABERTURA = new Date(novaDataAbertura).getTime();
+        DATA_EVENTO = new Date(novaDataEtapa);
+        NUMERO_ETAPA = parseInt(novoNumero);
+        INSCRICOES_ABERTAS = false;
+        
+        // Salvar configurações
+        await salvarConfiguracoes();
+        
+        // Atualizar interface
+        document.getElementById('adminStatusAtual').textContent = 'Fechadas';
+        document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+        
+        // Mostrar mensagem de sucesso
+        const successMsg = document.getElementById('successMessage');
+        successMsg.style.display = 'block';
+        successMsg.textContent = '✅ Inscrições encerradas. Próxima etapa configurada!';
+        successMsg.style.color = '#4CAF50';
+        setTimeout(() => {
+            successMsg.style.display = 'none';
+        }, 3000);
+        
+        // Fechar modal admin
+        setTimeout(() => {
+            document.getElementById('modalAdmin').classList.remove('active');
+        }, 1500);
+        
+    } catch (e) {
+        alert('Erro ao encerrar inscrições: ' + e.message);
+    }
 };
 
 // Função para adicionar novo jogador
@@ -699,6 +981,7 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
     const successMsg = document.getElementById('successMessage');
     successMsg.style.display = 'block';
     successMsg.textContent = `✅ Jogador "${novoJogador}" adicionado com sucesso!`;
+    successMsg.style.color = '#4CAF50';
     setTimeout(() => {
         successMsg.style.display = 'none';
     }, 3000);
