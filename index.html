@@ -286,7 +286,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     animation: pulse 1.5s infinite;
 }
 
-/* NOVOS ESTILOS PARA O SELECT COM FOTO */
+/* ESTILOS PARA O SELECT COM FOTO */
 .custom-select-wrapper {
     position: relative;
     width: 100%;
@@ -418,6 +418,35 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     background: #45a049;
 }
 
+/* NOVO ESTILO PARA A LISTA DE JOGADORES NO ADMIN */
+.jogadores-lista-admin {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #8b0000;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.jogador-item-admin {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-bottom: 1px solid rgba(139, 0, 0, 0.3);
+}
+
+.jogador-item-admin:last-child {
+    border-bottom: none;
+}
+
+.jogador-avatar-admin {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #d4a121;
+}
+
 @media(max-width:768px){
 .info-cards{grid-template-columns:1fr}
 .admin-grid{grid-template-columns:1fr}
@@ -489,6 +518,11 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
         <!-- Card: Gerenciar Jogadores -->
         <div class="admin-card">
             <h3><i>👥</i> Gerenciar Jogadores</h3>
+            
+            <h4 style="color: #d4a121; margin: 10px 0;">Lista de Jogadores</h4>
+            <div class="jogadores-lista-admin" id="jogadoresListaAdmin">
+                Carregando jogadores...
+            </div>
             
             <h4 style="color: #d4a121; margin: 10px 0;">Adicionar Jogador</h4>
             <input type="text" id="novoJogadorNome" placeholder="Nome do jogador" class="admin-input">
@@ -885,12 +919,14 @@ async function carregarJogadoresDoFirebase() {
         atualizarSelectJogadores();
         atualizarSelectRemoverJogadores();
         atualizarCustomSelect();
+        atualizarListaJogadoresAdmin();
         if (modoAdmin) atualizarContadoresAdmin();
     } catch (e) {
         console.error('Erro ao carregar jogadores:', e);
         atualizarSelectJogadores();
         atualizarSelectRemoverJogadores();
         atualizarCustomSelect();
+        atualizarListaJogadoresAdmin();
     }
 }
 
@@ -952,6 +988,37 @@ function atualizarCustomSelect() {
         option.onclick = () => selecionarJogadorCustom(j.nome, j.avatar);
         
         dropdown.appendChild(option);
+    });
+}
+
+// Função para atualizar a lista de jogadores no admin
+function atualizarListaJogadoresAdmin() {
+    const listaDiv = document.getElementById('jogadoresListaAdmin');
+    if (!listaDiv) return;
+    
+    if (jogadores.length === 0) {
+        listaDiv.innerHTML = '<p style="color: #fff; text-align: center;">Nenhum jogador cadastrado</p>';
+        return;
+    }
+    
+    listaDiv.innerHTML = '';
+    jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(j => {
+        const item = document.createElement('div');
+        item.className = 'jogador-item-admin';
+        
+        const avatar = document.createElement('img');
+        avatar.className = 'jogador-avatar-admin';
+        avatar.src = j.avatar || 'https://via.placeholder.com/30/1a3d1a/d4a121?text=?';
+        avatar.onerror = () => { avatar.src = 'https://via.placeholder.com/30/1a3d1a/d4a121?text=?'; };
+        
+        const name = document.createElement('span');
+        name.style.color = '#fff';
+        name.style.flex = '1';
+        name.textContent = j.nome;
+        
+        item.appendChild(avatar);
+        item.appendChild(name);
+        listaDiv.appendChild(item);
     });
 }
 
@@ -1284,6 +1351,7 @@ document.getElementById('btnAcessarAdmin').onclick = () => {
         
         atualizarSelectRemoverJogadores();
         atualizarContadoresAdmin();
+        atualizarListaJogadoresAdmin();
         
         const selectProximaEtapa = document.getElementById('adminProximaEtapa');
         selectProximaEtapa.innerHTML = '<option value="">Selecione...</option>';
@@ -1437,6 +1505,7 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
     atualizarSelectJogadores();
     atualizarSelectRemoverJogadores();
     atualizarCustomSelect();
+    atualizarListaJogadoresAdmin();
     
     document.getElementById('novoJogadorNome').value = '';
     document.getElementById('avatarPreview').src = 'https://via.placeholder.com/60/1a3d1a/d4a121?text=?';
@@ -1471,6 +1540,7 @@ document.getElementById('btnRemoverJogador').onclick = async function() {
         atualizarSelectJogadores();
         atualizarSelectRemoverJogadores();
         atualizarCustomSelect();
+        atualizarListaJogadoresAdmin();
         
         select.value = '';
         
