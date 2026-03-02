@@ -62,6 +62,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .status-indicator.connected{background:#1a3d1a;border-color:#4CAF50}
 .status-indicator.error{background:#3d1a1a;border-color:#c72c48}
 .priority-indicator{background:#FFA500;color:#000;padding:2px 8px;border-radius:10px;font-size:0.75em;margin-left:5px}
+.admin-section{display:none; border-top: 1px solid #d4a121; margin-top: 20px; padding-top: 20px;}
+.admin-section.active{display:block;}
+.success-message{color:#4CAF50; font-size:0.9em; margin-top:10px; display:none;}
 @media(max-width:768px){
 .info-cards{grid-template-columns:1fr}
 }
@@ -123,19 +126,8 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="modal-content">
 <h2 style="color: #8b0000;">🔐 Modo Administrador</h2>
 
-<!-- NOVA SEÇÃO: Adicionar Jogador -->
-<div style="border-bottom: 1px solid #d4a121; margin: 20px 0; padding-bottom: 20px;">
-    <h3 style="color: #d4a121; margin-bottom: 15px;">➕ Adicionar Novo Jogador</h3>
-    <div class="form-group">
-        <label>Nome do Jogador</label>
-        <input type="text" id="novoJogadorNome" placeholder="Digite o nome completo" style="background: #1a3d1a;">
-    </div>
-    <button class="modal-btn confirm" id="btnAdicionarJogador" style="background: #4CAF50; color: #fff; width: 100%;">Adicionar Jogador</button>
-    <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">O jogador será adicionado à lista permanente e poderá se inscrever normalmente.</p>
-</div>
-
-<!-- SEÇÃO EXISTENTE: Login Admin -->
-<div>
+<!-- SEÇÃO DE LOGIN -->
+<div id="loginSection">
     <p style="margin: 15px 0; opacity: 0.8;">Digite a senha de administrador para acessar funções exclusivas:</p>
     <div class="form-group">
         <label>Senha Admin</label>
@@ -144,6 +136,27 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     <div class="modal-buttons">
         <button class="modal-btn cancel" id="btnFecharAdmin">Cancelar</button>
         <button class="modal-btn confirm" id="btnAcessarAdmin" style="background:#8b0000; color:#fff">Acessar</button>
+    </div>
+    <div id="loginError" style="color: #c72c48; margin-top: 10px; display: none;">❌ Senha incorreta!</div>
+</div>
+
+<!-- SEÇÃO ADMIN (só aparece após login) -->
+<div id="adminSection" class="admin-section">
+    <div style="background: #1a3d1a; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+        <p style="color: #4CAF50; font-weight: bold;">✅ Modo Admin Ativado</p>
+    </div>
+
+    <h3 style="color: #d4a121; margin-bottom: 15px;">➕ Adicionar Novo Jogador</h3>
+    <div class="form-group">
+        <label>Nome do Jogador</label>
+        <input type="text" id="novoJogadorNome" placeholder="Digite o nome completo" style="background: #1a3d1a;">
+    </div>
+    <button class="modal-btn confirm" id="btnAdicionarJogador" style="background: #4CAF50; color: #fff; width: 100%;">Adicionar Jogador</button>
+    <p style="font-size: 0.8em; opacity: 0.7; margin-top: 10px;">O jogador será adicionado à lista permanente e poderá se inscrever normalmente.</p>
+    <div id="successMessage" class="success-message">✅ Jogador adicionado com sucesso!</div>
+    
+    <div style="margin-top: 20px;">
+        <button class="modal-btn cancel" id="btnSairAdmin" style="width:100%;">🔒 Sair do Modo Admin</button>
     </div>
 </div>
 
@@ -207,7 +220,7 @@ const LIMITE_VAGAS = 20;
 const DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
 const DATA_EVENTO = new Date('2026-03-26');
 
-// Mudamos de const para let para permitir adicionar novos jogadores
+// Lista de jogadores (agora pode ser modificada)
 let jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Kastelo","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
 let db;
@@ -564,7 +577,44 @@ window.promoverJogadorManual = async (id) => {
   }
 };
 
-// NOVA FUNÇÃO: Adicionar jogador via admin
+// FUNÇÕES DO MODO ADMIN
+btnModoAdmin.onclick = () => {
+    document.getElementById('modalAdmin').classList.add('active');
+    // Resetar para tela de login
+    document.getElementById('loginSection').style.display = 'block';
+    document.getElementById('adminSection').classList.remove('active');
+    document.getElementById('senhaAdmin').value = '';
+    document.getElementById('loginError').style.display = 'none';
+};
+
+document.getElementById('btnFecharAdmin').onclick = () => {
+    document.getElementById('modalAdmin').classList.remove('active');
+};
+
+document.getElementById('btnAcessarAdmin').onclick = () => {
+    const senha = document.getElementById('senhaAdmin').value;
+    if (senha === "poker2026") {
+        modoAdmin = true;
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('adminSection').classList.add('active');
+        document.getElementById('btnModoAdmin').style.background = '#4CAF50';
+        document.getElementById('btnModoAdmin').style.opacity = '1';
+        document.getElementById('successMessage').style.display = 'none';
+        atualizar();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+    }
+};
+
+document.getElementById('btnSairAdmin').onclick = () => {
+    modoAdmin = false;
+    document.getElementById('modalAdmin').classList.remove('active');
+    document.getElementById('btnModoAdmin').style.background = 'rgba(13,27,13,0.3)';
+    document.getElementById('btnModoAdmin').style.opacity = '0.15';
+    atualizar();
+};
+
+// Função para adicionar novo jogador
 document.getElementById('btnAdicionarJogador').onclick = async function() {
     const novoJogador = document.getElementById('novoJogadorNome').value.trim();
     
@@ -590,25 +640,13 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
     // Atualizar o select
     atualizarSelectJogadores();
     
-    // Limpar campo
+    // Limpar campo e mostrar mensagem de sucesso
     document.getElementById('novoJogadorNome').value = '';
-    
-    alert(`✅ Jogador "${novoJogador}" adicionado com sucesso!\n\nAgora ele aparecerá na lista de seleção.`);
-};
-
-btnModoAdmin.onclick = () => document.getElementById('modalAdmin').classList.add('active');
-document.getElementById('btnFecharAdmin').onclick = () => document.getElementById('modalAdmin').classList.remove('active');
-document.getElementById('btnAcessarAdmin').onclick = () => {
-  if (document.getElementById('senhaAdmin').value === "poker2026") {
-    modoAdmin = true;
-    document.getElementById('modalAdmin').classList.remove('active');
-    document.getElementById('btnModoAdmin').style.background = '#4CAF50';
-    document.getElementById('btnModoAdmin').style.opacity = '1';
-    alert("✅ Modo Administrador Ativado!\n\nVocê agora pode remover e promover jogadores.");
-    atualizar();
-  } else {
-    alert('❌ Senha incorreta!');
-  }
+    const successMsg = document.getElementById('successMessage');
+    successMsg.style.display = 'block';
+    setTimeout(() => {
+        successMsg.style.display = 'none';
+    }, 3000);
 };
 
 btnExportar.onclick = () => {
