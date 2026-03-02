@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirmação de Presença - 3ª Etapa</title>
+<title>Confirmação de Presença - Poker de Quinta</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@300;400;700&display=swap');
@@ -15,17 +15,6 @@ body{font-family:'Roboto', sans-serif;background:#0d1b0d;color:#fff;min-height:1
 header{text-align:center;background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;margin-bottom:30px}
 h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .subtitle{margin-top:10px}
-
-#countdownContainer {
-    background: #1a3d1a;
-    border: 2px dashed #d4a121;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 20px;
-    text-align: center;
-}
-.timer-header { font-family: 'Anton'; font-size: 1.2em; color: #fff; margin-bottom: 5px; display: block; }
-#timer { font-family: 'Anton'; font-size: 1.8em; color: #d4a121; }
 
 .info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:25px}
 .info-card{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;text-align:center}
@@ -73,7 +62,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .status-badge.fechada{background:#c72c48; color:#fff;}
 .data-inscricao{font-size:0.9em; opacity:0.8; margin-top:10px;}
 
-/* NOVOS ESTILOS PARA O MODO ADMIN */
+/* ESTILOS PARA O MODO ADMIN */
 .admin-panel {
     display: none;
     background: #1a0d0d;
@@ -276,7 +265,62 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     color: #fff;
 }
 
-/* Animações */
+.etapa-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.etapa-btn {
+    background: #1a3d1a;
+    border: 2px solid #d4a121;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    flex: 1;
+    min-width: 80px;
+}
+
+.etapa-btn.active {
+    background: #d4a121;
+    color: #000;
+}
+
+.etapa-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 161, 33, 0.3);
+}
+
+.proxima-etapa-info {
+    background: #1a3d1a;
+    border: 2px dashed #d4a121;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.proxima-etapa-titulo {
+    font-family: 'Anton';
+    font-size: 1.5em;
+    color: #d4a121;
+    margin-bottom: 10px;
+}
+
+.proxima-etapa-data {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.proxima-etapa-abertura {
+    font-size: 1.1em;
+    color: #4CAF50;
+}
+
 @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.7; }
@@ -290,6 +334,8 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 @media(max-width:768px){
 .info-cards{grid-template-columns:1fr}
 .admin-grid{grid-template-columns:1fr}
+.etapa-selector{flex-direction:column;}
+.etapa-btn{width:100%;}
 }
 </style>
 </head>
@@ -306,19 +352,17 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 <header>
 <h1>LISTA DE PRESENÇA POKER DE QUINTA</h1>
-<div class="subtitle" id="etapaInfo">📅 3ª Etapa - 26/03/2026</div>
+<div class="subtitle" id="etapaInfo">Carregando etapas...</div>
 </header>
+
+<!-- SELETOR DE ETAPAS -->
+<div class="etapa-selector" id="etapaSelector"></div>
 
 <!-- STATUS DAS INSCRIÇÕES -->
 <div id="inscricaoStatusContainer" class="inscricao-status">
     <div id="statusBadge" class="status-badge">Carregando...</div>
     <div id="statusMessage"></div>
     <div id="dataInfo" class="data-inscricao"></div>
-</div>
-
-<div id="countdownContainer">
-    <span class="timer-header" id="timerHeader">As Inscrições abrem dia <span id="dataAberturaDisplay">23/03 às 07:00</span></span>
-    <div id="timer">Calculando tempo...</div>
 </div>
 
 <!-- PAINEL ADMIN (aparece após login) -->
@@ -334,22 +378,15 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
             <h3><i>🔓</i> Controle de Inscrições</h3>
             <div class="admin-status">
                 <p><span class="label">Status atual:</span> <span class="value" id="adminStatusAtual">Carregando...</span></p>
-                <p><span class="label">Etapa atual:</span> <span class="value" id="adminEtapaAtual">3ª Etapa - 26/03/2026</span></p>
+                <p><span class="label">Etapa atual:</span> <span class="value" id="adminEtapaAtual">Carregando...</span></p>
+                <p><span class="label">Abertura:</span> <span class="value" id="adminAberturaAtual">Carregando...</span></p>
             </div>
             
             <div class="form-group">
-                <label>Data de Abertura</label>
-                <input type="datetime-local" id="novaDataAbertura" class="admin-input">
-            </div>
-
-            <div class="form-group">
-                <label>Data da Etapa</label>
-                <input type="date" id="novaDataEtapa" class="admin-input">
-            </div>
-
-            <div class="form-group">
-                <label>Nº da Próxima Etapa</label>
-                <input type="number" id="numeroProximaEtapa" min="1" value="4" class="admin-input">
+                <label>Selecionar Próxima Etapa</label>
+                <select id="adminProximaEtapa" class="admin-select">
+                    <option value="">Selecione...</option>
+                </select>
             </div>
 
             <button class="admin-btn primary" id="btnAbrirInscricoes">
@@ -473,7 +510,8 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
   • Confirme a presença somente se for ir com CERTEZA<br>
   • Caso se inscreva e não possa ir a etapa, clique no botão CANCELAR MINHA INSCRIÇÃO<br>
   • Após 20 confirmações, novos jogadores vão para lista de espera<br>
-  • Na lista de espera: membros têm prioridade sobre convidados
+  • Na lista de espera: membros têm prioridade sobre convidados<br>
+  • As inscrições abrem automaticamente toda segunda-feira às 07:00 da semana da etapa
 </p>
 <div class="modal-buttons">
 <button class="modal-btn confirm" id="btnEntendi" style="width:100%">Entendi!</button>
@@ -531,11 +569,48 @@ const firebaseConfig = {
 
 const LIMITE_VAGAS = 20;
 
-// Variáveis de configuração (serão carregadas do Firebase)
-let DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
-let DATA_EVENTO = new Date('2026-03-26');
-let NUMERO_ETAPA = 3;
-let INSCRICOES_ABERTAS = false;
+// Datas das etapas
+const ETAPAS = [
+    { numero: 3, data: new Date('2026-03-26') },
+    { numero: 4, data: new Date('2026-04-30') },
+    { numero: 5, data: new Date('2026-05-28') },
+    { numero: 6, data: new Date('2026-06-25') },
+    { numero: 7, data: new Date('2026-07-30') },
+    { numero: 8, data: new Date('2026-08-27') },
+    { numero: 9, data: new Date('2026-09-24') },
+    { numero: 10, data: new Date('2026-10-08') },
+    { numero: 11, data: new Date('2026-10-29') },
+    { numero: 12, data: new Date('2026-11-26') },
+    { numero: 13, data: new Date('2026-12-10') }
+];
+
+// Função para calcular a data de abertura (segunda-feira anterior à etapa)
+function calcularDataAbertura(dataEtapa) {
+    const data = new Date(dataEtapa);
+    const diaDaSemana = data.getDay(); // 0 = domingo, 1 = segunda, ..., 6 = sábado
+    
+    // Calcular quantos dias voltar para chegar na segunda-feira
+    let diasVoltar;
+    if (diaDaSemana === 1) { // Se a etapa for na segunda, volta 7 dias
+        diasVoltar = 7;
+    } else if (diaDaSemana === 0) { // Se for domingo, volta 6 dias
+        diasVoltar = 6;
+    } else { // Para terça a sábado, volta (diaDaSemana - 1) dias
+        diasVoltar = diaDaSemana - 1;
+    }
+    
+    const dataAbertura = new Date(data);
+    dataAbertura.setDate(data.getDate() - diasVoltar);
+    dataAbertura.setHours(7, 0, 0, 0); // 07:00 da manhã
+    
+    return dataAbertura;
+}
+
+// Calcular todas as datas de abertura
+const ETAPAS_COM_ABERTURA = ETAPAS.map(etapa => ({
+    ...etapa,
+    abertura: calcularDataAbertura(etapa.data)
+}));
 
 let db;
 let confirmados = [];
@@ -543,50 +618,102 @@ let listaEspera = [];
 let modoAdmin = false;
 let timerInterval;
 
-// Lista de jogadores (agora pode ser modificada)
+// Configuração atual
+let etapaAtual = ETAPAS_COM_ABERTURA[0]; // Começa com a 3ª etapa
+let DATA_ABERTURA = etapaAtual.abertura.getTime();
+let DATA_EVENTO = etapaAtual.data;
+let NUMERO_ETAPA = etapaAtual.numero;
+let INSCRICOES_ABERTAS = false;
+
+// Lista de jogadores
 let jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Kastelo","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
-// Função para atualizar contadores no admin
-function atualizarContadoresAdmin() {
-    document.getElementById('totalJogadoresCount').textContent = jogadores.length;
-    document.getElementById('totalInscritosCount').textContent = confirmados.length + listaEspera.length;
+// Função para criar o seletor de etapas
+function criarSeletorEtapas() {
+    const selector = document.getElementById('etapaSelector');
+    selector.innerHTML = '';
+    
+    ETAPAS_COM_ABERTURA.forEach(etapa => {
+        const btn = document.createElement('button');
+        btn.className = `etapa-btn ${etapa.numero === NUMERO_ETAPA ? 'active' : ''}`;
+        btn.textContent = `${etapa.numero}ª Etapa`;
+        btn.onclick = () => selecionarEtapa(etapa);
+        selector.appendChild(btn);
+    });
 }
 
-// Função para carregar configurações do Firebase
-async function carregarConfiguracoes() {
-    try {
-        const snapshot = await get(ref(db, 'configuracoes'));
-        if (snapshot.exists()) {
-            const config = snapshot.val();
-            DATA_ABERTURA = config.dataAbertura || DATA_ABERTURA;
-            DATA_EVENTO = config.dataEvento ? new Date(config.dataEvento) : DATA_EVENTO;
-            NUMERO_ETAPA = config.numeroEtapa || NUMERO_ETAPA;
-            INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
-            
-            // Atualizar display
-            document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
-            if (document.getElementById('adminEtapaAtual')) {
-                document.getElementById('adminEtapaAtual').textContent = `${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
-            }
-            
-            const dataAberturaDate = new Date(DATA_ABERTURA);
-            document.getElementById('dataAberturaDisplay').textContent = 
-                `${dataAberturaDate.toLocaleDateString('pt-BR')} às ${dataAberturaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
-            
-            // Atualizar status das inscrições
-            atualizarStatusInscricoes();
-        }
-    } catch (e) {
-        console.error('Erro ao carregar configurações:', e);
+// Função para selecionar uma etapa
+async function selecionarEtapa(etapa) {
+    if (!confirm(`Deseja visualizar a ${etapa.numero}ª Etapa?\n\nAs listas exibidas serão da etapa selecionada.`)) {
+        return;
     }
+    
+    NUMERO_ETAPA = etapa.numero;
+    DATA_EVENTO = etapa.data;
+    DATA_ABERTURA = etapa.abertura.getTime();
+    
+    // Atualizar UI
+    document.querySelectorAll('.etapa-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes(`${etapa.numero}ª`)) {
+            btn.classList.add('active');
+        }
+    });
+    
+    document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+    
+    // Verificar se as inscrições devem estar abertas
+    verificarAberturaAutomatica();
+    
+    // Carregar dados da etapa selecionada
+    await carregarDadosEtapa(etapa.numero);
+}
+
+// Função para carregar dados de uma etapa específica
+async function carregarDadosEtapa(numeroEtapa) {
+    try {
+        const snapshotConfirmados = await get(ref(db, `etapas/${numeroEtapa}/confirmados`));
+        const snapshotEspera = await get(ref(db, `etapas/${numeroEtapa}/listaEspera`));
+        
+        confirmados = [];
+        if (snapshotConfirmados.exists()) {
+            snapshotConfirmados.forEach(child => {
+                confirmados.push({...child.val(), id: child.key});
+            });
+        }
+        
+        listaEspera = [];
+        if (snapshotEspera.exists()) {
+            snapshotEspera.forEach(child => {
+                listaEspera.push({...child.val(), id: child.key});
+            });
+        }
+        
+        atualizar();
+    } catch (e) {
+        console.error('Erro ao carregar dados da etapa:', e);
+    }
+}
+
+// Função para verificar se deve abrir automaticamente
+function verificarAberturaAutomatica() {
+    const agora = new Date();
+    const abertura = new Date(DATA_ABERTURA);
+    
+    // Se já passou da data de abertura e as inscrições estão fechadas, abrir automaticamente
+    if (agora >= abertura && !INSCRICOES_ABERTAS) {
+        console.log('🔓 Abrindo inscrições automaticamente');
+        INSCRICOES_ABERTAS = true;
+        salvarConfiguracoes();
+    }
+    
+    atualizarStatusInscricoes();
 }
 
 // Função para salvar configurações no Firebase
 async function salvarConfiguracoes() {
     try {
         await set(ref(db, 'configuracoes'), {
-            dataAbertura: DATA_ABERTURA,
-            dataEvento: DATA_EVENTO.toISOString(),
             numeroEtapa: NUMERO_ETAPA,
             inscricoesAbertas: INSCRICOES_ABERTAS,
             ultimaAtualizacao: new Date().toISOString()
@@ -604,61 +731,30 @@ function atualizarStatusInscricoes() {
     const message = document.getElementById('statusMessage');
     const dataInfo = document.getElementById('dataInfo');
     const btnConfirmar = document.getElementById('btnConfirmar');
-    const countdownContainer = document.getElementById('countdownContainer');
+    
+    const dataAberturaDate = new Date(DATA_ABERTURA);
+    const dataFormatada = dataAberturaDate.toLocaleDateString('pt-BR');
+    const horaFormatada = dataAberturaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     
     if (INSCRICOES_ABERTAS) {
         container.className = 'inscricao-status aberta';
         badge.className = 'status-badge aberta';
         badge.textContent = '✅ INSCRIÇÕES ABERTAS';
-        message.innerHTML = 'As inscrições estão abertas! Clique no botão abaixo para confirmar presença.';
+        message.innerHTML = `As inscrições para a ${NUMERO_ETAPA}ª Etapa estão abertas!`;
         dataInfo.innerHTML = `Abertas desde: ${new Date().toLocaleString('pt-BR')}`;
         
         btnConfirmar.disabled = false;
         btnConfirmar.textContent = '➕ CONFIRMAR PRESENÇA';
-        countdownContainer.style.display = 'none';
-        
-        // Parar o cronômetro se estiver rodando
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
     } else {
         container.className = 'inscricao-status fechada';
         badge.className = 'status-badge fechada';
-        badge.textContent = '🔒 INSCRIÇÕES ENCERRADAS';
+        badge.textContent = '🔒 INSCRIÇÕES FECHADAS';
         
-        const dataAberturaDate = new Date(DATA_ABERTURA);
-        const dataFormatada = dataAberturaDate.toLocaleDateString('pt-BR');
-        const horaFormatada = dataAberturaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-        
-        message.innerHTML = `As inscrições para a ${NUMERO_ETAPA}ª Etapa abrirão dia ${dataFormatada} às ${horaFormatada}.`;
+        message.innerHTML = `As inscrições para a ${NUMERO_ETAPA}ª Etapa abrirão automaticamente na segunda-feira ${dataFormatada} às ${horaFormatada}.`;
         dataInfo.innerHTML = `Próxima etapa: ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
         
         btnConfirmar.disabled = true;
         btnConfirmar.textContent = '🔒 INSCRIÇÕES FECHADAS';
-        countdownContainer.style.display = 'block';
-        
-        // Iniciar o cronômetro
-        if (!timerInterval) {
-            atualizarCronometro();
-            timerInterval = setInterval(atualizarCronometro, 1000);
-        }
-    }
-}
-
-function atualizarCronometro() {
-    const agora = new Date().getTime();
-    const dist = DATA_ABERTURA - agora;
-
-    if (dist > 0) {
-        const d = Math.floor(dist / (1000 * 60 * 60 * 24));
-        const h = Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((dist % (1000 * 60)) / 1000);
-        document.getElementById("timer").innerHTML = `${d}d ${h}h ${m}m ${s}s`;
-    } else if (!INSCRICOES_ABERTAS) {
-        // Se passou da data de abertura mas inscrições estão fechadas, mostrar mensagem
-        document.getElementById("timer").innerHTML = "Aguardando abertura manual...";
     }
 }
 
@@ -668,46 +764,41 @@ try {
   statusIndicator.textContent = '✅ Conectado';
   statusIndicator.classList.add('connected');
   
-  onValue(ref(db, 'confirmados'), (snapshot) => {
-    confirmados = [];
-    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
-    atualizar();
-    if (modoAdmin) atualizarContadoresAdmin();
-  });
-  
-  onValue(ref(db, 'listaEspera'), (snapshot) => {
-    listaEspera = [];
-    if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
-    atualizar();
-    if (modoAdmin) atualizarContadoresAdmin();
-  });
-
-  // Carregar configurações
+  // Carregar configurações do Firebase
   onValue(ref(db, 'configuracoes'), (snapshot) => {
-    if (snapshot.exists()) {
-      const config = snapshot.val();
-      DATA_ABERTURA = config.dataAbertura || DATA_ABERTURA;
-      DATA_EVENTO = config.dataEvento ? new Date(config.dataEvento) : DATA_EVENTO;
-      NUMERO_ETAPA = config.numeroEtapa || NUMERO_ETAPA;
-      INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
-      
-      // Atualizar display
-      document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
-      if (document.getElementById('adminEtapaAtual')) {
-        document.getElementById('adminEtapaAtual').textContent = `${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+      if (snapshot.exists()) {
+          const config = snapshot.val();
+          NUMERO_ETAPA = config.numeroEtapa || NUMERO_ETAPA;
+          INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
+          
+          // Encontrar a etapa correspondente
+          const etapaEncontrada = ETAPAS_COM_ABERTURA.find(e => e.numero === NUMERO_ETAPA);
+          if (etapaEncontrada) {
+              DATA_EVENTO = etapaEncontrada.data;
+              DATA_ABERTURA = etapaEncontrada.abertura.getTime();
+          }
+          
+          // Atualizar UI
+          document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+          criarSeletorEtapas();
+          
+          // Verificar abertura automática
+          verificarAberturaAutomatica();
+          
+          // Carregar dados da etapa
+          carregarDadosEtapa(NUMERO_ETAPA);
+      } else {
+          criarSeletorEtapas();
+          verificarAberturaAutomatica();
+          carregarDadosEtapa(NUMERO_ETAPA);
       }
-      
-      const dataAberturaDate = new Date(DATA_ABERTURA);
-      document.getElementById('dataAberturaDisplay').textContent = 
-          `${dataAberturaDate.toLocaleDateString('pt-BR')} às ${dataAberturaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`;
-      
-      // Atualizar status das inscrições
-      atualizarStatusInscricoes();
-    }
   });
 
   // Carregar lista de jogadores do Firebase
   carregarJogadoresDoFirebase();
+  
+  // Verificar abertura automática a cada minuto
+  setInterval(verificarAberturaAutomatica, 60000);
   
 } catch (e) {
   statusIndicator.textContent = '❌ Erro de conexão';
@@ -744,21 +835,18 @@ async function salvarJogadoresNoFirebase() {
     }
 }
 
-// Função para atualizar o select de jogadores (para confirmar presença)
+// Função para atualizar o select de jogadores
 function atualizarSelectJogadores() {
     const select = document.getElementById('playerName');
     if (!select) return;
     
-    // Limpar select
     select.innerHTML = '';
     
-    // Adicionar opção padrão
     const optDefault = document.createElement('option');
     optDefault.value = '';
     optDefault.textContent = 'Selecione seu nome...';
     select.appendChild(optDefault);
     
-    // Adicionar jogadores ordenados
     jogadores.sort().forEach(j => {
         const option = document.createElement('option');
         option.value = j;
@@ -767,12 +855,11 @@ function atualizarSelectJogadores() {
     });
 }
 
-// Função para atualizar o select de remover jogadores (admin)
+// Função para atualizar o select de remover jogadores
 function atualizarSelectRemoverJogadores() {
     const select = document.getElementById('removerJogadorSelect');
     if (!select) return;
     
-    // Limpar select
     select.innerHTML = '';
     
     if (jogadores.length === 0) {
@@ -783,13 +870,11 @@ function atualizarSelectRemoverJogadores() {
         return;
     }
     
-    // Adicionar opção padrão
     const optDefault = document.createElement('option');
     optDefault.value = '';
     optDefault.textContent = 'Selecione um jogador para remover...';
     select.appendChild(optDefault);
     
-    // Adicionar jogadores ordenados
     jogadores.sort().forEach(j => {
         const option = document.createElement('option');
         option.value = j;
@@ -798,7 +883,13 @@ function atualizarSelectRemoverJogadores() {
     });
 }
 
-// Inicializar os selects
+// Função para atualizar contadores
+function atualizarContadoresAdmin() {
+    document.getElementById('totalJogadoresCount').textContent = jogadores.length;
+    document.getElementById('totalInscritosCount').textContent = confirmados.length + listaEspera.length;
+}
+
+// Inicializar
 atualizarSelectJogadores();
 atualizarSelectRemoverJogadores();
 
@@ -808,7 +899,7 @@ window.addEventListener('load', () => modalBemVindo.classList.add('active'));
 btnConfirmar.onclick = () => {
     if (!INSCRICOES_ABERTAS && !modoAdmin) {
         const dataAberturaDate = new Date(DATA_ABERTURA);
-        return alert(`As inscrições ainda não abriram!\n\nAbertura: ${dataAberturaDate.toLocaleDateString('pt-BR')} às ${dataAberturaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}`);
+        return alert(`As inscrições ainda não abriram!\n\nAbertura automática: ${dataAberturaDate.toLocaleDateString('pt-BR')} às 07:00`);
     }
     modal.classList.add('active');
 };
@@ -826,7 +917,6 @@ btnConfirmarModal.onclick = async () => {
   const nome = document.getElementById('playerName').value;
   if (!nome) return alert('Selecione seu nome!');
   
-  // Verificar se já está inscrito (membro)
   if (!document.getElementById('isGuest').checked) {
     const jaInscrito = [...confirmados, ...listaEspera].some(p => !p.isGuest && p.nome === nome);
     if (jaInscrito) {
@@ -838,13 +928,11 @@ btnConfirmarModal.onclick = async () => {
   
   try {
     if (!document.getElementById('isGuest').checked) {
-      // MEMBRO - verificar vagas em tempo real
-      const snapshot = await get(ref(db, 'confirmados'));
+      const snapshot = await get(ref(db, `etapas/${NUMERO_ETAPA}/confirmados`));
       const totalAtual = snapshot.exists() ? snapshot.size : 0;
       
       if (totalAtual < LIMITE_VAGAS) {
-        // Tem vaga - adicionar em confirmados
-        await push(ref(db, 'confirmados'), { 
+        await push(ref(db, `etapas/${NUMERO_ETAPA}/confirmados`), { 
           nome, 
           isGuest: false, 
           data: agora,
@@ -852,28 +940,26 @@ btnConfirmarModal.onclick = async () => {
         });
         alert('✅ Presença confirmada! Você está na lista de confirmados.');
       } else {
-        // Sem vagas - adicionar na lista de espera
-        await push(ref(db, 'listaEspera'), { 
+        await push(ref(db, `etapas/${NUMERO_ETAPA}/listaEspera`), { 
           nome, 
           isGuest: false, 
           data: agora,
           timestamp: Date.now()
         });
-        alert('⏳ As 20 vagas foram preenchidas!\n\nVocê foi adicionado à LISTA DE ESPERA.\n\nMembros têm prioridade sobre convidados na fila.');
+        alert('⏳ As 20 vagas foram preenchidas!\n\nVocê foi adicionado à LISTA DE ESPERA.');
       }
     } else {
-      // CONVIDADO - sempre vai para lista de espera
       const gNome = document.getElementById('guestName').value.trim();
       if (!gNome) return alert('Digite o nome do convidado!');
       
-      await push(ref(db, 'listaEspera'), { 
+      await push(ref(db, `etapas/${NUMERO_ETAPA}/listaEspera`), { 
         nome: gNome, 
         isGuest: true, 
         guestOf: nome, 
         data: agora,
         timestamp: Date.now()
       });
-      alert('✅ Convidado adicionado à lista de espera!\n\nConvidados ficam após membros na ordem de prioridade.');
+      alert('✅ Convidado adicionado à lista de espera!');
     }
     
     modal.classList.remove('active');
@@ -882,13 +968,16 @@ btnConfirmarModal.onclick = async () => {
     document.getElementById('guestNameGroup').style.display = 'none';
     document.getElementById('guestName').value = '';
     
+    // Recarregar dados
+    await carregarDadosEtapa(NUMERO_ETAPA);
+    
   } catch (e) { 
     alert('Erro ao confirmar: ' + e.message); 
   }
 };
 
 btnCancelarWhatsApp.onclick = () => {
-  const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta,Eu sei que fui um cagalhão,isso nao vai mais acontecer.\nNome: ');
+  const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ');
   window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
 };
 
@@ -897,7 +986,6 @@ function atualizar() {
   document.getElementById('vacancyCount').textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
   document.getElementById('waitlistCount').textContent = listaEspera.length;
 
-  // LISTA DE CONFIRMADOS - ordenar por timestamp
   const confirmadosOrdenados = [...confirmados].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
   
   const confirmedList = document.getElementById('confirmedList');
@@ -914,7 +1002,6 @@ function atualizar() {
         ${btnRemover}</li>`;
   });
 
-  // LISTA DE ESPERA - ORDENAR: membros primeiro, depois convidados, por timestamp dentro de cada grupo
   const membrosEspera = listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
   const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
   const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera];
@@ -946,108 +1033,45 @@ window.removerJogador = async (id, isWait) => {
   if(!confirm('Tem certeza que deseja remover este jogador?')) return;
   try {
     const path = isWait ? 'listaEspera' : 'confirmados';
-    await remove(ref(db, `${path}/${id}`));
-    
-    // Se removeu dos confirmados, promover da lista de espera
-    if (!isWait) {
-      await promoverDaListaDeEspera();
-    }
-    
+    await remove(ref(db, `etapas/${NUMERO_ETAPA}/${path}/${id}`));
+    await carregarDadosEtapa(NUMERO_ETAPA);
     alert('Jogador removido com sucesso!');
   } catch (e) {
     alert('Erro ao remover: ' + e.message);
   }
 };
 
-// Função para promover automaticamente da lista de espera
-async function promoverDaListaDeEspera() {
-  try {
-    // Verificar quantos confirmados existem
-    const snapshotConfirmados = await get(ref(db, 'confirmados'));
-    const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
-    
-    // Se tiver vaga disponível
-    if (totalConfirmados < LIMITE_VAGAS) {
-      // Buscar lista de espera atual
-      const snapshotEspera = await get(ref(db, 'listaEspera'));
-      
-      if (snapshotEspera.exists()) {
-        let candidatos = [];
-        snapshotEspera.forEach(child => {
-          candidatos.push({...child.val(), id: child.key});
-        });
-        
-        // APENAS MEMBROS são promovidos automaticamente
-        const membros = candidatos.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-        
-        if (membros.length > 0) {
-          // Pegar o primeiro MEMBRO da fila
-          const promovido = membros[0];
-          
-          // Adicionar aos confirmados
-          await push(ref(db, 'confirmados'), {
-            nome: promovido.nome,
-            isGuest: false,
-            data: promovido.data,
-            timestamp: promovido.timestamp,
-            promovido: true,
-            dataPromocao: new Date().toISOString()
-          });
-          
-          // Remover da lista de espera
-          await remove(ref(db, `listaEspera/${promovido.id}`));
-          
-          console.log(`✅ ${promovido.nome} (MEMBRO) foi promovido automaticamente para confirmados!`);
-        } else {
-          console.log('ℹ️ Há vaga disponível, mas apenas convidados na fila. Promoção manual necessária.');
-        }
-      }
-    }
-  } catch (e) {
-    console.error('Erro ao promover da lista de espera:', e);
-  }
-}
-
-// Função para promover jogador manualmente (ADMIN)
 window.promoverJogadorManual = async (id) => {
   try {
-    // Verificar se há vaga
-    const snapshotConfirmados = await get(ref(db, 'confirmados'));
+    const snapshotConfirmados = await get(ref(db, `etapas/${NUMERO_ETAPA}/confirmados`));
     const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
     
     if (totalConfirmados >= LIMITE_VAGAS) {
-      return alert('❌ Não há vagas disponíveis!\n\nRemova um jogador dos confirmados primeiro.');
+      return alert('❌ Não há vagas disponíveis!');
     }
     
-    // Buscar dados do jogador na lista de espera
-    const snapshot = await get(ref(db, `listaEspera/${id}`));
-    
+    const snapshot = await get(ref(db, `etapas/${NUMERO_ETAPA}/listaEspera/${id}`));
     if (!snapshot.exists()) {
       return alert('Jogador não encontrado!');
     }
     
     const jogador = snapshot.val();
     
-    // Confirmar promoção
-    const tipoJogador = jogador.isGuest ? 'CONVIDADO' : 'MEMBRO';
-    if (!confirm(`Promover ${jogador.nome} (${tipoJogador}) para confirmados?`)) {
+    if (!confirm(`Promover ${jogador.nome} para confirmados?`)) {
       return;
     }
     
-    // Adicionar aos confirmados
-    await push(ref(db, 'confirmados'), {
+    await push(ref(db, `etapas/${NUMERO_ETAPA}/confirmados`), {
       nome: jogador.nome,
       isGuest: jogador.isGuest,
       guestOf: jogador.guestOf || null,
       data: jogador.data,
       timestamp: jogador.timestamp,
-      promovido: true,
-      promocaoManual: true,
-      dataPromocao: new Date().toISOString()
+      promovido: true
     });
     
-    // Remover da lista de espera
-    await remove(ref(db, `listaEspera/${id}`));
+    await remove(ref(db, `etapas/${NUMERO_ETAPA}/listaEspera/${id}`));
+    await carregarDadosEtapa(NUMERO_ETAPA);
     
     alert(`✅ ${jogador.nome} foi promovido para confirmados!`);
     
@@ -1077,29 +1101,26 @@ document.getElementById('btnAcessarAdmin').onclick = () => {
         document.getElementById('btnModoAdmin').style.opacity = '1';
         document.getElementById('successMessage').style.display = 'none';
         
-        // Atualizar selects e contadores
+        // Atualizar selects do admin
         atualizarSelectRemoverJogadores();
         atualizarContadoresAdmin();
+        
+        // Preencher select de próximas etapas
+        const selectProximaEtapa = document.getElementById('adminProximaEtapa');
+        selectProximaEtapa.innerHTML = '<option value="">Selecione...</option>';
+        ETAPAS_COM_ABERTURA.forEach(etapa => {
+            if (etapa.numero > NUMERO_ETAPA) {
+                const option = document.createElement('option');
+                option.value = etapa.numero;
+                option.textContent = `${etapa.numero}ª Etapa - ${etapa.data.toLocaleDateString('pt-BR')}`;
+                selectProximaEtapa.appendChild(option);
+            }
+        });
         
         // Atualizar status
         document.getElementById('adminStatusAtual').textContent = INSCRICOES_ABERTAS ? 'Abertas' : 'Fechadas';
         document.getElementById('adminEtapaAtual').textContent = `${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
-        
-        // Preencher campos com datas atuais
-        const dataAberturaDate = new Date(DATA_ABERTURA);
-        const ano = dataAberturaDate.getFullYear();
-        const mes = String(dataAberturaDate.getMonth() + 1).padStart(2, '0');
-        const dia = String(dataAberturaDate.getDate()).padStart(2, '0');
-        const horas = String(dataAberturaDate.getHours()).padStart(2, '0');
-        const minutos = String(dataAberturaDate.getMinutes()).padStart(2, '0');
-        document.getElementById('novaDataAbertura').value = `${ano}-${mes}-${dia}T${horas}:${minutos}`;
-        
-        const dataEventoAno = DATA_EVENTO.getFullYear();
-        const dataEventoMes = String(DATA_EVENTO.getMonth() + 1).padStart(2, '0');
-        const dataEventoDia = String(DATA_EVENTO.getDate()).padStart(2, '0');
-        document.getElementById('novaDataEtapa').value = `${dataEventoAno}-${dataEventoMes}-${dataEventoDia}`;
-        
-        document.getElementById('numeroProximaEtapa').value = NUMERO_ETAPA + 1;
+        document.getElementById('adminAberturaAtual').textContent = `${new Date(DATA_ABERTURA).toLocaleDateString('pt-BR')} 07:00`;
         
         atualizar();
     } else {
@@ -1115,91 +1136,86 @@ document.getElementById('btnSairAdmin').onclick = () => {
     atualizar();
 };
 
-// Função para abrir inscrições
+// Abrir inscrições manualmente
 document.getElementById('btnAbrirInscricoes').onclick = async () => {
-    const novaDataAbertura = document.getElementById('novaDataAbertura').value;
-    const novaDataEtapa = document.getElementById('novaDataEtapa').value;
-    const novoNumero = document.getElementById('numeroProximaEtapa').value;
+    const select = document.getElementById('adminProximaEtapa');
+    const proximaEtapaNum = parseInt(select.value);
     
-    if (!novaDataAbertura || !novaDataEtapa || !novoNumero) {
-        alert('❌ Preencha todos os campos!');
+    if (!proximaEtapaNum) {
+        alert('❌ Selecione a próxima etapa!');
         return;
     }
     
-    if (!confirm('Tem certeza que deseja ABRIR as inscrições?\n\nIsso irá:\n• Ativar o botão de inscrição\n• Remover o cronômetro da página\n• Limpar todas as listas atuais?')) {
+    const etapaSelecionada = ETAPAS_COM_ABERTURA.find(e => e.numero === proximaEtapaNum);
+    
+    if (!confirm(`Abrir inscrições para a ${etapaSelecionada.numero}ª Etapa?\n\nIsso irá limpar todas as listas atuais.`)) {
         return;
     }
     
     try {
-        // Atualizar configurações
-        DATA_ABERTURA = new Date(novaDataAbertura).getTime();
-        DATA_EVENTO = new Date(novaDataEtapa);
-        NUMERO_ETAPA = parseInt(novoNumero);
+        NUMERO_ETAPA = etapaSelecionada.numero;
+        DATA_EVENTO = etapaSelecionada.data;
+        DATA_ABERTURA = etapaSelecionada.abertura.getTime();
         INSCRICOES_ABERTAS = true;
         
-        // Limpar todas as listas
-        await set(ref(db, 'confirmados'), null);
-        await set(ref(db, 'listaEspera'), null);
+        // Limpar listas da etapa anterior
+        await set(ref(db, `etapas/${NUMERO_ETAPA}/confirmados`), null);
+        await set(ref(db, `etapas/${NUMERO_ETAPA}/listaEspera`), null);
         
         // Salvar configurações
         await salvarConfiguracoes();
         
-        // Atualizar interface
-        document.getElementById('adminStatusAtual').textContent = 'Abertas';
-        document.getElementById('adminEtapaAtual').textContent = `${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+        // Atualizar UI
         document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+        document.querySelectorAll('.etapa-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent.includes(`${NUMERO_ETAPA}ª`)) {
+                btn.classList.add('active');
+            }
+        });
         
-        // Mostrar mensagem de sucesso
+        atualizarStatusInscricoes();
+        await carregarDadosEtapa(NUMERO_ETAPA);
+        
         const successMsg = document.getElementById('successMessage');
         successMsg.style.display = 'block';
-        successMsg.innerHTML = '✅ Inscrições abertas com sucesso!';
-        successMsg.style.color = '#4CAF50';
+        successMsg.innerHTML = `✅ Inscrições abertas para a ${NUMERO_ETAPA}ª Etapa!`;
         setTimeout(() => {
             successMsg.style.display = 'none';
         }, 3000);
-        
-        atualizarContadoresAdmin();
         
     } catch (e) {
         alert('Erro ao abrir inscrições: ' + e.message);
     }
 };
 
-// Função para encerrar inscrições
+// Encerrar inscrições
 document.getElementById('btnEncerrarInscricoes').onclick = async () => {
-    const novaDataAbertura = document.getElementById('novaDataAbertura').value;
-    const novaDataEtapa = document.getElementById('novaDataEtapa').value;
-    const novoNumero = document.getElementById('numeroProximaEtapa').value;
+    const select = document.getElementById('adminProximaEtapa');
+    const proximaEtapaNum = parseInt(select.value);
     
-    if (!novaDataAbertura || !novaDataEtapa || !novoNumero) {
-        alert('❌ Preencha os campos com as informações da PRÓXIMA etapa!');
+    if (!proximaEtapaNum) {
+        alert('❌ Selecione a próxima etapa para configurar a abertura automática!');
         return;
     }
     
-    if (!confirm('Tem certeza que deseja ENCERRAR as inscrições?\n\nIsso irá:\n• Desativar o botão de inscrição\n• Mostrar o cronômetro para a próxima etapa\n• As listas atuais serão MANTIDAS para consulta')) {
+    const etapaSelecionada = ETAPAS_COM_ABERTURA.find(e => e.numero === proximaEtapaNum);
+    
+    if (!confirm(`Encerrar inscrições da ${NUMERO_ETAPA}ª Etapa?\n\nA próxima abertura será em ${etapaSelecionada.abertura.toLocaleDateString('pt-BR')} às 07:00 para a ${etapaSelecionada.numero}ª Etapa.`)) {
         return;
     }
     
     try {
-        // Atualizar configurações para a próxima etapa
-        DATA_ABERTURA = new Date(novaDataAbertura).getTime();
-        DATA_EVENTO = new Date(novaDataEtapa);
-        NUMERO_ETAPA = parseInt(novoNumero);
         INSCRICOES_ABERTAS = false;
         
-        // Salvar configurações
+        // Salvar configurações (mantém a etapa atual para consulta)
         await salvarConfiguracoes();
         
-        // Atualizar interface
-        document.getElementById('adminStatusAtual').textContent = 'Fechadas';
-        document.getElementById('adminEtapaAtual').textContent = `${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
-        document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+        atualizarStatusInscricoes();
         
-        // Mostrar mensagem de sucesso
         const successMsg = document.getElementById('successMessage');
         successMsg.style.display = 'block';
-        successMsg.innerHTML = '✅ Inscrições encerradas. Próxima etapa configurada!';
-        successMsg.style.color = '#4CAF50';
+        successMsg.innerHTML = `✅ Inscrições encerradas. Próxima abertura: ${etapaSelecionada.abertura.toLocaleDateString('pt-BR')} 07:00`;
         setTimeout(() => {
             successMsg.style.display = 'none';
         }, 3000);
@@ -1209,7 +1225,7 @@ document.getElementById('btnEncerrarInscricoes').onclick = async () => {
     }
 };
 
-// Função para adicionar novo jogador
+// Adicionar jogador
 document.getElementById('btnAdicionarJogador').onclick = async function() {
     const novoJogador = document.getElementById('novoJogadorNome').value.trim();
     
@@ -1218,30 +1234,24 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
         return;
     }
     
-    // Verificar se já existe (case insensitive)
     const existe = jogadores.some(j => j.toLowerCase() === novoJogador.toLowerCase());
     if (existe) {
         alert('❌ Este jogador já existe na lista!');
         return;
     }
     
-    // Adicionar à lista
     jogadores.push(novoJogador);
-    jogadores.sort(); // Ordenar alfabeticamente
+    jogadores.sort();
     
-    // Salvar no Firebase
     await salvarJogadoresNoFirebase();
     
-    // Atualizar os selects
     atualizarSelectJogadores();
     atualizarSelectRemoverJogadores();
     
-    // Limpar campo e mostrar mensagem de sucesso
     document.getElementById('novoJogadorNome').value = '';
     const successMsg = document.getElementById('successMessage');
     successMsg.style.display = 'block';
     successMsg.innerHTML = `✅ Jogador "${novoJogador}" adicionado com sucesso!`;
-    successMsg.style.color = '#4CAF50';
     setTimeout(() => {
         successMsg.style.display = 'none';
     }, 3000);
@@ -1249,7 +1259,7 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
     atualizarContadoresAdmin();
 };
 
-// Função para remover jogador
+// Remover jogador
 document.getElementById('btnRemoverJogador').onclick = async function() {
     const select = document.getElementById('removerJogadorSelect');
     const jogadorRemover = select.value;
@@ -1259,65 +1269,23 @@ document.getElementById('btnRemoverJogador').onclick = async function() {
         return;
     }
     
-    // Verificar se o jogador está inscrito em algum lugar
-    const inscritoConfirmados = confirmados.some(p => !p.isGuest && p.nome === jogadorRemover);
-    const inscritoEspera = listaEspera.some(p => !p.isGuest && p.nome === jogadorRemover);
-    
-    let mensagem = `Tem certeza que deseja remover "${jogadorRemover}" da lista permanente?`;
-    if (inscritoConfirmados || inscritoEspera) {
-        mensagem = `⚠️ ATENÇÃO: "${jogadorRemover}" está inscrito `;
-        if (inscritoConfirmados) mensagem += 'na lista de CONFIRMADOS ';
-        if (inscritoEspera) mensagem += 'na lista de ESPERA ';
-        mensagem += '.\n\nRemovendo o jogador, ele também será removido das listas de inscrição.\n\nContinuar?';
-    }
-    
-    if (!confirm(mensagem)) return;
+    if (!confirm(`Remover "${jogadorRemover}" da lista permanente?`)) return;
     
     try {
-        // Remover das listas de inscrição se estiver presente
-        const promises = [];
-        
-        // Remover dos confirmados
-        const jogadorConfirmado = confirmados.find(p => !p.isGuest && p.nome === jogadorRemover);
-        if (jogadorConfirmado) {
-            promises.push(remove(ref(db, `confirmados/${jogadorConfirmado.id}`)));
-        }
-        
-        // Remover da lista de espera
-        const jogadorEspera = listaEspera.find(p => !p.isGuest && p.nome === jogadorRemover);
-        if (jogadorEspera) {
-            promises.push(remove(ref(db, `listaEspera/${jogadorEspera.id}`)));
-        }
-        
-        // Aguardar todas as remoções
-        await Promise.all(promises);
-        
-        // Remover da lista permanente
         jogadores = jogadores.filter(j => j !== jogadorRemover);
-        
-        // Salvar no Firebase
         await salvarJogadoresNoFirebase();
         
-        // Atualizar os selects
         atualizarSelectJogadores();
         atualizarSelectRemoverJogadores();
         
-        // Limpar select
         select.value = '';
         
-        // Mostrar mensagem de sucesso
         const successMsg = document.getElementById('successMessage');
         successMsg.style.display = 'block';
         successMsg.innerHTML = `✅ Jogador "${jogadorRemover}" removido com sucesso!`;
-        successMsg.style.color = '#c72c48';
         setTimeout(() => {
             successMsg.style.display = 'none';
         }, 3000);
-        
-        // Se removeu dos confirmados, tentar promover da espera
-        if (jogadorConfirmado) {
-            await promoverDaListaDeEspera();
-        }
         
         atualizarContadoresAdmin();
         
@@ -1326,8 +1294,8 @@ document.getElementById('btnRemoverJogador').onclick = async function() {
     }
 };
 
-// Função para limpar todas as listas
-document.getElementById('btnLimparTodasListas').onclick = async () => {
+// Limpar todas as listas
+document.getElementById('btnLimparTodasListas').onclick = () => {
     document.getElementById('modalConfirmarLimpeza').classList.add('active');
 };
 
@@ -1339,30 +1307,30 @@ document.getElementById('btnConfirmarLimpeza').onclick = async () => {
     document.getElementById('modalConfirmarLimpeza').classList.remove('active');
     
     try {
-        await set(ref(db, 'confirmados'), null);
-        await set(ref(db, 'listaEspera'), null);
+        await set(ref(db, `etapas/${NUMERO_ETAPA}/confirmados`), null);
+        await set(ref(db, `etapas/${NUMERO_ETAPA}/listaEspera`), null);
+        await carregarDadosEtapa(NUMERO_ETAPA);
         
         const successMsg = document.getElementById('successMessage');
         successMsg.style.display = 'block';
         successMsg.innerHTML = '✅ Todas as listas foram limpas com sucesso!';
-        successMsg.style.color = '#ff9800';
         setTimeout(() => {
             successMsg.style.display = 'none';
         }, 3000);
-        
-        atualizarContadoresAdmin();
     } catch (e) {
         alert('Erro ao limpar listas: ' + e.message);
     }
 };
 
-// Exportar CSV do admin
+// Exportar CSV
 document.getElementById('btnExportarAdmin').onclick = () => {
     btnExportar.click();
 };
 
 btnExportar.onclick = () => {
-  let csv = 'Posição,Nome,Status,Data/Hora\n';
+  let csv = `Lista de Presença - ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}\n\n`;
+  csv += 'Posição,Nome,Status,Data/Hora\n';
+  
   confirmados.forEach((p, i) => {
     csv += `${i+1},${p.nome},CONFIRMADO,${new Date(p.data).toLocaleString('pt-BR')}\n`;
   });
@@ -1380,7 +1348,7 @@ btnExportar.onclick = () => {
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `lista-poker-${new Date().toISOString().split('T')[0]}.csv`;
+  link.download = `poker-etapa-${NUMERO_ETAPA}-${new Date().toISOString().split('T')[0]}.csv`;
   link.click();
 };
 </script>
