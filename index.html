@@ -552,7 +552,7 @@ const firebaseConfig = {
 
 const LIMITE_VAGAS = 20;
 
-// Datas das etapas
+// Datas das etapas - CORRIGIDO: 3ª etapa é a primeira
 const ETAPAS = [
     { numero: 3, data: new Date('2026-03-26'), abertura: new Date('2026-03-23T07:00:00') },
     { numero: 4, data: new Date('2026-04-30'), abertura: new Date('2026-04-27T07:00:00') },
@@ -573,8 +573,8 @@ let listaEspera = [];
 let modoAdmin = false;
 let timerInterval;
 
-// Configuração atual - Começa com a 3ª etapa
-let etapaAtual = ETAPAS[0];
+// Configuração atual - FORÇANDO a 3ª etapa como inicial
+let etapaAtual = ETAPAS[0]; // Índice 0 = 3ª etapa
 let DATA_ABERTURA = etapaAtual.abertura.getTime();
 let DATA_EVENTO = etapaAtual.data;
 let NUMERO_ETAPA = etapaAtual.numero;
@@ -736,7 +736,7 @@ try {
           // Carregar dados da etapa
           carregarDadosEtapa();
       } else {
-          // Salvar configuração inicial
+          // Salvar configuração inicial (3ª etapa)
           salvarConfiguracoes();
           carregarDadosEtapa();
       }
@@ -923,7 +923,7 @@ btnConfirmarModal.onclick = async () => {
 };
 
 btnCancelarWhatsApp.onclick = () => {
-  const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ');
+  const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.Eu sei que SOU UM CAGALHAO ISSO NAO VAI MAIS ACONTECER.\nNome: ');
   window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
 };
 
@@ -1051,7 +1051,7 @@ document.getElementById('btnAcessarAdmin').onclick = () => {
         atualizarSelectRemoverJogadores();
         atualizarContadoresAdmin();
         
-        // Preencher select de próximas etapas
+        // Preencher select de próximas etapas (mostrar apenas etapas futuras)
         const selectProximaEtapa = document.getElementById('adminProximaEtapa');
         selectProximaEtapa.innerHTML = '<option value="">Selecione...</option>';
         ETAPAS.forEach(etapa => {
