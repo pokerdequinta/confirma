@@ -276,32 +276,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     color: #fff;
 }
 
-.proxima-etapa-info {
-    background: #1a3d1a;
-    border: 2px dashed #d4a121;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.proxima-etapa-titulo {
-    font-family: 'Anton';
-    font-size: 1.5em;
-    color: #d4a121;
-    margin-bottom: 10px;
-}
-
-.proxima-etapa-data {
-    font-size: 1.2em;
-    margin-bottom: 5px;
-}
-
-.proxima-etapa-abertura {
-    font-size: 1.1em;
-    color: #4CAF50;
-}
-
 @keyframes pulse {
     0% { opacity: 1; }
     50% { opacity: 0.7; }
@@ -310,6 +284,21 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 .admin-loading {
     animation: pulse 1.5s infinite;
+}
+
+.etapa-destaque {
+    background: #1a3d1a;
+    border: 2px solid #d4a121;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.etapa-destaque h3 {
+    color: #d4a121;
+    font-family: 'Anton';
+    font-size: 1.5em;
 }
 
 @media(max-width:768px){
@@ -552,7 +541,7 @@ const firebaseConfig = {
 
 const LIMITE_VAGAS = 20;
 
-// Datas das etapas - CORRIGIDO: 3ª etapa é a primeira
+// Datas das etapas - 3ª etapa é a primeira e atual
 const ETAPAS = [
     { numero: 3, data: new Date('2026-03-26'), abertura: new Date('2026-03-23T07:00:00') },
     { numero: 4, data: new Date('2026-04-30'), abertura: new Date('2026-04-27T07:00:00') },
@@ -573,15 +562,11 @@ let listaEspera = [];
 let modoAdmin = false;
 let timerInterval;
 
-// Configuração atual - FORÇANDO a 3ª etapa como inicial
-let etapaAtual = ETAPAS[0]; // Índice 0 = 3ª etapa
-let DATA_ABERTURA = etapaAtual.abertura.getTime();
-let DATA_EVENTO = etapaAtual.data;
-let NUMERO_ETAPA = etapaAtual.numero;
+// FORÇANDO a 3ª etapa como a atual - IGNORANDO o Firebase inicialmente
+let NUMERO_ETAPA = 3;
+let DATA_EVENTO = new Date('2026-03-26');
+let DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
 let INSCRICOES_ABERTAS = false;
-
-// Lista de jogadores
-let jogadores = ["Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego","Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Kastelo","Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon","Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso","Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"];
 
 // Função para atualizar o cronômetro
 function atualizarCronometro() {
@@ -634,6 +619,7 @@ function verificarAberturaAutomatica() {
 // Função para carregar dados da etapa atual
 async function carregarDadosEtapa() {
     try {
+        console.log(`Carregando dados da ${NUMERO_ETAPA}ª etapa...`);
         const snapshotConfirmados = await get(ref(db, `etapas/${NUMERO_ETAPA}/confirmados`));
         const snapshotEspera = await get(ref(db, `etapas/${NUMERO_ETAPA}/listaEspera`));
         
@@ -706,53 +692,6 @@ function atualizarStatusInscricoes() {
     }
 }
 
-try {
-  const app = initializeApp(firebaseConfig);
-  db = getDatabase(app);
-  statusIndicator.textContent = '✅ Conectado';
-  statusIndicator.classList.add('connected');
-  
-  // Carregar configurações do Firebase
-  onValue(ref(db, 'configuracoes'), (snapshot) => {
-      if (snapshot.exists()) {
-          const config = snapshot.val();
-          NUMERO_ETAPA = config.numeroEtapa || NUMERO_ETAPA;
-          INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
-          
-          // Encontrar a etapa correspondente
-          const etapaEncontrada = ETAPAS.find(e => e.numero === NUMERO_ETAPA);
-          if (etapaEncontrada) {
-              DATA_EVENTO = etapaEncontrada.data;
-              DATA_ABERTURA = etapaEncontrada.abertura.getTime();
-          }
-          
-          // Atualizar UI
-          document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
-          document.getElementById('timerHeader').innerHTML = `Abertura das inscrições para a ${NUMERO_ETAPA}ª Etapa`;
-          
-          // Verificar abertura automática
-          verificarAberturaAutomatica();
-          
-          // Carregar dados da etapa
-          carregarDadosEtapa();
-      } else {
-          // Salvar configuração inicial (3ª etapa)
-          salvarConfiguracoes();
-          carregarDadosEtapa();
-      }
-  });
-
-  // Carregar lista de jogadores do Firebase
-  carregarJogadoresDoFirebase();
-  
-  // Verificar abertura automática a cada minuto
-  setInterval(verificarAberturaAutomatica, 60000);
-  
-} catch (e) {
-  statusIndicator.textContent = '❌ Erro de conexão';
-  statusIndicator.classList.add('error');
-}
-
 // Função para carregar jogadores do Firebase
 async function carregarJogadoresDoFirebase() {
     try {
@@ -760,7 +699,6 @@ async function carregarJogadoresDoFirebase() {
         if (snapshot.exists()) {
             jogadores = snapshot.val();
         }
-        // Atualizar os selects após carregar
         atualizarSelectJogadores();
         atualizarSelectRemoverJogadores();
         if (modoAdmin) atualizarContadoresAdmin();
@@ -836,9 +774,46 @@ function atualizarContadoresAdmin() {
     document.getElementById('totalInscritosCount').textContent = confirmados.length + listaEspera.length;
 }
 
-// Inicializar
+// INICIALIZAÇÃO - FORÇANDO A 3ª ETAPA
+console.log('Inicializando com a 3ª etapa');
+document.getElementById('etapaInfo').innerHTML = `📅 3ª Etapa - 26/03/2026`;
+document.getElementById('timerHeader').innerHTML = `Abertura das inscrições para a 3ª Etapa`;
+document.getElementById('adminEtapaAtual').innerHTML = `3ª Etapa - 26/03/2026`;
+document.getElementById('adminAberturaAtual').innerHTML = `23/03/2026 07:00`;
+
 atualizarSelectJogadores();
 atualizarSelectRemoverJogadores();
+
+try {
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+  statusIndicator.textContent = '✅ Conectado';
+  statusIndicator.classList.add('connected');
+  
+  // Carregar dados da 3ª etapa
+  carregarDadosEtapa();
+  
+  // Carregar configurações do Firebase (mas NÃO alterar a etapa atual)
+  onValue(ref(db, 'configuracoes'), (snapshot) => {
+      if (snapshot.exists()) {
+          const config = snapshot.val();
+          // Só atualiza o status de inscrições, NÃO o número da etapa
+          INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
+          console.log('Configurações carregadas:', config);
+          atualizarStatusInscricoes();
+      }
+  });
+
+  // Carregar lista de jogadores do Firebase
+  carregarJogadoresDoFirebase();
+  
+  // Verificar abertura automática a cada minuto
+  setInterval(verificarAberturaAutomatica, 60000);
+  
+} catch (e) {
+  statusIndicator.textContent = '❌ Erro de conexão';
+  statusIndicator.classList.add('error');
+}
 
 btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
 window.addEventListener('load', () => modalBemVindo.classList.add('active'));
@@ -1065,8 +1040,6 @@ document.getElementById('btnAcessarAdmin').onclick = () => {
         
         // Atualizar status
         document.getElementById('adminStatusAtual').textContent = INSCRICOES_ABERTAS ? 'Abertas' : 'Fechadas';
-        document.getElementById('adminEtapaAtual').textContent = `${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
-        document.getElementById('adminAberturaAtual').textContent = `${new Date(DATA_ABERTURA).toLocaleDateString('pt-BR')} 07:00`;
         
         atualizar();
     } else {
@@ -1149,7 +1122,7 @@ document.getElementById('btnEncerrarInscricoes').onclick = async () => {
     try {
         INSCRICOES_ABERTAS = false;
         
-        // Salvar configurações (mantém a etapa atual para consulta)
+        // Salvar configurações
         await salvarConfiguracoes();
         
         atualizarStatusInscricoes();
