@@ -426,6 +426,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     border-radius: 8px;
     padding: 10px;
     margin-bottom: 15px;
+    background: #1f1212;
 }
 
 .jogador-item-admin {
@@ -445,6 +446,29 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     height: 30px;
     border-radius: 50%;
     border: 1px solid #d4a121;
+    object-fit: cover;
+}
+
+.etapas-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.etapa-tag {
+    background: #1a3d1a;
+    border: 1px solid #d4a121;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+.etapa-tag.active {
+    background: #d4a121;
+    color: #000;
+    font-weight: bold;
 }
 
 @media(max-width:768px){
@@ -501,6 +525,23 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
             </div>
             
             <div class="form-group">
+                <label>Próximas Etapas</label>
+                <div class="etapas-list" id="etapasList">
+                    <div class="etapa-tag active">3ª Etapa: 26/03</div>
+                    <div class="etapa-tag">4ª Etapa: 30/04</div>
+                    <div class="etapa-tag">5ª Etapa: 28/05</div>
+                    <div class="etapa-tag">6ª Etapa: 25/06</div>
+                    <div class="etapa-tag">7ª Etapa: 30/07</div>
+                    <div class="etapa-tag">8ª Etapa: 27/08</div>
+                    <div class="etapa-tag">9ª Etapa: 24/09</div>
+                    <div class="etapa-tag">10ª Etapa: 08/10</div>
+                    <div class="etapa-tag">11ª Etapa: 29/10</div>
+                    <div class="etapa-tag">12ª Etapa: 26/11</div>
+                    <div class="etapa-tag">13ª Etapa: 10/12</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
                 <label>Selecionar Próxima Etapa</label>
                 <select id="adminProximaEtapa" class="admin-select">
                     <option value="">Selecione...</option>
@@ -521,7 +562,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
             
             <h4 style="color: #d4a121; margin: 10px 0;">Lista de Jogadores</h4>
             <div class="jogadores-lista-admin" id="jogadoresListaAdmin">
-                Carregando jogadores...
+                <div class="jogador-item-admin">
+                    <span>Carregando jogadores...</span>
+                </div>
             </div>
             
             <h4 style="color: #d4a121; margin: 10px 0;">Adicionar Jogador</h4>
@@ -741,7 +784,7 @@ let DATA_EVENTO = new Date('2026-03-26');
 let DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
 let INSCRICOES_ABERTAS = false;
 
-// Lista de jogadores com fotos
+// Lista de jogadores com fotos (valores padrão)
 let jogadores = [
     { nome: "Amarildo", avatar: "" },
     { nome: "Boy", avatar: "" },
@@ -916,18 +959,22 @@ async function carregarJogadoresDoFirebase() {
         if (snapshot.exists()) {
             jogadores = snapshot.val();
         }
-        atualizarSelectJogadores();
-        atualizarSelectRemoverJogadores();
-        atualizarCustomSelect();
-        atualizarListaJogadoresAdmin();
+        // Mesmo se não existir no Firebase, usamos a lista padrão
+        atualizarTodasListasJogadores();
         if (modoAdmin) atualizarContadoresAdmin();
     } catch (e) {
         console.error('Erro ao carregar jogadores:', e);
-        atualizarSelectJogadores();
-        atualizarSelectRemoverJogadores();
-        atualizarCustomSelect();
-        atualizarListaJogadoresAdmin();
+        // Em caso de erro, usamos a lista padrão
+        atualizarTodasListasJogadores();
     }
+}
+
+// Função para atualizar todas as listas de jogadores
+function atualizarTodasListasJogadores() {
+    atualizarSelectJogadores();
+    atualizarSelectRemoverJogadores();
+    atualizarCustomSelect();
+    atualizarListaJogadoresAdmin();
 }
 
 // Função para salvar jogadores no Firebase
@@ -968,6 +1015,11 @@ function atualizarCustomSelect() {
     
     dropdown.innerHTML = '';
     
+    if (jogadores.length === 0) {
+        dropdown.innerHTML = '<div class="custom-select-option">Nenhum jogador disponível</div>';
+        return;
+    }
+    
     jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(j => {
         const option = document.createElement('div');
         option.className = 'custom-select-option';
@@ -997,7 +1049,7 @@ function atualizarListaJogadoresAdmin() {
     if (!listaDiv) return;
     
     if (jogadores.length === 0) {
-        listaDiv.innerHTML = '<p style="color: #fff; text-align: center;">Nenhum jogador cadastrado</p>';
+        listaDiv.innerHTML = '<div class="jogador-item-admin">Nenhum jogador cadastrado</div>';
         return;
     }
     
@@ -1077,6 +1129,8 @@ function atualizarContadoresAdmin() {
 console.log('Inicializando com a 3ª etapa');
 document.getElementById('etapaInfo').innerHTML = `📅 3ª Etapa - 26/03/2026`;
 document.getElementById('timerHeader').innerHTML = `Abertura das inscrições para a 3ª Etapa`;
+document.getElementById('adminEtapaAtual').innerHTML = `3ª Etapa - 26/03/2026`;
+document.getElementById('adminAberturaAtual').innerHTML = `23/03/2026 07:00`;
 
 // Event listeners para o custom select
 document.getElementById('customSelect').onclick = () => {
@@ -1107,6 +1161,9 @@ document.getElementById('avatarUpload').onchange = async (e) => {
     reader.readAsDataURL(file);
 };
 
+// Inicializar listas de jogadores imediatamente (antes do Firebase)
+atualizarTodasListasJogadores();
+
 try {
   const app = initializeApp(firebaseConfig);
   db = getDatabase(app);
@@ -1122,6 +1179,9 @@ try {
           INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
           console.log('Configurações carregadas:', config);
           atualizarStatusInscricoes();
+      } else {
+          // Salvar configuração inicial
+          salvarConfiguracoes();
       }
   });
 
@@ -1132,6 +1192,8 @@ try {
 } catch (e) {
   statusIndicator.textContent = '❌ Erro de conexão';
   statusIndicator.classList.add('error');
+  // Mesmo com erro, manter as listas de jogadores visíveis
+  atualizarTodasListasJogadores();
 }
 
 btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
@@ -1409,6 +1471,8 @@ document.getElementById('btnAbrirInscricoes').onclick = async () => {
         
         document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
         document.getElementById('timerHeader').innerHTML = `Abertura das inscrições para a ${NUMERO_ETAPA}ª Etapa`;
+        document.getElementById('adminEtapaAtual').innerHTML = `${NUMERO_ETAPA}ª Etapa - ${DATA_EVENTO.toLocaleDateString('pt-BR')}`;
+        document.getElementById('adminAberturaAtual').innerHTML = `${etapaSelecionada.abertura.toLocaleDateString('pt-BR')} 07:00`;
         
         atualizarStatusInscricoes();
         await carregarDadosEtapa();
@@ -1478,7 +1542,7 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
     let avatarUrl = '';
     
     // Se tiver foto temporária, fazer upload
-    if (fotoTemp) {
+    if (fotoTemp && storage) {
         try {
             // Converter base64 para blob
             const response = await fetch(fotoTemp);
@@ -1502,10 +1566,7 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
     
     await salvarJogadoresNoFirebase();
     
-    atualizarSelectJogadores();
-    atualizarSelectRemoverJogadores();
-    atualizarCustomSelect();
-    atualizarListaJogadoresAdmin();
+    atualizarTodasListasJogadores();
     
     document.getElementById('novoJogadorNome').value = '';
     document.getElementById('avatarPreview').src = 'https://via.placeholder.com/60/1a3d1a/d4a121?text=?';
@@ -1537,10 +1598,7 @@ document.getElementById('btnRemoverJogador').onclick = async function() {
         jogadores = jogadores.filter(j => j.nome !== jogadorRemover);
         await salvarJogadoresNoFirebase();
         
-        atualizarSelectJogadores();
-        atualizarSelectRemoverJogadores();
-        atualizarCustomSelect();
-        atualizarListaJogadoresAdmin();
+        atualizarTodasListasJogadores();
         
         select.value = '';
         
