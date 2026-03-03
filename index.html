@@ -282,28 +282,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     100% { opacity: 1; }
 }
 
-.etapas-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.etapa-card {
-    background: #1a3d1a;
-    border: 1px solid #d4a121;
-    border-radius: 8px;
-    padding: 8px;
-    text-align: center;
-    font-size: 0.9em;
-}
-
-.etapa-card.active {
-    background: #d4a121;
-    color: #000;
-    font-weight: bold;
-}
-
 /* ESTILOS PARA AVATARES */
 .avatar-upload {
     display: flex;
@@ -338,6 +316,29 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     background: #45a049;
 }
 
+.url-upload {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.url-input {
+    flex: 1;
+    background: #1f1212;
+    border: 1px solid #8b0000;
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.url-preview {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #d4a121;
+    object-fit: cover;
+}
+
 .jogador-com-avatar {
     display: flex;
     align-items: center;
@@ -359,10 +360,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .jogador-nome {
     flex: 1;
     color: #fff;
-}
-
-.jogador-sem-foto {
-    opacity: 0.7;
 }
 
 .foto-existente {
@@ -419,7 +416,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
         <div class="admin-card">
             <h3><i>🔓</i> Controle de Inscrições</h3>
             <div class="admin-status">
-                <p><span class="label">Status atual:</span> <span class="value" id="adminStatusAtual">Carregando...</span></p>
+                <p><span class="label">Status atual:</span> <span class="value" id="adminStatusAtual">Fechadas</span></p>
                 <p><span class="label">Etapa atual:</span> <span class="value" id="adminEtapaAtual">3ª Etapa - 26/03/2026</span></p>
                 <p><span class="label">Abertura:</span> <span class="value" id="adminAberturaAtual">23/03/2026 07:00</span></p>
             </div>
@@ -446,10 +443,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
             <h4 style="color: #d4a121; margin: 10px 0;">Adicionar Novo Jogador</h4>
             <input type="text" id="novoJogadorNome" placeholder="Nome do jogador" class="admin-input">
             
-            <div class="avatar-upload">
-                <img id="novoAvatarPreview" class="avatar-preview" src="https://via.placeholder.com/60/1a3d1a/d4a121?text=?" alt="Preview">
-                <input type="file" id="novoAvatarUpload" accept="image/*" style="display: none;">
-                <button class="avatar-upload-btn" id="btnNovoUploadAvatar">📸 Escolher Foto</button>
+            <div class="url-upload">
+                <input type="text" id="novoJogadorUrl" placeholder="URL da foto (opcional)" class="url-input">
+                <img id="novoUrlPreview" class="url-preview" src="https://via.placeholder.com/50/1a3d1a/d4a121?text=?" alt="Preview">
             </div>
             
             <button class="admin-btn primary" id="btnAdicionarJogador" style="background: #4CAF50;">
@@ -467,10 +463,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
                 </select>
             </div>
             
-            <div class="avatar-upload">
-                <img id="existenteAvatarPreview" class="avatar-preview" src="https://via.placeholder.com/60/1a3d1a/d4a121?text=?" alt="Preview">
-                <input type="file" id="existenteAvatarUpload" accept="image/*" style="display: none;">
-                <button class="avatar-upload-btn" id="btnExistenteUploadAvatar">📸 Escolher Foto</button>
+            <div class="url-upload">
+                <input type="text" id="existenteJogadorUrl" placeholder="URL da foto" class="url-input">
+                <img id="existenteUrlPreview" class="url-preview" src="https://via.placeholder.com/50/1a3d1a/d4a121?text=?" alt="Preview">
             </div>
             
             <button class="admin-btn warning" id="btnAdicionarFotoExistente" style="background: #ff9800;">
@@ -525,12 +520,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <ul id="waitlistList" class="player-list">
 <li class="loading">Carregando dados...</li>
 </ul>
-</div>
-
-<!-- Etapas -->
-<div class="section">
-<h3>📅 Calendário de Etapas 2026</h3>
-<div class="etapas-grid" id="etapasGrid"></div>
 </div>
 
 </div>
@@ -614,7 +603,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getDatabase, ref, set, onValue, remove, push, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
@@ -644,38 +632,18 @@ const ETAPAS = [
 ];
 
 let db;
-let storage;
 let confirmados = [];
 let listaEspera = [];
 let modoAdmin = false;
 let timerInterval;
-let novaFotoTemp = null;
-let existenteFotoTemp = null;
 
-// Configuração atual - 3ª etapa
-let NUMERO_ETAPA = 3;
-let DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
+// Configuração atual - 3ª etapa fixa
+const NUMERO_ETAPA = 3;
+const DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
 let INSCRICOES_ABERTAS = false;
 
 // Lista de jogadores com fotos
 let jogadores = [];
-
-// Mostrar etapas
-function mostrarEtapas() {
-    const grid = document.getElementById('etapasGrid');
-    grid.innerHTML = '';
-    
-    ETAPAS.forEach(etapa => {
-        const card = document.createElement('div');
-        card.className = `etapa-card ${etapa.numero === NUMERO_ETAPA ? 'active' : ''}`;
-        card.innerHTML = `
-            <strong>${etapa.numero}ª Etapa</strong><br>
-            ${etapa.data}<br>
-            <small>Abre: ${etapa.abertura}</small>
-        `;
-        grid.appendChild(card);
-    });
-}
 
 // Função para carregar jogadores do Firebase
 async function carregarJogadores() {
@@ -713,34 +681,46 @@ async function salvarJogadores() {
 function atualizarTodosSelects() {
     // Select principal
     const selectPrincipal = document.getElementById('playerName');
-    selectPrincipal.innerHTML = '<option value="">Selecione seu nome...</option>';
+    if (selectPrincipal) {
+        selectPrincipal.innerHTML = '<option value="">Selecione seu nome...</option>';
+    }
     
     // Select para adicionar foto
     const selectFoto = document.getElementById('jogadorFotoSelect');
-    selectFoto.innerHTML = '<option value="">Selecione um jogador...</option>';
+    if (selectFoto) {
+        selectFoto.innerHTML = '<option value="">Selecione um jogador...</option>';
+    }
     
     // Select para remover
     const selectRemover = document.getElementById('removerJogadorSelect');
-    selectRemover.innerHTML = '<option value="">Selecione um jogador...</option>';
+    if (selectRemover) {
+        selectRemover.innerHTML = '<option value="">Selecione um jogador...</option>';
+    }
     
     jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(j => {
         // Select principal
-        const option1 = document.createElement('option');
-        option1.value = j.nome;
-        option1.textContent = j.nome + (j.avatar ? ' 📸' : '');
-        selectPrincipal.appendChild(option1);
+        if (selectPrincipal) {
+            const option1 = document.createElement('option');
+            option1.value = j.nome;
+            option1.textContent = j.nome + (j.avatar ? ' 📸' : '');
+            selectPrincipal.appendChild(option1);
+        }
         
         // Select foto
-        const option2 = document.createElement('option');
-        option2.value = j.nome;
-        option2.textContent = j.nome + (j.avatar ? ' (já tem foto)' : ' (sem foto)');
-        selectFoto.appendChild(option2);
+        if (selectFoto) {
+            const option2 = document.createElement('option');
+            option2.value = j.nome;
+            option2.textContent = j.nome + (j.avatar ? ' (já tem foto)' : ' (sem foto)');
+            selectFoto.appendChild(option2);
+        }
         
         // Select remover
-        const option3 = document.createElement('option');
-        option3.value = j.nome;
-        option3.textContent = j.nome;
-        selectRemover.appendChild(option3);
+        if (selectRemover) {
+            const option3 = document.createElement('option');
+            option3.value = j.nome;
+            option3.textContent = j.nome;
+            selectRemover.appendChild(option3);
+        }
     });
 }
 
@@ -798,7 +778,7 @@ function atualizarStatusInscricoes() {
         badge.className = 'status-badge aberta';
         badge.textContent = '✅ INSCRIÇÕES ABERTAS';
         message.innerHTML = `As inscrições para a ${NUMERO_ETAPA}ª Etapa estão abertas!`;
-        dataInfo.innerHTML = `Etapa: ${ETAPAS[NUMERO_ETAPA-3].data}`;
+        dataInfo.innerHTML = `Etapa: ${ETAPAS[0].data}`;
         
         btnConfirmar.disabled = false;
         btnConfirmar.textContent = '➕ CONFIRMAR PRESENÇA';
@@ -812,7 +792,7 @@ function atualizarStatusInscricoes() {
         badge.className = 'status-badge fechada';
         badge.textContent = '🔒 INSCRIÇÕES FECHADAS';
         message.innerHTML = `As inscrições para a ${NUMERO_ETAPA}ª Etapa abrirão automaticamente:`;
-        dataInfo.innerHTML = `${ETAPAS[NUMERO_ETAPA-3].abertura}`;
+        dataInfo.innerHTML = `${ETAPAS[0].abertura}`;
         
         btnConfirmar.disabled = true;
         btnConfirmar.textContent = '🔒 INSCRIÇÕES FECHADAS';
@@ -826,23 +806,27 @@ function atualizarStatusInscricoes() {
 }
 
 // Inicialização
-mostrarEtapas();
-
 try {
   const app = initializeApp(firebaseConfig);
   db = getDatabase(app);
-  storage = getStorage(app);
   statusIndicator.textContent = '✅ Conectado';
   statusIndicator.classList.add('connected');
   
   carregarJogadores();
   carregarDadosEtapa();
   
+  // Carregar configurações
   onValue(ref(db, 'configuracoes'), (snapshot) => {
       if (snapshot.exists()) {
           const config = snapshot.val();
           INSCRICOES_ABERTAS = config.inscricoesAbertas || false;
           atualizarStatusInscricoes();
+      } else {
+          // Configuração inicial - inscrições fechadas
+          set(ref(db, 'configuracoes'), {
+              numeroEtapa: NUMERO_ETAPA,
+              inscricoesAbertas: false
+          });
       }
   });
   
@@ -857,7 +841,7 @@ window.addEventListener('load', () => modalBemVindo.classList.add('active'));
 
 btnConfirmar.onclick = () => {
     if (!INSCRICOES_ABERTAS && !modoAdmin) {
-        return alert(`As inscrições ainda não abriram!`);
+        return alert(`As inscrições ainda não abriram! Abertura em ${ETAPAS[0].abertura}`);
     }
     modal.classList.add('active');
 };
@@ -1035,43 +1019,29 @@ document.getElementById('btnSairAdmin').onclick = () => {
     atualizar();
 };
 
-// Upload de foto para novo jogador
-document.getElementById('btnNovoUploadAvatar').onclick = () => {
-    document.getElementById('novoAvatarUpload').click();
-};
+// Preview de URL
+document.getElementById('novoJogadorUrl').addEventListener('input', (e) => {
+    const url = e.target.value;
+    if (url) {
+        document.getElementById('novoUrlPreview').src = url;
+    } else {
+        document.getElementById('novoUrlPreview').src = 'https://via.placeholder.com/50/1a3d1a/d4a121?text=?';
+    }
+});
 
-document.getElementById('novoAvatarUpload').onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        document.getElementById('novoAvatarPreview').src = e.target.result;
-        novaFotoTemp = e.target.result;
-    };
-    reader.readAsDataURL(file);
-};
+document.getElementById('existenteJogadorUrl').addEventListener('input', (e) => {
+    const url = e.target.value;
+    if (url) {
+        document.getElementById('existenteUrlPreview').src = url;
+    } else {
+        document.getElementById('existenteUrlPreview').src = 'https://via.placeholder.com/50/1a3d1a/d4a121?text=?';
+    }
+});
 
-// Upload de foto para jogador existente
-document.getElementById('btnExistenteUploadAvatar').onclick = () => {
-    document.getElementById('existenteAvatarUpload').click();
-};
-
-document.getElementById('existenteAvatarUpload').onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        document.getElementById('existenteAvatarPreview').src = e.target.result;
-        existenteFotoTemp = e.target.result;
-    };
-    reader.readAsDataURL(file);
-};
-
-// Adicionar novo jogador com foto
+// Adicionar novo jogador com URL da foto
 document.getElementById('btnAdicionarJogador').onclick = async function() {
     const novoJogador = document.getElementById('novoJogadorNome').value.trim();
+    const fotoUrl = document.getElementById('novoJogadorUrl').value.trim();
     
     if (!novoJogador) {
         alert('❌ Digite o nome!');
@@ -1083,28 +1053,18 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
         return;
     }
     
-    let avatarUrl = '';
+    jogadores.push({ 
+        nome: novoJogador, 
+        avatar: fotoUrl || '' 
+    });
     
-    if (novaFotoTemp && storage) {
-        try {
-            const response = await fetch(novaFotoTemp);
-            const blob = await response.blob();
-            const avatarRef = storageRef(storage, `avatares/${novoJogador}_${Date.now()}.jpg`);
-            await uploadBytes(avatarRef, blob);
-            avatarUrl = await getDownloadURL(avatarRef);
-        } catch (e) {
-            console.error('Erro ao fazer upload:', e);
-        }
-    }
-    
-    jogadores.push({ nome: novoJogador, avatar: avatarUrl });
     await salvarJogadores();
     
     atualizarTodosSelects();
     
     document.getElementById('novoJogadorNome').value = '';
-    document.getElementById('novoAvatarPreview').src = 'https://via.placeholder.com/60/1a3d1a/d4a121?text=?';
-    novaFotoTemp = null;
+    document.getElementById('novoJogadorUrl').value = '';
+    document.getElementById('novoUrlPreview').src = 'https://via.placeholder.com/50/1a3d1a/d4a121?text=?';
     
     document.getElementById('successMessage').style.display = 'block';
     document.getElementById('successMessage').innerHTML = `✅ Jogador "${novoJogador}" adicionado!`;
@@ -1113,56 +1073,40 @@ document.getElementById('btnAdicionarJogador').onclick = async function() {
     }, 3000);
 };
 
-// Adicionar foto a jogador existente
+// Adicionar foto a jogador existente via URL
 document.getElementById('btnAdicionarFotoExistente').onclick = async function() {
     const select = document.getElementById('jogadorFotoSelect');
     const jogadorNome = select.value;
+    const fotoUrl = document.getElementById('existenteJogadorUrl').value.trim();
     
     if (!jogadorNome) {
         alert('❌ Selecione um jogador!');
         return;
     }
     
-    if (!existenteFotoTemp) {
-        alert('❌ Selecione uma foto!');
+    if (!fotoUrl) {
+        alert('❌ Digite a URL da foto!');
         return;
     }
     
-    if (!storage) {
-        alert('❌ Erro no storage!');
-        return;
+    // Atualizar jogador
+    const index = jogadores.findIndex(j => j.nome === jogadorNome);
+    if (index !== -1) {
+        jogadores[index].avatar = fotoUrl;
+        await salvarJogadores();
+        atualizarTodosSelects();
     }
     
-    try {
-        // Upload da foto
-        const response = await fetch(existenteFotoTemp);
-        const blob = await response.blob();
-        const avatarRef = storageRef(storage, `avatares/${jogadorNome}_${Date.now()}.jpg`);
-        await uploadBytes(avatarRef, blob);
-        const avatarUrl = await getDownloadURL(avatarRef);
-        
-        // Atualizar jogador
-        const index = jogadores.findIndex(j => j.nome === jogadorNome);
-        if (index !== -1) {
-            jogadores[index].avatar = avatarUrl;
-            await salvarJogadores();
-            atualizarTodosSelects();
-        }
-        
-        // Limpar
-        document.getElementById('existenteAvatarPreview').src = 'https://via.placeholder.com/60/1a3d1a/d4a121?text=?';
-        existenteFotoTemp = null;
-        select.value = '';
-        
-        document.getElementById('successMessage').style.display = 'block';
-        document.getElementById('successMessage').innerHTML = `✅ Foto adicionada para "${jogadorNome}"!`;
-        setTimeout(() => {
-            document.getElementById('successMessage').style.display = 'none';
-        }, 3000);
-        
-    } catch (e) {
-        alert('Erro ao adicionar foto: ' + e.message);
-    }
+    // Limpar
+    document.getElementById('existenteJogadorUrl').value = '';
+    document.getElementById('existenteUrlPreview').src = 'https://via.placeholder.com/50/1a3d1a/d4a121?text=?';
+    select.value = '';
+    
+    document.getElementById('successMessage').style.display = 'block';
+    document.getElementById('successMessage').innerHTML = `✅ Foto adicionada para "${jogadorNome}"!`;
+    setTimeout(() => {
+        document.getElementById('successMessage').style.display = 'none';
+    }, 3000);
 };
 
 // Remover jogador
@@ -1190,39 +1134,20 @@ document.getElementById('btnRemoverJogador').onclick = async function() {
     }, 3000);
 };
 
-// Abrir inscrições
+// Abrir inscrições (agora apenas controla o status, não muda a etapa)
 document.getElementById('btnAbrirInscricoes').onclick = async () => {
-    const select = document.getElementById('adminProximaEtapa');
-    const proximaEtapaNum = parseInt(select.value);
-    
-    if (!proximaEtapaNum) {
-        alert('❌ Selecione a próxima etapa!');
-        return;
-    }
-    
-    const etapaSelecionada = ETAPAS.find(e => e.numero === proximaEtapaNum);
-    
-    if (!confirm(`Abrir inscrições para a ${etapaSelecionada.numero}ª Etapa?`)) return;
+    if (!confirm(`Abrir inscrições para a 3ª Etapa?`)) return;
     
     try {
-        NUMERO_ETAPA = etapaSelecionada.numero;
-        DATA_ABERTURA = new Date(etapaSelecionada.abertura.replace(' ', 'T')).getTime();
         INSCRICOES_ABERTAS = true;
-        
-        await set(ref(db, `etapas/${NUMERO_ETAPA}/confirmados`), null);
-        await set(ref(db, `etapas/${NUMERO_ETAPA}/listaEspera`), null);
         await set(ref(db, 'configuracoes'), {
             numeroEtapa: NUMERO_ETAPA,
             inscricoesAbertas: true
         });
         
-        document.getElementById('etapaInfo').innerHTML = `📅 ${NUMERO_ETAPA}ª Etapa - ${etapaSelecionada.data}`;
-        document.getElementById('timerHeader').innerHTML = `Abertura das inscrições para a ${NUMERO_ETAPA}ª Etapa`;
-        mostrarEtapas();
         atualizarStatusInscricoes();
-        await carregarDadosEtapa();
         
-        alert(`✅ Inscrições abertas para a ${NUMERO_ETAPA}ª Etapa!`);
+        alert(`✅ Inscrições abertas para a 3ª Etapa!`);
     } catch (e) {
         alert('Erro: ' + e.message);
     }
@@ -1230,17 +1155,7 @@ document.getElementById('btnAbrirInscricoes').onclick = async () => {
 
 // Encerrar inscrições
 document.getElementById('btnEncerrarInscricoes').onclick = async () => {
-    const select = document.getElementById('adminProximaEtapa');
-    const proximaEtapaNum = parseInt(select.value);
-    
-    if (!proximaEtapaNum) {
-        alert('❌ Selecione a próxima etapa!');
-        return;
-    }
-    
-    const etapaSelecionada = ETAPAS.find(e => e.numero === proximaEtapaNum);
-    
-    if (!confirm(`Encerrar inscrições da ${NUMERO_ETAPA}ª Etapa?`)) return;
+    if (!confirm(`Encerrar inscrições da 3ª Etapa?`)) return;
     
     try {
         INSCRICOES_ABERTAS = false;
@@ -1249,7 +1164,7 @@ document.getElementById('btnEncerrarInscricoes').onclick = async () => {
             inscricoesAbertas: false
         });
         
-        alert(`✅ Inscrições encerradas. Próxima abertura: ${etapaSelecionada.abertura}`);
+        alert(`✅ Inscrições encerradas.`);
         atualizarStatusInscricoes();
     } catch (e) {
         alert('Erro: ' + e.message);
