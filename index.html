@@ -304,6 +304,73 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     font-weight: bold;
 }
 
+/* ESTILOS PARA AVATARES */
+.avatar-upload {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 10px;
+    background: #1f1212;
+    border-radius: 8px;
+}
+
+.avatar-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #d4a121;
+    object-fit: cover;
+}
+
+.avatar-upload-btn {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    flex: 1;
+}
+
+.avatar-upload-btn:hover {
+    background: #45a049;
+}
+
+.jogador-com-avatar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: #1f1212;
+    border-radius: 6px;
+    margin-bottom: 5px;
+}
+
+.jogador-avatar-mini {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #d4a121;
+    object-fit: cover;
+}
+
+.jogador-nome {
+    flex: 1;
+    color: #fff;
+}
+
+.jogador-sem-foto {
+    opacity: 0.7;
+}
+
+.foto-existente {
+    font-size: 0.8em;
+    color: #4CAF50;
+    margin-left: 5px;
+}
+
 @media(max-width:768px){
 .info-cards{grid-template-columns:1fr}
 .admin-grid{grid-template-columns:1fr}
@@ -376,10 +443,38 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
         <div class="admin-card">
             <h3><i>👥</i> Gerenciar Jogadores</h3>
             
-            <h4 style="color: #d4a121; margin: 10px 0;">Adicionar Jogador</h4>
+            <h4 style="color: #d4a121; margin: 10px 0;">Adicionar Novo Jogador</h4>
             <input type="text" id="novoJogadorNome" placeholder="Nome do jogador" class="admin-input">
+            
+            <div class="avatar-upload">
+                <img id="novoAvatarPreview" class="avatar-preview" src="https://via.placeholder.com/60/1a3d1a/d4a121?text=?" alt="Preview">
+                <input type="file" id="novoAvatarUpload" accept="image/*" style="display: none;">
+                <button class="avatar-upload-btn" id="btnNovoUploadAvatar">📸 Escolher Foto</button>
+            </div>
+            
             <button class="admin-btn primary" id="btnAdicionarJogador" style="background: #4CAF50;">
                 <span style="margin-right: 8px;">➕</span> ADICIONAR
+            </button>
+
+            <div class="admin-divider"></div>
+
+            <h4 style="color: #d4a121; margin: 10px 0;">Adicionar Foto a Jogador Existente</h4>
+            
+            <div class="form-group">
+                <label>Selecione o Jogador</label>
+                <select id="jogadorFotoSelect" class="admin-select">
+                    <option value="">Carregando jogadores...</option>
+                </select>
+            </div>
+            
+            <div class="avatar-upload">
+                <img id="existenteAvatarPreview" class="avatar-preview" src="https://via.placeholder.com/60/1a3d1a/d4a121?text=?" alt="Preview">
+                <input type="file" id="existenteAvatarUpload" accept="image/*" style="display: none;">
+                <button class="avatar-upload-btn" id="btnExistenteUploadAvatar">📸 Escolher Foto</button>
+            </div>
+            
+            <button class="admin-btn warning" id="btnAdicionarFotoExistente" style="background: #ff9800;">
+                <span style="margin-right: 8px;">📷</span> ADICIONAR FOTO
             </button>
 
             <div class="admin-divider"></div>
@@ -519,6 +614,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getDatabase, ref, set, onValue, remove, push, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD_XXjcjJYM73wLTTzpDgzKCOZnztcJhjE",
@@ -548,24 +644,21 @@ const ETAPAS = [
 ];
 
 let db;
+let storage;
 let confirmados = [];
 let listaEspera = [];
 let modoAdmin = false;
 let timerInterval;
+let novaFotoTemp = null;
+let existenteFotoTemp = null;
 
 // Configuração atual - 3ª etapa
 let NUMERO_ETAPA = 3;
 let DATA_ABERTURA = new Date('2026-03-23T07:00:00').getTime();
 let INSCRICOES_ABERTAS = false;
 
-// Lista de jogadores
-let jogadores = [
-    "Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego",
-    "Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Kastelo",
-    "Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon",
-    "Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso",
-    "Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"
-];
+// Lista de jogadores com fotos
+let jogadores = [];
 
 // Mostrar etapas
 function mostrarEtapas() {
@@ -584,6 +677,73 @@ function mostrarEtapas() {
     });
 }
 
+// Função para carregar jogadores do Firebase
+async function carregarJogadores() {
+    try {
+        const snapshot = await get(ref(db, 'jogadores'));
+        if (snapshot.exists()) {
+            jogadores = snapshot.val();
+        } else {
+            // Jogadores padrão se não existir no Firebase
+            jogadores = [
+                "Amarildo","Boy","Buiu","Caio","Charles","Cleversson","Davi","Gera","Diego",
+                "Dos Anjos","Eduardo","Fernando","Gregory","Gaspar","Guilherme","Guti","Kastelo",
+                "Izidio","Jean","Jean Rebuy","Junior","Leo","Loreto","Lucas","Matheus","Maykon",
+                "Neto","Nil","Peterson","Rafael","Ricardo Amarante","Ricardo Linhares","Ricardo Matoso",
+                "Robson","Sergio","Solano","Tigre","Van Van","Waltinho","Wesley"
+            ].map(nome => ({ nome, avatar: '' }));
+            await salvarJogadores();
+        }
+        atualizarTodosSelects();
+    } catch (e) {
+        console.error('Erro ao carregar jogadores:', e);
+    }
+}
+
+// Salvar jogadores
+async function salvarJogadores() {
+    try {
+        await set(ref(db, 'jogadores'), jogadores);
+    } catch (e) {
+        console.error('Erro ao salvar jogadores:', e);
+    }
+}
+
+// Atualizar todos os selects
+function atualizarTodosSelects() {
+    // Select principal
+    const selectPrincipal = document.getElementById('playerName');
+    selectPrincipal.innerHTML = '<option value="">Selecione seu nome...</option>';
+    
+    // Select para adicionar foto
+    const selectFoto = document.getElementById('jogadorFotoSelect');
+    selectFoto.innerHTML = '<option value="">Selecione um jogador...</option>';
+    
+    // Select para remover
+    const selectRemover = document.getElementById('removerJogadorSelect');
+    selectRemover.innerHTML = '<option value="">Selecione um jogador...</option>';
+    
+    jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(j => {
+        // Select principal
+        const option1 = document.createElement('option');
+        option1.value = j.nome;
+        option1.textContent = j.nome + (j.avatar ? ' 📸' : '');
+        selectPrincipal.appendChild(option1);
+        
+        // Select foto
+        const option2 = document.createElement('option');
+        option2.value = j.nome;
+        option2.textContent = j.nome + (j.avatar ? ' (já tem foto)' : ' (sem foto)');
+        selectFoto.appendChild(option2);
+        
+        // Select remover
+        const option3 = document.createElement('option');
+        option3.value = j.nome;
+        option3.textContent = j.nome;
+        selectRemover.appendChild(option3);
+    });
+}
+
 // Função para atualizar o cronômetro
 function atualizarCronometro() {
     const agora = new Date().getTime();
@@ -595,7 +755,6 @@ function atualizarCronometro() {
         const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
         const s = Math.floor((dist % (1000 * 60)) / 1000);
         document.getElementById("timer").innerHTML = `${d}d ${h}h ${m}m ${s}s`;
-        
         document.getElementById("dataAberturaInfo").innerHTML = 
             `Abertura: ${ETAPAS[0].abertura}`;
     }
@@ -666,43 +825,17 @@ function atualizarStatusInscricoes() {
     }
 }
 
-// Atualizar select de jogadores
-function atualizarSelectJogadores() {
-    const select = document.getElementById('playerName');
-    select.innerHTML = '<option value="">Selecione seu nome...</option>';
-    
-    jogadores.sort().forEach(j => {
-        const option = document.createElement('option');
-        option.value = j;
-        option.textContent = j;
-        select.appendChild(option);
-    });
-}
-
-// Atualizar select de remover
-function atualizarSelectRemover() {
-    const select = document.getElementById('removerJogadorSelect');
-    select.innerHTML = '<option value="">Selecione um jogador...</option>';
-    
-    jogadores.sort().forEach(j => {
-        const option = document.createElement('option');
-        option.value = j;
-        option.textContent = j;
-        select.appendChild(option);
-    });
-}
-
 // Inicialização
 mostrarEtapas();
-atualizarSelectJogadores();
-atualizarSelectRemover();
 
 try {
   const app = initializeApp(firebaseConfig);
   db = getDatabase(app);
+  storage = getStorage(app);
   statusIndicator.textContent = '✅ Conectado';
   statusIndicator.classList.add('connected');
   
+  carregarJogadores();
   carregarDadosEtapa();
   
   onValue(ref(db, 'configuracoes'), (snapshot) => {
@@ -902,6 +1035,161 @@ document.getElementById('btnSairAdmin').onclick = () => {
     atualizar();
 };
 
+// Upload de foto para novo jogador
+document.getElementById('btnNovoUploadAvatar').onclick = () => {
+    document.getElementById('novoAvatarUpload').click();
+};
+
+document.getElementById('novoAvatarUpload').onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById('novoAvatarPreview').src = e.target.result;
+        novaFotoTemp = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
+// Upload de foto para jogador existente
+document.getElementById('btnExistenteUploadAvatar').onclick = () => {
+    document.getElementById('existenteAvatarUpload').click();
+};
+
+document.getElementById('existenteAvatarUpload').onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById('existenteAvatarPreview').src = e.target.result;
+        existenteFotoTemp = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
+// Adicionar novo jogador com foto
+document.getElementById('btnAdicionarJogador').onclick = async function() {
+    const novoJogador = document.getElementById('novoJogadorNome').value.trim();
+    
+    if (!novoJogador) {
+        alert('❌ Digite o nome!');
+        return;
+    }
+    
+    if (jogadores.some(j => j.nome === novoJogador)) {
+        alert('❌ Jogador já existe!');
+        return;
+    }
+    
+    let avatarUrl = '';
+    
+    if (novaFotoTemp && storage) {
+        try {
+            const response = await fetch(novaFotoTemp);
+            const blob = await response.blob();
+            const avatarRef = storageRef(storage, `avatares/${novoJogador}_${Date.now()}.jpg`);
+            await uploadBytes(avatarRef, blob);
+            avatarUrl = await getDownloadURL(avatarRef);
+        } catch (e) {
+            console.error('Erro ao fazer upload:', e);
+        }
+    }
+    
+    jogadores.push({ nome: novoJogador, avatar: avatarUrl });
+    await salvarJogadores();
+    
+    atualizarTodosSelects();
+    
+    document.getElementById('novoJogadorNome').value = '';
+    document.getElementById('novoAvatarPreview').src = 'https://via.placeholder.com/60/1a3d1a/d4a121?text=?';
+    novaFotoTemp = null;
+    
+    document.getElementById('successMessage').style.display = 'block';
+    document.getElementById('successMessage').innerHTML = `✅ Jogador "${novoJogador}" adicionado!`;
+    setTimeout(() => {
+        document.getElementById('successMessage').style.display = 'none';
+    }, 3000);
+};
+
+// Adicionar foto a jogador existente
+document.getElementById('btnAdicionarFotoExistente').onclick = async function() {
+    const select = document.getElementById('jogadorFotoSelect');
+    const jogadorNome = select.value;
+    
+    if (!jogadorNome) {
+        alert('❌ Selecione um jogador!');
+        return;
+    }
+    
+    if (!existenteFotoTemp) {
+        alert('❌ Selecione uma foto!');
+        return;
+    }
+    
+    if (!storage) {
+        alert('❌ Erro no storage!');
+        return;
+    }
+    
+    try {
+        // Upload da foto
+        const response = await fetch(existenteFotoTemp);
+        const blob = await response.blob();
+        const avatarRef = storageRef(storage, `avatares/${jogadorNome}_${Date.now()}.jpg`);
+        await uploadBytes(avatarRef, blob);
+        const avatarUrl = await getDownloadURL(avatarRef);
+        
+        // Atualizar jogador
+        const index = jogadores.findIndex(j => j.nome === jogadorNome);
+        if (index !== -1) {
+            jogadores[index].avatar = avatarUrl;
+            await salvarJogadores();
+            atualizarTodosSelects();
+        }
+        
+        // Limpar
+        document.getElementById('existenteAvatarPreview').src = 'https://via.placeholder.com/60/1a3d1a/d4a121?text=?';
+        existenteFotoTemp = null;
+        select.value = '';
+        
+        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('successMessage').innerHTML = `✅ Foto adicionada para "${jogadorNome}"!`;
+        setTimeout(() => {
+            document.getElementById('successMessage').style.display = 'none';
+        }, 3000);
+        
+    } catch (e) {
+        alert('Erro ao adicionar foto: ' + e.message);
+    }
+};
+
+// Remover jogador
+document.getElementById('btnRemoverJogador').onclick = async function() {
+    const select = document.getElementById('removerJogadorSelect');
+    const jogadorRemover = select.value;
+    
+    if (!jogadorRemover) {
+        alert('❌ Selecione um jogador!');
+        return;
+    }
+    
+    if (!confirm(`Remover "${jogadorRemover}"?`)) return;
+    
+    jogadores = jogadores.filter(j => j.nome !== jogadorRemover);
+    await salvarJogadores();
+    
+    atualizarTodosSelects();
+    select.value = '';
+    
+    document.getElementById('successMessage').style.display = 'block';
+    document.getElementById('successMessage').innerHTML = `✅ Jogador removido!`;
+    setTimeout(() => {
+        document.getElementById('successMessage').style.display = 'none';
+    }, 3000);
+};
+
 // Abrir inscrições
 document.getElementById('btnAbrirInscricoes').onclick = async () => {
     const select = document.getElementById('adminProximaEtapa');
@@ -966,54 +1254,6 @@ document.getElementById('btnEncerrarInscricoes').onclick = async () => {
     } catch (e) {
         alert('Erro: ' + e.message);
     }
-};
-
-// Adicionar jogador
-document.getElementById('btnAdicionarJogador').onclick = async function() {
-    const novoJogador = document.getElementById('novoJogadorNome').value.trim();
-    
-    if (!novoJogador) {
-        alert('❌ Digite o nome!');
-        return;
-    }
-    
-    if (jogadores.includes(novoJogador)) {
-        alert('❌ Jogador já existe!');
-        return;
-    }
-    
-    jogadores.push(novoJogador);
-    jogadores.sort();
-    
-    await set(ref(db, 'jogadores'), jogadores);
-    
-    atualizarSelectJogadores();
-    atualizarSelectRemover();
-    
-    document.getElementById('novoJogadorNome').value = '';
-    alert(`✅ Jogador "${novoJogador}" adicionado!`);
-};
-
-// Remover jogador
-document.getElementById('btnRemoverJogador').onclick = async function() {
-    const select = document.getElementById('removerJogadorSelect');
-    const jogadorRemover = select.value;
-    
-    if (!jogadorRemover) {
-        alert('❌ Selecione um jogador!');
-        return;
-    }
-    
-    if (!confirm(`Remover "${jogadorRemover}"?`)) return;
-    
-    jogadores = jogadores.filter(j => j !== jogadorRemover);
-    await set(ref(db, 'jogadores'), jogadores);
-    
-    atualizarSelectJogadores();
-    atualizarSelectRemover();
-    select.value = '';
-    
-    alert(`✅ Jogador removido!`);
 };
 
 // Exportar
