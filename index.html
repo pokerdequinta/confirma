@@ -209,11 +209,11 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 <header>
 <h1>LISTA DE PRESENÇA POKER DE QUINTA</h1>
-<div class="subtitle" id="dataEvento">📅 4ª Etapa - 30/04/2026</div> <!-- CORRIGIDO: 30/04 -->
+<div class="subtitle" id="dataEvento">📅 4ª Etapa - 30/04/2026</div>
 </header>
 
 <div id="countdownContainer">
-    <span class="timer-header" id="timerHeader">As Inscrições abrem 27/04/2026 às 07:00</span> <!-- CORRIGIDO: 27/04 -->
+    <span class="timer-header" id="timerHeader">As Inscrições abrem 27/04/2026 às 07:00</span>
     <div id="timer">Calculando tempo...</div>
 </div>
 
@@ -365,16 +365,12 @@ const LIMITE_VAGAS = 20;
 // URL da foto padrão (avatar)
 const FOTO_PADRAO = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
 
-// DATAS CORRETAS DA 4ª ETAPA - FORÇADAS PARA CORRIGIR O FIREBASE
-const DATA_CORRETA_4_ETAPA = '2026-04-30';
-const DATA_ABERTURA_4_ETAPA = '2026-04-27';
-
 // Calendário oficial das etapas (baseado no http://pokerdequinta.github.io/calendario)
 const ETAPAS = [
     { numero: 1, data: '2026-01-29', descricao: '1ª Etapa' },
     { numero: 2, data: '2026-02-26', descricao: '2ª Etapa' },
     { numero: 3, data: '2026-03-26', descricao: '3ª Etapa' },
-    { numero: 4, data: DATA_CORRETA_4_ETAPA, descricao: '4ª Etapa' },
+    { numero: 4, data: '2026-04-30', descricao: '4ª Etapa' },
     { numero: 5, data: '2026-05-28', descricao: '5ª Etapa' },
     { numero: 6, data: '2026-06-25', descricao: '6ª Etapa' },
     { numero: 7, data: '2026-07-30', descricao: '7ª Etapa' },
@@ -416,11 +412,11 @@ function calcularDataAbertura(dataEtapa) {
     return dataAbertura;
 }
 
-// Configurações iniciais - FORÇANDO 4ª ETAPA COM DATAS CORRETAS
+// Configurações iniciais - 4ª ETAPA COM DATAS CORRETAS
 let config = {
     etapa: 4,
-    dataEvento: DATA_CORRETA_4_ETAPA,
-    dataAbertura: new Date(DATA_ABERTURA_4_ETAPA + 'T07:00:00').toISOString(),
+    dataEvento: '2026-04-30',
+    dataAbertura: new Date('2026-04-27T07:00:00.000Z').toISOString(),
     inscricoesAbertas: false
 };
 
@@ -458,6 +454,28 @@ const modalBemVindo = document.getElementById('modalBemVindo');
 const isGuest = document.getElementById('isGuest');
 const guestNameGroup = document.getElementById('guestNameGroup');
 const statusIndicator = document.getElementById('statusIndicator');
+
+// FUNÇÃO PARA FORÇAR A CORREÇÃO DAS DATAS DA 4ª ETAPA NO FIREBASE
+async function forcarCorrecaoDatasQuartaEtapa() {
+    if (config.etapa === 4) {
+        const configCorreta = {
+            etapa: 4,
+            dataEvento: '2026-04-30',
+            dataAbertura: new Date('2026-04-27T07:00:00.000Z').toISOString(),
+            inscricoesAbertas: config.inscricoesAbertas || false
+        };
+        
+        // Verifica se precisa corrigir
+        if (config.dataEvento !== '2026-04-30') {
+            console.log('🔧 Corrigindo datas da 4ª etapa...');
+            await set(ref(db, 'config'), configCorreta);
+            config = configCorreta;
+            DATA_ABERTURA = new Date(config.dataAbertura).getTime();
+            DATA_EVENTO = new Date(config.dataEvento);
+            atualizarInterfaceConfig();
+        }
+    }
+}
 
 // Função para obter dados da etapa atual
 function getEtapaAtual() {
@@ -526,47 +544,28 @@ function preencherSelectJogadores() {
     });
 }
 
-// FORÇA A CORREÇÃO DAS DATAS DA 4ª ETAPA NO FIREBASE
-async function forcarCorrecaoDatas() {
-    const configCorrigida = {
-        etapa: 4,
-        dataEvento: DATA_CORRETA_4_ETAPA,
-        dataAbertura: new Date(DATA_ABERTURA_4_ETAPA + 'T07:00:00').toISOString(),
-        inscricoesAbertas: config.inscricoesAbertas || false
-    };
-    
-    await set(ref(db, 'config'), configCorrigida);
-    config = configCorrigida;
-    DATA_ABERTURA = new Date(config.dataAbertura).getTime();
-    DATA_EVENTO = new Date(config.dataEvento);
-    console.log('✅ Datas corrigidas no Firebase:', config);
-}
-
 // Carregar configurações do Firebase
 async function carregarConfig() {
     try {
         const snapshot = await get(ref(db, 'config'));
         if (snapshot.exists()) {
-            const firebaseConfig = snapshot.val();
+            config = snapshot.val();
             
-            // FORÇA A CORREÇÃO - Se for etapa 4 ou se as datas estiverem erradas
-            if (firebaseConfig.etapa === 4 || firebaseConfig.dataEvento !== DATA_CORRETA_4_ETAPA) {
-                console.log('⚠️ Corrigindo datas da 4ª etapa no Firebase...');
-                await forcarCorrecaoDatas();
-            } else {
-                config = firebaseConfig;
-                DATA_ABERTURA = new Date(config.dataAbertura).getTime();
-                DATA_EVENTO = new Date(config.dataEvento);
+            // CORREÇÃO FORÇADA PARA A 4ª ETAPA
+            if (config.etapa === 4) {
+                if (config.dataEvento !== '2026-04-30') {
+                    await forcarCorrecaoDatasQuartaEtapa();
+                }
             }
         } else {
-            await forcarCorrecaoDatas();
+            await salvarConfig(config);
         }
         
+        DATA_ABERTURA = new Date(config.dataAbertura).getTime();
+        DATA_EVENTO = new Date(config.dataEvento);
         atualizarInterfaceConfig();
     } catch (e) {
         console.error('Erro ao carregar config:', e);
-        await forcarCorrecaoDatas();
-        atualizarInterfaceConfig();
     }
 }
 
@@ -586,8 +585,6 @@ async function salvarConfig(novaConfig) {
 // Atualizar interface com as configurações
 function atualizarInterfaceConfig() {
     const etapaAtual = getEtapaAtual();
-    
-    // FORÇA A DATA CORRETA NO HEADER
     const dataFormatada = DATA_EVENTO.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
     dataEventoEl.textContent = `📅 ${etapaAtual.descricao} - ${dataFormatada}`;
     
@@ -660,21 +657,17 @@ try {
     atualizar();
   });
   
-  onValue(ref(db, 'config'), async (snapshot) => {
+  onValue(ref(db, 'config'), (snapshot) => {
     if (snapshot.exists()) {
-      const firebaseConfig = snapshot.val();
+      config = snapshot.val();
       
-      // FORÇA A CORREÇÃO DAS DATAS DA 4ª ETAPA EM TEMPO REAL
-      if (firebaseConfig.etapa === 4) {
-        if (firebaseConfig.dataEvento !== DATA_CORRETA_4_ETAPA || 
-            !firebaseConfig.dataAbertura?.startsWith(DATA_ABERTURA_4_ETAPA)) {
+      // CORREÇÃO FORÇADA PARA A 4ª ETAPA EM TEMPO REAL
+      if (config.etapa === 4) {
+        if (config.dataEvento !== '2026-04-30') {
           console.log('⚠️ CORREÇÃO EM TEMPO REAL: Ajustando datas da 4ª etapa');
-          await forcarCorrecaoDatas();
-        } else {
-          config = firebaseConfig;
+          forcarCorrecaoDatasQuartaEtapa();
+          return;
         }
-      } else {
-        config = firebaseConfig;
       }
       
       DATA_ABERTURA = new Date(config.dataAbertura).getTime();
@@ -694,492 +687,438 @@ const selectJogador = document.getElementById('playerName');
 const photoPreview = document.getElementById('playerPhotoPreview');
 const previewImg = photoPreview.querySelector('img');
 
-if (selectJogador) {
-    selectJogador.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const foto = selectedOption.getAttribute('data-foto');
-        
-        if (foto && this.value) {
-            previewImg.src = foto;
-            photoPreview.style.display = 'block';
-        } else {
-            photoPreview.style.display = 'none';
-        }
-    });
-}
-
-const btnEntendi = document.getElementById('btnEntendi');
-if (btnEntendi) btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
-window.addEventListener('load', () => {
-    if (modalBemVindo) modalBemVindo.classList.add('active');
+selectJogador.addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const foto = selectedOption.getAttribute('data-foto');
+    
+    if (foto && this.value) {
+        previewImg.src = foto;
+        photoPreview.style.display = 'block';
+    } else {
+        photoPreview.style.display = 'none';
+    }
 });
 
-if (btnConfirmar) {
-    btnConfirmar.onclick = () => {
-        if (!config.inscricoesAbertas && !modoAdmin) {
-            return alert("As inscrições estão fechadas no momento!");
-        }
-        if (modal) modal.classList.add('active');
-    };
-}
+btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
+window.addEventListener('load', () => modalBemVindo.classList.add('active'));
 
-const btnCancelar = document.getElementById('btnCancelar');
-if (btnCancelar) {
-    btnCancelar.onclick = () => {
-        if (modal) modal.classList.remove('active');
-        if (selectJogador) selectJogador.value = '';
-        if (photoPreview) photoPreview.style.display = 'none';
-        if (isGuest) isGuest.checked = false;
-        if (guestNameGroup) guestNameGroup.style.display = 'none';
-        const guestNameInput = document.getElementById('guestName');
-        if (guestNameInput) guestNameInput.value = '';
-    };
-}
+btnConfirmar.onclick = () => {
+    if (!config.inscricoesAbertas && !modoAdmin) {
+        return alert("As inscrições estão fechadas no momento!");
+    }
+    modal.classList.add('active');
+};
 
-if (isGuest) {
-    isGuest.onchange = e => {
-        if (guestNameGroup) guestNameGroup.style.display = e.target.checked ? 'block' : 'none';
-    };
-}
+btnCancelar.onclick = () => {
+  modal.classList.remove('active');
+  selectJogador.value = '';
+  photoPreview.style.display = 'none';
+  isGuest.checked = false;
+  guestNameGroup.style.display = 'none';
+  document.getElementById('guestName').value = '';
+};
 
-const btnConfirmarModal = document.getElementById('btnConfirmarModal');
-if (btnConfirmarModal) {
-    btnConfirmarModal.onclick = async () => {
-        const nome = selectJogador ? selectJogador.value : '';
-        if (!nome) return alert('Selecione seu nome!');
-        
-        if (!isGuest.checked) {
-            const jaInscrito = [...confirmados, ...listaEspera].some(p => !p.isGuest && p.nome === nome);
-            if (jaInscrito) {
-                return alert('Você já está inscrito!');
-            }
-        }
-        
-        const agora = new Date().toISOString();
-        
-        try {
-            if (!isGuest.checked) {
-                const snapshot = await get(ref(db, 'confirmados'));
-                const totalAtual = snapshot.exists() ? snapshot.size : 0;
-                
-                if (totalAtual < LIMITE_VAGAS) {
-                    await push(ref(db, 'confirmados'), { 
-                        nome, 
-                        isGuest: false, 
-                        data: agora,
-                        timestamp: Date.now(),
-                        foto: getFotoJogador(nome),
-                        etapa: config.etapa
-                    });
-                    alert('✅ Presença confirmada! Você está na lista de confirmados.');
-                } else {
-                    await push(ref(db, 'listaEspera'), { 
-                        nome, 
-                        isGuest: false, 
-                        data: agora,
-                        timestamp: Date.now(),
-                        foto: getFotoJogador(nome),
-                        etapa: config.etapa
-                    });
-                    alert('⏳ Você foi adicionado à LISTA DE ESPERA.');
-                }
-            } else {
-                const gNome = document.getElementById('guestName').value.trim();
-                if (!gNome) return alert('Digite o nome do convidado!');
-                
-                await push(ref(db, 'listaEspera'), { 
-                    nome: gNome, 
-                    isGuest: true, 
-                    guestOf: nome, 
-                    data: agora,
-                    timestamp: Date.now(),
-                    etapa: config.etapa
-                });
-                alert('✅ Convidado adicionado à lista de espera!');
-            }
-            
-            if (modal) modal.classList.remove('active');
-            if (selectJogador) selectJogador.value = '';
-            if (photoPreview) photoPreview.style.display = 'none';
-            if (isGuest) isGuest.checked = false;
-            if (guestNameGroup) guestNameGroup.style.display = 'none';
-            const guestNameInput = document.getElementById('guestName');
-            if (guestNameInput) guestNameInput.value = '';
-            
-        } catch (e) { 
-            alert('Erro ao confirmar: ' + e.message); 
-        }
-    };
-}
+isGuest.onchange = e => guestNameGroup.style.display = e.target.checked ? 'block' : 'none';
 
-const btnCancelarWhatsApp = document.getElementById('btnCancelarWhatsApp');
-if (btnCancelarWhatsApp) {
-    btnCancelarWhatsApp.onclick = () => {
-        const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ');
-        window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
-    };
-}
+btnConfirmarModal.onclick = async () => {
+  const nome = selectJogador.value;
+  if (!nome) return alert('Selecione seu nome!');
+  
+  if (!isGuest.checked) {
+    const jaInscrito = [...confirmados, ...listaEspera].some(p => !p.isGuest && p.nome === nome);
+    if (jaInscrito) {
+      return alert('Você já está inscrito!');
+    }
+  }
+  
+  const agora = new Date().toISOString();
+  
+  try {
+    if (!isGuest.checked) {
+      const snapshot = await get(ref(db, 'confirmados'));
+      const totalAtual = snapshot.exists() ? snapshot.size : 0;
+      
+      if (totalAtual < LIMITE_VAGAS) {
+        await push(ref(db, 'confirmados'), { 
+          nome, 
+          isGuest: false, 
+          data: agora,
+          timestamp: Date.now(),
+          foto: getFotoJogador(nome),
+          etapa: config.etapa
+        });
+        alert('✅ Presença confirmada! Você está na lista de confirmados.');
+      } else {
+        await push(ref(db, 'listaEspera'), { 
+          nome, 
+          isGuest: false, 
+          data: agora,
+          timestamp: Date.now(),
+          foto: getFotoJogador(nome),
+          etapa: config.etapa
+        });
+        alert('⏳ Você foi adicionado à LISTA DE ESPERA.');
+      }
+    } else {
+      const gNome = document.getElementById('guestName').value.trim();
+      if (!gNome) return alert('Digite o nome do convidado!');
+      
+      await push(ref(db, 'listaEspera'), { 
+        nome: gNome, 
+        isGuest: true, 
+        guestOf: nome, 
+        data: agora,
+        timestamp: Date.now(),
+        etapa: config.etapa
+      });
+      alert('✅ Convidado adicionado à lista de espera!');
+    }
+    
+    modal.classList.remove('active');
+    selectJogador.value = '';
+    photoPreview.style.display = 'none';
+    isGuest.checked = false;
+    guestNameGroup.style.display = 'none';
+    document.getElementById('guestName').value = '';
+    
+  } catch (e) { 
+    alert('Erro ao confirmar: ' + e.message); 
+  }
+};
+
+btnCancelarWhatsApp.onclick = () => {
+  const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ');
+  window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
+};
 
 function atualizar() {
-    if (confirmedCount) confirmedCount.textContent = confirmados.length;
-    if (vacancyCount) vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
-    if (waitlistCount) waitlistCount.textContent = listaEspera.length;
+  confirmedCount.textContent = confirmados.length;
+  vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
+  waitlistCount.textContent = listaEspera.length;
 
-    const confirmadosOrdenados = [...confirmados].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  const confirmadosOrdenados = [...confirmados].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  
+  confirmedList.innerHTML = confirmadosOrdenados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
+  confirmadosOrdenados.forEach((p, i) => {
+    const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
+    const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge member">MEMBRO</span>';
+    const guestInfo = p.isGuest && p.guestOf ? ` <small style="opacity:0.7">(Convidado de ${p.guestOf})</small>` : '';
+    const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
     
-    if (confirmedList) {
-        confirmedList.innerHTML = confirmadosOrdenados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
-        confirmadosOrdenados.forEach((p, i) => {
-            const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="window.removerJogador('${p.id}',false)">❌</button>` : '';
-            const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge member">MEMBRO</span>';
-            const guestInfo = p.isGuest && p.guestOf ? ` <small style="opacity:0.7">(Convidado de ${p.guestOf})</small>` : '';
-            const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
-            
-            confirmedList.innerHTML += `<li class="player-item">
-                <div class="player-info">
-                    <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}">
-                    <div class="player-number">${i+1}º</div>
-                    <div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div>
-                </div>
-                ${badge}
-                ${btnRemover}</li>`;
-        });
-    }
+    confirmedList.innerHTML += `<li class="player-item">
+        <div class="player-info">
+            <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}">
+            <div class="player-number">${i+1}º</div>
+            <div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div>
+        </div>
+        ${badge}
+        ${btnRemover}</li>`;
+  });
 
-    const membrosEspera = listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-    const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-    const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera];
+  const membrosEspera = listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera];
 
-    if (waitlistList) {
-        waitlistList.innerHTML = listaEsperaOrdenada.length ? '' : '<li class="empty-state">Lista vazia</li>';
-        listaEsperaOrdenada.forEach((p, i) => {
-            const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="window.removerJogador('${p.id}',true)">❌</button>` : '';
-            const btnPromover = modoAdmin && confirmados.length < LIMITE_VAGAS ? 
-                `<button class="remove-btn" style="background:#4CAF50" onclick="window.promoverJogadorManual('${p.id}')">↗️ PROMOVER</button>` : '';
-            const guestInfo = p.isGuest && p.guestOf ? ` (Convidado de ${p.guestOf})` : '';
-            const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge wait">MEMBRO</span>';
-            const prioridade = !p.isGuest && i < membrosEspera.length ? '<span class="priority-indicator">PRIORIDADE</span>' : '';
-            const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
-            
-            waitlistList.innerHTML += `<li class="player-item">
-                <div class="player-info">
-                    <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}">
-                    <div class="player-number">${i+1}º</div>
-                    <div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div>
-                </div>
-                <div style="display:flex;gap:5px;align-items:center">
-                  ${badge}
-                  ${prioridade}
-                  ${btnPromover}
-                  ${btnRemover}
-                </div>
-                </li>`;
-        });
-    }
+  waitlistList.innerHTML = listaEsperaOrdenada.length ? '' : '<li class="empty-state">Lista vazia</li>';
+  listaEsperaOrdenada.forEach((p, i) => {
+    const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
+    const btnPromover = modoAdmin && confirmados.length < LIMITE_VAGAS ? 
+      `<button class="remove-btn" style="background:#4CAF50" onclick="promoverJogadorManual('${p.id}')">↗️ PROMOVER</button>` : '';
+    const guestInfo = p.isGuest && p.guestOf ? ` (Convidado de ${p.guestOf})` : '';
+    const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge wait">MEMBRO</span>';
+    const prioridade = !p.isGuest && i < membrosEspera.length ? '<span class="priority-indicator">PRIORIDADE</span>' : '';
+    const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
+    
+    waitlistList.innerHTML += `<li class="player-item">
+        <div class="player-info">
+            <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}">
+            <div class="player-number">${i+1}º</div>
+            <div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div>
+        </div>
+        <div style="display:flex;gap:5px;align-items:center">
+          ${badge}
+          ${prioridade}
+          ${btnPromover}
+          ${btnRemover}
+        </div>
+        </li>`;
+  });
 }
 
 window.removerJogador = async (id, isWait) => {
-    if(!confirm('Tem certeza que deseja remover este jogador?')) return;
-    try {
-        const path = isWait ? 'listaEspera' : 'confirmados';
-        await remove(ref(db, `${path}/${id}`));
-        if (!isWait) {
-            await promoverDaListaDeEspera();
-        }
-        alert('Jogador removido com sucesso!');
-    } catch (e) {
-        alert('Erro ao remover: ' + e.message);
+  if(!confirm('Tem certeza que deseja remover este jogador?')) return;
+  try {
+    const path = isWait ? 'listaEspera' : 'confirmados';
+    await remove(ref(db, `${path}/${id}`));
+    if (!isWait) {
+      await promoverDaListaDeEspera();
     }
+    alert('Jogador removido com sucesso!');
+  } catch (e) {
+    alert('Erro ao remover: ' + e.message);
+  }
 };
 
 async function promoverDaListaDeEspera() {
-    try {
-        const snapshotConfirmados = await get(ref(db, 'confirmados'));
-        const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
+  try {
+    const snapshotConfirmados = await get(ref(db, 'confirmados'));
+    const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
+    
+    if (totalConfirmados < LIMITE_VAGAS) {
+      const snapshotEspera = await get(ref(db, 'listaEspera'));
+      
+      if (snapshotEspera.exists()) {
+        let candidatos = [];
+        snapshotEspera.forEach(child => {
+          candidatos.push({...child.val(), id: child.key});
+        });
         
-        if (totalConfirmados < LIMITE_VAGAS) {
-            const snapshotEspera = await get(ref(db, 'listaEspera'));
-            
-            if (snapshotEspera.exists()) {
-                let candidatos = [];
-                snapshotEspera.forEach(child => {
-                    candidatos.push({...child.val(), id: child.key});
-                });
-                
-                const membros = candidatos.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-                
-                if (membros.length > 0) {
-                    const promovido = membros[0];
-                    
-                    await push(ref(db, 'confirmados'), {
-                        nome: promovido.nome,
-                        isGuest: false,
-                        data: promovido.data,
-                        timestamp: promovido.timestamp,
-                        foto: promovido.foto || getFotoJogador(promovido.nome),
-                        promovido: true,
-                        dataPromocao: new Date().toISOString(),
-                        etapa: config.etapa
-                    });
-                    
-                    await remove(ref(db, `listaEspera/${promovido.id}`));
-                }
-            }
+        const membros = candidatos.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        
+        if (membros.length > 0) {
+          const promovido = membros[0];
+          
+          await push(ref(db, 'confirmados'), {
+            nome: promovido.nome,
+            isGuest: false,
+            data: promovido.data,
+            timestamp: promovido.timestamp,
+            foto: promovido.foto || getFotoJogador(promovido.nome),
+            promovido: true,
+            dataPromocao: new Date().toISOString(),
+            etapa: config.etapa
+          });
+          
+          await remove(ref(db, `listaEspera/${promovido.id}`));
         }
-    } catch (e) {
-        console.error('Erro ao promover da lista de espera:', e);
+      }
     }
+  } catch (e) {
+    console.error('Erro ao promover da lista de espera:', e);
+  }
 }
 
 window.promoverJogadorManual = async (id) => {
-    try {
-        const snapshotConfirmados = await get(ref(db, 'confirmados'));
-        const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
-        
-        if (totalConfirmados >= LIMITE_VAGAS) {
-            return alert('❌ Não há vagas disponíveis!');
-        }
-        
-        const snapshot = await get(ref(db, `listaEspera/${id}`));
-        
-        if (!snapshot.exists()) {
-            return alert('Jogador não encontrado!');
-        }
-        
-        const jogador = snapshot.val();
-        
-        if (!confirm(`Promover ${jogador.nome} para confirmados?`)) {
-            return;
-        }
-        
-        await push(ref(db, 'confirmados'), {
-            nome: jogador.nome,
-            isGuest: jogador.isGuest,
-            guestOf: jogador.guestOf || null,
-            data: jogador.data,
-            timestamp: jogador.timestamp,
-            foto: jogador.foto || (!jogador.isGuest ? getFotoJogador(jogador.nome) : null),
-            promovido: true,
-            promocaoManual: true,
-            dataPromocao: new Date().toISOString(),
-            etapa: config.etapa
-        });
-        
-        await remove(ref(db, `listaEspera/${id}`));
-        
-        alert(`✅ ${jogador.nome} foi promovido!`);
-        
-    } catch (e) {
-        alert('Erro ao promover: ' + e.message);
+  try {
+    const snapshotConfirmados = await get(ref(db, 'confirmados'));
+    const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
+    
+    if (totalConfirmados >= LIMITE_VAGAS) {
+      return alert('❌ Não há vagas disponíveis!');
     }
+    
+    const snapshot = await get(ref(db, `listaEspera/${id}`));
+    
+    if (!snapshot.exists()) {
+      return alert('Jogador não encontrado!');
+    }
+    
+    const jogador = snapshot.val();
+    
+    if (!confirm(`Promover ${jogador.nome} para confirmados?`)) {
+      return;
+    }
+    
+    await push(ref(db, 'confirmados'), {
+      nome: jogador.nome,
+      isGuest: jogador.isGuest,
+      guestOf: jogador.guestOf || null,
+      data: jogador.data,
+      timestamp: jogador.timestamp,
+      foto: jogador.foto || (!jogador.isGuest ? getFotoJogador(jogador.nome) : null),
+      promovido: true,
+      promocaoManual: true,
+      dataPromocao: new Date().toISOString(),
+      etapa: config.etapa
+    });
+    
+    await remove(ref(db, `listaEspera/${id}`));
+    
+    alert(`✅ ${jogador.nome} foi promovido!`);
+    
+  } catch (e) {
+    alert('Erro ao promover: ' + e.message);
+  }
 };
 
 // Funções do modo admin
-const btnModoAdmin = document.getElementById('btnModoAdmin');
-if (btnModoAdmin) btnModoAdmin.onclick = () => modalAdmin.classList.add('active');
+btnModoAdmin.onclick = () => modalAdmin.classList.add('active');
+btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
 
-const btnFecharAdmin = document.getElementById('btnFecharAdmin');
-if (btnFecharAdmin) btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
+btnAcessarAdmin.onclick = () => {
+  if (document.getElementById('senhaAdmin').value === "poker2026") {
+    modoAdmin = true;
+    modalAdmin.classList.remove('active');
+    
+    btnToggleInscricoes.style.display = 'block';
+    btnProximaEtapa.style.display = 'block';
+    btnSelecionarEtapa.style.display = 'block';
+    btnGerenciarFotos.style.display = 'block';
+    btnSairAdmin.style.display = 'block';
+    btnModoAdmin.style.background = '#4CAF50';
+    btnModoAdmin.style.opacity = '1';
+    
+    atualizarBotaoInscricoes();
+    
+    alert("✅ Modo Administrador Ativado!");
+    atualizar();
+  } else {
+    alert('❌ Senha incorreta!');
+  }
+};
 
-const btnAcessarAdmin = document.getElementById('btnAcessarAdmin');
-if (btnAcessarAdmin) {
-    btnAcessarAdmin.onclick = () => {
-        const senhaInput = document.getElementById('senhaAdmin');
-        if (senhaInput && senhaInput.value === "poker2026") {
-            modoAdmin = true;
-            modalAdmin.classList.remove('active');
-            
-            if (btnToggleInscricoes) btnToggleInscricoes.style.display = 'block';
-            if (btnProximaEtapa) btnProximaEtapa.style.display = 'block';
-            if (btnSelecionarEtapa) btnSelecionarEtapa.style.display = 'block';
-            if (btnGerenciarFotos) btnGerenciarFotos.style.display = 'block';
-            if (btnSairAdmin) btnSairAdmin.style.display = 'block';
-            if (btnModoAdmin) {
-                btnModoAdmin.style.background = '#4CAF50';
-                btnModoAdmin.style.opacity = '1';
-            }
-            
-            atualizarBotaoInscricoes();
-            
-            alert("✅ Modo Administrador Ativado!");
-            atualizar();
-        } else {
-            alert('❌ Senha incorreta!');
-        }
-    };
-}
+btnSairAdmin.onclick = () => {
+  modoAdmin = false;
+  
+  btnToggleInscricoes.style.display = 'none';
+  btnProximaEtapa.style.display = 'none';
+  btnSelecionarEtapa.style.display = 'none';
+  btnGerenciarFotos.style.display = 'none';
+  btnSairAdmin.style.display = 'none';
+  btnModoAdmin.style.background = 'rgba(13,27,13,0.3)';
+  btnModoAdmin.style.opacity = '0.15';
+  
+  alert("👋 Modo Administrador desativado.");
+  atualizar();
+};
 
-if (btnSairAdmin) {
-    btnSairAdmin.onclick = () => {
-        modoAdmin = false;
-        
-        if (btnToggleInscricoes) btnToggleInscricoes.style.display = 'none';
-        if (btnProximaEtapa) btnProximaEtapa.style.display = 'none';
-        if (btnSelecionarEtapa) btnSelecionarEtapa.style.display = 'none';
-        if (btnGerenciarFotos) btnGerenciarFotos.style.display = 'none';
-        if (btnSairAdmin) btnSairAdmin.style.display = 'none';
-        if (btnModoAdmin) {
-            btnModoAdmin.style.background = 'rgba(13,27,13,0.3)';
-            btnModoAdmin.style.opacity = '0.15';
-        }
-        
-        alert("👋 Modo Administrador desativado.");
-        atualizar();
-    };
-}
-
-if (btnToggleInscricoes) {
-    btnToggleInscricoes.onclick = async () => {
-        const novaConfig = {...config, inscricoesAbertas: !config.inscricoesAbertas};
-        await salvarConfig(novaConfig);
-        atualizarBotaoInscricoes();
-    };
-}
+btnToggleInscricoes.onclick = async () => {
+  const novaConfig = {...config, inscricoesAbertas: !config.inscricoesAbertas};
+  await salvarConfig(novaConfig);
+  atualizarBotaoInscricoes();
+};
 
 function atualizarBotaoInscricoes() {
-    if (btnToggleInscricoes) {
-        if (config.inscricoesAbertas) {
-            btnToggleInscricoes.textContent = '🔒 Fechar';
-            btnToggleInscricoes.style.background = '#c72c48';
-        } else {
-            btnToggleInscricoes.textContent = '🔓 Abrir';
-            btnToggleInscricoes.style.background = '#4CAF50';
-        }
+  if (config.inscricoesAbertas) {
+    btnToggleInscricoes.textContent = '🔒 Fechar';
+    btnToggleInscricoes.style.background = '#c72c48';
+  } else {
+    btnToggleInscricoes.textContent = '🔓 Abrir';
+    btnToggleInscricoes.style.background = '#4CAF50';
+  }
+}
+
+btnGerenciarFotos.onclick = () => {
+  const fotosList = document.getElementById('fotosList');
+  fotosList.innerHTML = '';
+  
+  jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach((jogador, index) => {
+    const div = document.createElement('div');
+    div.className = 'foto-item';
+    div.innerHTML = `
+        <img class="foto-preview" src="${jogador.foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${jogador.nome}">
+        <div class="foto-info">${jogador.nome}</div>
+        <input type="text" class="foto-input" id="foto-${index}" value="${jogador.foto}" placeholder="URL da foto do ${jogador.nome}">
+        <div class="foto-actions">
+            <button class="foto-btn" onclick="document.getElementById('foto-${index}').value='${FOTO_PADRAO}'">Padrão</button>
+        </div>
+    `;
+    fotosList.appendChild(div);
+  });
+  
+  modalGerenciarFotos.classList.add('active');
+};
+
+btnFecharFotos.onclick = () => {
+  modalGerenciarFotos.classList.remove('active');
+};
+
+btnSalvarFotos.onclick = () => {
+  jogadores.forEach((jogador, index) => {
+    const input = document.getElementById(`foto-${index}`);
+    if (input) {
+      jogador.foto = input.value || FOTO_PADRAO;
     }
-}
+  });
+  
+  salvarFotosJogadores();
+};
 
-if (btnGerenciarFotos) {
-    btnGerenciarFotos.onclick = () => {
-        const fotosList = document.getElementById('fotosList');
-        if (fotosList) {
-            fotosList.innerHTML = '';
-            
-            jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach((jogador, index) => {
-                const div = document.createElement('div');
-                div.className = 'foto-item';
-                div.innerHTML = `
-                    <img class="foto-preview" src="${jogador.foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${jogador.nome}">
-                    <div class="foto-info">${jogador.nome}</div>
-                    <input type="text" class="foto-input" id="foto-${index}" value="${jogador.foto}" placeholder="URL da foto do ${jogador.nome}">
-                    <div class="foto-actions">
-                        <button class="foto-btn" onclick="document.getElementById('foto-${index}').value='${FOTO_PADRAO}'">Padrão</button>
-                    </div>
-                `;
-                fotosList.appendChild(div);
-            });
-        }
-        
-        if (modalGerenciarFotos) modalGerenciarFotos.classList.add('active');
-    };
-}
+btnSelecionarEtapa.onclick = () => {
+  const selector = document.getElementById('etapaSelector');
+  selector.innerHTML = '';
+  
+  ETAPAS.forEach(etapa => {
+    const btn = document.createElement('button');
+    btn.className = `etapa-btn ${etapa.numero === config.etapa ? 'ativa' : ''}`;
+    btn.textContent = `${etapa.numero}ª`;
+    btn.title = etapa.descricao;
+    btn.onclick = () => selecionarEtapa(etapa.numero);
+    selector.appendChild(btn);
+  });
+  
+  modalSelecionarEtapa.classList.add('active');
+};
 
-const btnFecharFotos = document.getElementById('btnFecharFotos');
-if (btnFecharFotos) btnFecharFotos.onclick = () => modalGerenciarFotos.classList.remove('active');
-
-const btnSalvarFotos = document.getElementById('btnSalvarFotos');
-if (btnSalvarFotos) {
-    btnSalvarFotos.onclick = () => {
-        jogadores.forEach((jogador, index) => {
-            const input = document.getElementById(`foto-${index}`);
-            if (input) {
-                jogador.foto = input.value || FOTO_PADRAO;
-            }
-        });
-        
-        salvarFotosJogadores();
-    };
-}
-
-if (btnSelecionarEtapa) {
-    btnSelecionarEtapa.onclick = () => {
-        const selector = document.getElementById('etapaSelector');
-        if (selector) {
-            selector.innerHTML = '';
-            
-            ETAPAS.forEach(etapa => {
-                const btn = document.createElement('button');
-                btn.className = `etapa-btn ${etapa.numero === config.etapa ? 'ativa' : ''}`;
-                btn.textContent = `${etapa.numero}ª`;
-                btn.title = etapa.descricao;
-                btn.onclick = () => selecionarEtapa(etapa.numero);
-                selector.appendChild(btn);
-            });
-        }
-        
-        if (modalSelecionarEtapa) modalSelecionarEtapa.classList.add('active');
-    };
-}
-
-const btnCancelarSelecao = document.getElementById('btnCancelarSelecao');
-if (btnCancelarSelecao) btnCancelarSelecao.onclick = () => modalSelecionarEtapa.classList.remove('active');
+btnCancelarSelecao.onclick = () => {
+  modalSelecionarEtapa.classList.remove('active');
+};
 
 async function selecionarEtapa(numero) {
-    const etapa = ETAPAS.find(e => e.numero === numero);
-    if (!etapa) return;
+  const etapa = ETAPAS.find(e => e.numero === numero);
+  if (!etapa) return;
+  
+  if (!confirm(`Deseja ir para a ${etapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) {
+    return;
+  }
+  
+  try {
+    await set(ref(db, 'confirmados'), null);
+    await set(ref(db, 'listaEspera'), null);
     
-    if (!confirm(`Deseja ir para a ${etapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) {
-        return;
-    }
+    const dataAbertura = calcularDataAbertura(etapa.data);
     
-    try {
-        await set(ref(db, 'confirmados'), null);
-        await set(ref(db, 'listaEspera'), null);
-        
-        const dataAbertura = calcularDataAbertura(etapa.data);
-        
-        await salvarConfig({
-            etapa: etapa.numero,
-            dataEvento: etapa.data,
-            dataAbertura: dataAbertura.toISOString(),
-            inscricoesAbertas: false
-        });
-        
-        if (modalSelecionarEtapa) modalSelecionarEtapa.classList.remove('active');
-        alert(`✅ Configurado para ${etapa.descricao}!`);
-        
-    } catch (e) {
-        alert('Erro ao mudar de etapa: ' + e.message);
-    }
+    await salvarConfig({
+      etapa: etapa.numero,
+      dataEvento: etapa.data,
+      dataAbertura: dataAbertura.toISOString(),
+      inscricoesAbertas: false
+    });
+    
+    modalSelecionarEtapa.classList.remove('active');
+    alert(`✅ Configurado para ${etapa.descricao}!`);
+    
+  } catch (e) {
+    alert('Erro ao mudar de etapa: ' + e.message);
+  }
 }
 
-if (btnProximaEtapa) {
-    btnProximaEtapa.onclick = () => {
-        const proximaEtapa = ETAPAS.find(e => e.numero === config.etapa + 1) || ETAPAS[0];
-        
-        if (!confirm(`Avançar para ${proximaEtapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) {
-            return;
-        }
-        
-        selecionarEtapa(proximaEtapa.numero);
-    };
-}
+btnProximaEtapa.onclick = () => {
+  const proximaEtapa = ETAPAS.find(e => e.numero === config.etapa + 1) || ETAPAS[0];
+  
+  if (!confirm(`Avançar para ${proximaEtapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) {
+    return;
+  }
+  
+  selecionarEtapa(proximaEtapa.numero);
+};
 
-const btnExportar = document.getElementById('btnExportar');
-if (btnExportar) {
-    btnExportar.onclick = () => {
-        let csv = 'Posição,Nome,Status,Data/Hora\n';
-        confirmados.forEach((p, i) => {
-            csv += `${i+1},${p.nome},CONFIRMADO,${new Date(p.data).toLocaleString('pt-BR')}\n`;
-        });
-        
-        const listaEsperaOrdenada = [
-            ...listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)),
-            ...listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
-        ];
-        
-        listaEsperaOrdenada.forEach((p, i) => {
-            const tipo = p.isGuest ? 'CONVIDADO' : 'ESPERA';
-            const nome = p.isGuest && p.guestOf ? `${p.nome} (Convidado de ${p.guestOf})` : p.nome;
-            csv += `${i+1},${nome},${tipo},${new Date(p.data).toLocaleString('pt-BR')}\n`;
-        });
-        
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `lista-poker-etapa${config.etapa}-${new Date().toISOString().split('T')[0]}.csv`;
-        link.click();
-    };
-}
+btnExportar.onclick = () => {
+  let csv = 'Posição,Nome,Status,Data/Hora\n';
+  confirmados.forEach((p, i) => {
+    csv += `${i+1},${p.nome},CONFIRMADO,${new Date(p.data).toLocaleString('pt-BR')}\n`;
+  });
+  
+  const listaEsperaOrdenada = [
+    ...listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)),
+    ...listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
+  ];
+  
+  listaEsperaOrdenada.forEach((p, i) => {
+    const tipo = p.isGuest ? 'CONVIDADO' : 'ESPERA';
+    const nome = p.isGuest && p.guestOf ? `${p.nome} (Convidado de ${p.guestOf})` : p.nome;
+    csv += `${i+1},${nome},${tipo},${new Date(p.data).toLocaleString('pt-BR')}\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `lista-poker-etapa${config.etapa}-${new Date().toISOString().split('T')[0]}.csv`;
+  link.click();
+};
+
+window.removerJogador = removerJogador;
+window.promoverJogadorManual = promoverJogadorManual;
 </script>
 </body>
 </html>
