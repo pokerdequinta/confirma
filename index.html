@@ -209,11 +209,11 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 <header>
 <h1>LISTA DE PRESENÇA POKER DE QUINTA</h1>
-<div class="subtitle" id="dataEvento">📅 3ª Etapa - 26/03/2026</div> <!-- CORRIGIDO MANUALMENTE -->
+<div class="subtitle" id="dataEvento">📅 4ª Etapa - 30/04/2026</div>
 </header>
 
 <div id="countdownContainer">
-    <span class="timer-header" id="timerHeader">As Inscrições abrem 23/03/2026 às 07:00</span> <!-- CORRIGIDO MANUALMENTE -->
+    <span class="timer-header" id="timerHeader">As Inscrições abrem 27/04/2026 às 07:00</span>
     <div id="timer">Calculando tempo...</div>
 </div>
 
@@ -365,11 +365,11 @@ const LIMITE_VAGAS = 20;
 // URL da foto padrão (avatar)
 const FOTO_PADRAO = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
 
-// Calendário oficial das etapas (baseado no http://pokerdequinta.github.io/calendario)
+// Calendário oficial das etapas
 const ETAPAS = [
     { numero: 1, data: '2026-01-29', descricao: '1ª Etapa' },
     { numero: 2, data: '2026-02-26', descricao: '2ª Etapa' },
-    { numero: 3, data: '2026-03-26', descricao: '3ª Etapa' }, // CORRIGIDO: 26/03
+    { numero: 3, data: '2026-03-26', descricao: '3ª Etapa' },
     { numero: 4, data: '2026-04-30', descricao: '4ª Etapa' },
     { numero: 5, data: '2026-05-28', descricao: '5ª Etapa' },
     { numero: 6, data: '2026-06-25', descricao: '6ª Etapa' },
@@ -412,11 +412,11 @@ function calcularDataAbertura(dataEtapa) {
     return dataAbertura;
 }
 
-// Configurações iniciais - 3ª ETAPA CORRIGIDA PARA 26/03/2026
+// Configurações iniciais - 4ª ETAPA (data correta: 30/04/2026, abertura: 27/04/2026)
 let config = {
-    etapa: 3,
-    dataEvento: '2026-03-26', // CORRIGIDO: 26/03
-    dataAbertura: calcularDataAbertura('2026-03-26').toISOString(), // CORRIGIDO: 26/03
+    etapa: 4,
+    dataEvento: '2026-04-30',
+    dataAbertura: calcularDataAbertura('2026-04-30').toISOString(),
     inscricoesAbertas: false
 };
 
@@ -442,12 +442,9 @@ const dataEventoEl = document.getElementById('dataEvento');
 const timerHeader = document.getElementById('timerHeader');
 const btnConfirmar = document.getElementById('btnConfirmar');
 
-// DATA FIXA PARA A 3ª ETAPA - CORREÇÃO DEFINITIVA
-const DATA_FIXA_3_ETAPA = new Date('2026-03-26T12:00:00');
-
 // Função para obter dados da etapa atual
 function getEtapaAtual() {
-    return ETAPAS.find(e => e.numero === config.etapa) || ETAPAS[2];
+    return ETAPAS.find(e => e.numero === config.etapa) || ETAPAS[3];
 }
 
 // Carregar fotos dos jogadores do Firebase
@@ -518,13 +515,6 @@ async function carregarConfig() {
         const snapshot = await get(ref(db, 'config'));
         if (snapshot.exists()) {
             config = snapshot.val();
-            
-            // CORREÇÃO DEFINITIVA: Se a etapa for 3, IGNORA a data do Firebase e USA 26/03/2026
-            if (config.etapa === 3) {
-                console.log('⚠️ CORREÇÃO DEFINITIVA: Forçando data 26/03/2026 para a 3ª etapa');
-                config.dataEvento = '2026-03-26';
-                config.dataAbertura = calcularDataAbertura('2026-03-26').toISOString();
-            }
         } else {
             await salvarConfig(config);
         }
@@ -553,20 +543,7 @@ async function salvarConfig(novaConfig) {
 // Atualizar interface com as configurações
 function atualizarInterfaceConfig() {
     const etapaAtual = getEtapaAtual();
-    
-    // CORREÇÃO DEFINITIVA: Forçar data visual correta no header
-    let dataParaMostrar;
-    
-    if (config.etapa === 3) {
-        // Para a 3ª etapa, SEMPRE usar 26/03/2026
-        dataParaMostrar = DATA_FIXA_3_ETAPA;
-        console.log('✅ Header forçado para 26/03/2026');
-    } else {
-        // Para outras etapas, usar a data do config
-        dataParaMostrar = DATA_EVENTO;
-    }
-    
-    const dataFormatada = dataParaMostrar.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
+    const dataFormatada = DATA_EVENTO.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
     dataEventoEl.textContent = `📅 ${etapaAtual.descricao} - ${dataFormatada}`;
     
     // Timer header
@@ -641,14 +618,6 @@ try {
   onValue(ref(db, 'config'), (snapshot) => {
     if (snapshot.exists()) {
       config = snapshot.val();
-      
-      // CORREÇÃO DEFINITIVA: Quando ouvir mudanças na config, FORÇAR a data correta da 3ª etapa
-      if (config.etapa === 3) {
-        console.log('⚠️ CORREÇÃO DEFINITIVA (onValue): Forçando data 26/03/2026');
-        config.dataEvento = '2026-03-26';
-        config.dataAbertura = calcularDataAbertura('2026-03-26').toISOString();
-      }
-      
       DATA_ABERTURA = new Date(config.dataAbertura).getTime();
       DATA_EVENTO = new Date(config.dataEvento);
       atualizarInterfaceConfig();
@@ -1100,4 +1069,3 @@ window.promoverJogadorManual = promoverJogadorManual;
 </script>
 </body>
 </html>
-
