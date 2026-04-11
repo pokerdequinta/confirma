@@ -38,7 +38,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .player-list{list-style:none}
 .player-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);padding:15px;border-radius:10px;margin-bottom:10px;gap:10px}
 .player-info{display:flex;gap:15px;align-items:center}
-.player-avatar {width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #d4a121}
+.player-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #d4a121}
 .player-number{font-family:'Anton';color:#d4a121}
 .player-details{display:flex;flex-direction:column}
 .player-details small{opacity:.85}
@@ -54,13 +54,12 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .form-group{margin-bottom:15px}
 .form-group label{color:#d4a121;font-weight:bold;display:block;margin-bottom:5px}
 .form-group input,.form-group select{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
-/* Estilo para o select com foto */
-.player-select {display:flex;align-items:center;gap:10px;padding:5px}
-.player-select img {width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #d4a121}
-.player-select span {color:#fff}
-#playerName option {background:#1a3d1a;color:#fff;padding:10px}
-#playerName option:hover {background:#2d5016}
-#playerName optgroup {background:#102810;color:#d4a121;font-weight:bold}
+.player-select{display:flex;align-items:center;gap:10px;padding:5px}
+.player-select img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #d4a121}
+.player-select span{color:#fff}
+#playerName option{background:#1a3d1a;color:#fff;padding:10px}
+#playerName option:hover{background:#2d5016}
+#playerName optgroup{background:#102810;color:#d4a121;font-weight:bold}
 .modal-buttons{display:flex;gap:10px;margin-top:20px}
 .modal-btn{flex:1;padding:10px;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
 .modal-btn.confirm{background:#d4a121;color:#000}
@@ -70,133 +69,25 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .status-indicator.connected{background:#1a3d1a;border-color:#4CAF50}
 .status-indicator.error{background:#3d1a1a;border-color:#c72c48}
 .priority-indicator{background:#FFA500;color:#000;padding:2px 8px;border-radius:10px;font-size:0.75em;margin-left:5px}
-
-/* Estilos para o painel admin */
-.admin-panel {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    z-index: 999;
-}
-.admin-btn {
-    width: auto;
-    padding: 8px 15px;
-    background: rgba(13,27,13,0.3);
-    border: 1px solid rgba(212,161,33,0.1);
-    opacity: 0.15;
-    font-size: 0.7em;
-    transition: opacity 0.3s;
-    cursor: pointer;
-    color: #fff;
-    border-radius: 5px;
-}
-.admin-btn:hover {
-    opacity: 1;
-    background: #d4a121;
-    color: #000;
-}
-.admin-btn.active {
-    opacity: 1;
-    background: #4CAF50;
-}
-
-/* Estilo para o seletor de etapa no admin */
-.etapa-selector {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 20px 0;
-}
-.etapa-btn {
-    background: #1a3d1a;
-    border: 1px solid #d4a121;
-    color: #fff;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s;
-}
-.etapa-btn:hover {
-    background: #d4a121;
-    color: #000;
-}
-.etapa-btn.ativa {
-    background: #d4a121;
-    color: #000;
-    border-color: #fff;
-}
-
-/* Estilo para a área de gerenciamento de fotos */
-.foto-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-    background: rgba(255,255,255,0.05);
-    padding: 15px;
-    border-radius: 8px;
-}
-.foto-info {
-    min-width: 150px;
-    font-weight: bold;
-    color: #d4a121;
-}
-.foto-preview {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #d4a121;
-}
-.foto-input {
-    flex: 1;
-    padding: 10px;
-    background: #1a3d1a;
-    border: 1px solid #2d5016;
-    color: #fff;
-    border-radius: 5px;
-    font-size: 0.9em;
-}
-.foto-actions {
-    display: flex;
-    gap: 5px;
-}
-.foto-btn {
-    padding: 8px 15px;
-    background: #d4a121;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: #000;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-.foto-btn.reset {
-    background: #c72c48;
-    color: #fff;
-}
-.fotos-header {
-    display: grid;
-    grid-template-columns: 80px 150px 1fr 100px;
-    gap: 15px;
-    padding: 10px 15px;
-    background: #102810;
-    border-bottom: 2px solid #d4a121;
-    font-weight: bold;
-    color: #d4a121;
-    margin-bottom: 10px;
-}
-
-@media(max-width:768px){
-.info-cards{grid-template-columns:1fr}
-}
+.admin-panel{position:fixed;bottom:10px;right:10px;display:flex;flex-direction:column;gap:5px;z-index:999}
+.admin-btn{width:auto;padding:8px 15px;background:rgba(13,27,13,0.3);border:1px solid rgba(212,161,33,0.1);opacity:0.15;font-size:0.7em;transition:opacity 0.3s;cursor:pointer;color:#fff;border-radius:5px}
+.admin-btn:hover{opacity:1;background:#d4a121;color:#000}
+.admin-btn.active{opacity:1;background:#4CAF50}
+.etapa-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}
+.etapa-btn{background:#1a3d1a;border:1px solid #d4a121;color:#fff;padding:10px;border-radius:8px;cursor:pointer;font-weight:bold;transition:all 0.3s}
+.etapa-btn:hover{background:#d4a121;color:#000}
+.etapa-btn.ativa{background:#d4a121;color:#000;border-color:#fff}
+.foto-item{display:flex;align-items:center;gap:15px;margin-bottom:15px;background:rgba(255,255,255,0.05);padding:15px;border-radius:8px}
+.foto-info{min-width:150px;font-weight:bold;color:#d4a121}
+.foto-preview{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #d4a121}
+.foto-input{flex:1;padding:10px;background:#1a3d1a;border:1px solid #2d5016;color:#fff;border-radius:5px;font-size:0.9em}
+.foto-actions{display:flex;gap:5px}
+.foto-btn{padding:8px 15px;background:#d4a121;border:none;border-radius:5px;cursor:pointer;color:#000;font-size:0.9em;font-weight:bold}
+.foto-btn.reset{background:#c72c48;color:#fff}
+.fotos-header{display:grid;grid-template-columns:80px 150px 1fr 100px;gap:15px;padding:10px 15px;background:#102810;border-bottom:2px solid #d4a121;font-weight:bold;color:#d4a121;margin-bottom:10px}
+@media(max-width:768px){.info-cards{grid-template-columns:1fr}}
 </style>
 </head>
-
 <body>
 
 <div class="status-indicator" id="statusIndicator">🔄 Conectando...</div>
@@ -206,7 +97,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </div>
 
 <div class="container">
-
 <header>
 <h1>LISTA DE PRESENÇA POKER DE QUINTA</h1>
 <div class="subtitle" id="dataEvento">📅 4ª Etapa - 30/04/2026</div>
@@ -229,21 +119,14 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 
 <div class="section">
 <h3>✅ CONFIRMADOS</h3>
-<ul id="confirmedList" class="player-list">
-<li class="loading">Carregando dados...</li>
-</ul>
+<ul id="confirmedList" class="player-list"><li class="loading">Carregando dados...</li></ul>
 </div>
 
 <div class="section">
 <h3>⏳ LISTA DE ESPERA</h3>
-<p style="opacity:0.8;margin-bottom:15px;font-size:0.9em">
-  🔸 Membros têm prioridade sobre convidados • Ordem de chegada dentro de cada categoria
-</p>
-<ul id="waitlistList" class="player-list">
-<li class="loading">Carregando dados...</li>
-</ul>
+<p style="opacity:0.8;margin-bottom:15px;font-size:0.9em">🔸 Membros têm prioridade sobre convidados • Ordem de chegada dentro de cada categoria</p>
+<ul id="waitlistList" class="player-list"><li class="loading">Carregando dados...</li></ul>
 </div>
-
 </div>
 
 <div class="admin-panel">
@@ -255,96 +138,15 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     <button class="admin-btn" id="btnSairAdmin" style="display:none; background:#c72c48;">🚪 Sair</button>
 </div>
 
-<div class="modal" id="modalAdmin">
-<div class="modal-content">
-<h2 style="color: #8b0000;">🔐 Modo Administrador</h2>
-<p style="margin: 15px 0; opacity: 0.8;">Digite a senha de administrador para acessar funções exclusivas:</p>
-<div class="form-group">
-<label>Senha Admin</label>
-<input type="password" id="senhaAdmin" placeholder="Digite a senha">
-</div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnFecharAdmin">Cancelar</button>
-<button class="modal-btn confirm" id="btnAcessarAdmin" style="background:#8b0000; color:#fff">Acessar</button>
-</div>
-</div>
-</div>
+<div class="modal" id="modalAdmin"><div class="modal-content"><h2 style="color: #8b0000;">🔐 Modo Administrador</h2><p style="margin: 15px 0; opacity: 0.8;">Digite a senha de administrador para acessar funções exclusivas:</p><div class="form-group"><label>Senha Admin</label><input type="password" id="senhaAdmin" placeholder="Digite a senha"></div><div class="modal-buttons"><button class="modal-btn cancel" id="btnFecharAdmin">Cancelar</button><button class="modal-btn confirm" id="btnAcessarAdmin" style="background:#8b0000; color:#fff">Acessar</button></div></div></div>
 
-<div class="modal" id="modalGerenciarFotos">
-<div class="modal-content" style="max-width: 900px;">
-<h2 style="color: #d4a121;">📸 Gerenciar Fotos dos Jogadores</h2>
-<p style="margin: 15px 0; opacity: 0.8;">Configure as URLs das fotos de cada jogador:</p>
-<div class="fotos-header">
-    <div>Prévia</div>
-    <div>Jogador</div>
-    <div>URL da Foto</div>
-    <div>Ações</div>
-</div>
-<div id="fotosList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
-    <!-- Lista de fotos será gerada aqui -->
-</div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnFecharFotos">Fechar</button>
-<button class="modal-btn confirm" id="btnSalvarFotos" style="background:#d4a121;">Salvar Todas</button>
-</div>
-</div>
-</div>
+<div class="modal" id="modalGerenciarFotos"><div class="modal-content" style="max-width: 900px;"><h2 style="color: #d4a121;">📸 Gerenciar Fotos dos Jogadores</h2><p style="margin: 15px 0; opacity: 0.8;">Configure as URLs das fotos de cada jogador:</p><div class="fotos-header"><div>Prévia</div><div>Jogador</div><div>URL da Foto</div><div>Ações</div></div><div id="fotosList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;"></div><div class="modal-buttons"><button class="modal-btn cancel" id="btnFecharFotos">Fechar</button><button class="modal-btn confirm" id="btnSalvarFotos" style="background:#d4a121;">Salvar Todas</button></div></div></div>
 
-<div class="modal" id="modalSelecionarEtapa">
-<div class="modal-content">
-<h2 style="color: #d4a121;">📅 Selecionar Etapa</h2>
-<p style="margin: 15px 0;">Escolha a etapa para configurar o sistema:</p>
-<div class="etapa-selector" id="etapaSelector">
-    <!-- Botões serão gerados via JavaScript -->
-</div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnCancelarSelecao">Cancelar</button>
-</div>
-</div>
-</div>
+<div class="modal" id="modalSelecionarEtapa"><div class="modal-content"><h2 style="color: #d4a121;">📅 Selecionar Etapa</h2><p style="margin: 15px 0;">Escolha a etapa para configurar o sistema:</p><div class="etapa-selector" id="etapaSelector"></div><div class="modal-buttons"><button class="modal-btn cancel" id="btnCancelarSelecao">Cancelar</button></div></div></div>
 
-<div class="modal" id="modalBemVindo">
-<div class="modal-content">
-<h2 style="color: #d4a121;">📋 Bem-vindo ao Poker de Quinta!</h2>
-<p style="margin: 15px 0; line-height: 1.6;">Esta é a página oficial de inscrição do <strong>Poker de Quinta</strong>.</p>
-<p style="margin: 15px 0; line-height: 1.6; font-size:0.9em">
-  <strong>Regras importantes:</strong><br>
-  • Limite de 20 vagas confirmadas<br>
-  • Confirme a presença somente se for ir com CERTEZA<br>
-  • Caso se inscreva e não possa ir a etapa, clique no botão CANCELAR MINHA INSCRIÇÃO<br>
-  • Após 20 confirmações, novos jogadores vão para lista de espera<br>
-  • Na lista de espera: membros têm prioridade sobre convidados
-</p>
-<div class="modal-buttons">
-<button class="modal-btn confirm" id="btnEntendi" style="width:100%">Entendi!</button>
-</div>
-</div>
-</div>
+<div class="modal" id="modalBemVindo"><div class="modal-content"><h2 style="color: #d4a121;">📋 Bem-vindo ao Poker de Quinta!</h2><p style="margin: 15px 0; line-height: 1.6;">Esta é a página oficial de inscrição do <strong>Poker de Quinta</strong>.</p><p style="margin: 15px 0; line-height: 1.6; font-size:0.9em"><strong>Regras importantes:</strong><br>• Limite de 20 vagas confirmadas<br>• Confirme a presença somente se for ir com CERTEZA<br>• Caso se inscreva e não possa ir a etapa, clique no botão CANCELAR MINHA INSCRIÇÃO<br>• Após 20 confirmações, novos jogadores vão para lista de espera<br>• Na lista de espera: membros têm prioridade sobre convidados</p><div class="modal-buttons"><button class="modal-btn confirm" id="btnEntendi" style="width:100%">Entendi!</button></div></div></div>
 
-<div class="modal" id="modal">
-<div class="modal-content">
-<h2>Confirmar Presença</h2>
-<div class="form-group">
-<label>Jogador</label>
-<select id="playerName" style="padding:10px;"></select>
-<!-- Div para mostrar a prévia da foto quando selecionar -->
-<div id="playerPhotoPreview" style="display:none; margin-top:10px; text-align:center;">
-    <img src="" alt="Foto do jogador" style="width:60px;height:60px;border-radius:50%;border:2px solid #d4a121;object-fit:cover;">
-</div>
-</div>
-<div class="form-group">
-<input type="checkbox" id="isGuest"> Adicionar convidado
-</div>
-<div class="form-group" id="guestNameGroup" style="display:none">
-<label>Nome do Convidado</label>
-<input id="guestName" placeholder="Digite o nome completo">
-</div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnCancelar">Cancelar</button>
-<button class="modal-btn confirm" id="btnConfirmarModal">Confirmar</button>
-</div>
-</div>
-</div>
+<div class="modal" id="modal"><div class="modal-content"><h2>Confirmar Presença</h2><div class="form-group"><label>Jogador</label><select id="playerName" style="padding:10px;"></select><div id="playerPhotoPreview" style="display:none; margin-top:10px; text-align:center;"><img src="" alt="Foto do jogador" style="width:60px;height:60px;border-radius:50%;border:2px solid #d4a121;object-fit:cover;"></div></div><div class="form-group"><input type="checkbox" id="isGuest"> Adicionar convidado</div><div class="form-group" id="guestNameGroup" style="display:none"><label>Nome do Convidado</label><input id="guestName" placeholder="Digite o nome completo"></div><div class="modal-buttons"><button class="modal-btn cancel" id="btnCancelar">Cancelar</button><button class="modal-btn confirm" id="btnConfirmarModal">Confirmar</button></div></div></div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -361,16 +163,23 @@ const firebaseConfig = {
 };
 
 const LIMITE_VAGAS = 20;
-
-// URL da foto padrão (avatar)
 const FOTO_PADRAO = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
 
-// Calendário oficial das etapas
+// DATAS CORRETAS DA 4ª ETAPA
+const DATA_CORRETA_EVENTO = '2026-04-30';
+const DATA_CORRETA_ABERTURA = '2026-04-27';
+
+// Função para criar data de abertura às 07:00
+function getDataAberturaComHorario() {
+    const data = new Date(DATA_CORRETA_ABERTURA + 'T07:00:00');
+    return data.toISOString();
+}
+
 const ETAPAS = [
     { numero: 1, data: '2026-01-29', descricao: '1ª Etapa' },
     { numero: 2, data: '2026-02-26', descricao: '2ª Etapa' },
     { numero: 3, data: '2026-03-26', descricao: '3ª Etapa' },
-    { numero: 4, data: '2026-04-30', descricao: '4ª Etapa' },
+    { numero: 4, data: DATA_CORRETA_EVENTO, descricao: '4ª Etapa' },
     { numero: 5, data: '2026-05-28', descricao: '5ª Etapa' },
     { numero: 6, data: '2026-06-25', descricao: '6ª Etapa' },
     { numero: 7, data: '2026-07-30', descricao: '7ª Etapa' },
@@ -382,7 +191,6 @@ const ETAPAS = [
     { numero: 13, data: '2026-12-10', descricao: 'ÚLTIMA ETAPA 🏆' }
 ];
 
-// Lista inicial de jogadores
 const JOGADORES_INICIAIS = [
     "Amarildo", "Boy", "Buiu", "Caio", "Charles", "Cleversson", "Davi", "Gera", "Diego", 
     "Dos Anjos", "Eduardo", "Fernando", "Gregory", "Gaspar", "Guilherme", "Guti", "Kastelo", 
@@ -391,48 +199,23 @@ const JOGADORES_INICIAIS = [
     "Ricardo Matoso", "Robson", "Sergio", "Solano", "Tigre", "Van Van", "Waltinho", "Wesley"
 ];
 
-// Função para calcular data de abertura das inscrições (segunda-feira anterior, 07:00)
-function calcularDataAbertura(dataEtapa) {
-    const data = new Date(dataEtapa + 'T19:00:00');
-    const diaDaSemana = data.getDay();
-    let diasAteSegunda;
-    
-    if (diaDaSemana === 1) {
-        diasAteSegunda = 7;
-    } else if (diaDaSemana === 0) {
-        diasAteSegunda = 6;
-    } else {
-        diasAteSegunda = diaDaSemana - 1;
-    }
-    
-    const dataAbertura = new Date(data);
-    dataAbertura.setDate(data.getDate() - diasAteSegunda);
-    dataAbertura.setHours(7, 0, 0, 0);
-    
-    return dataAbertura;
-}
-
-// Configurações iniciais - 4ª ETAPA (data correta: 30/04/2026, abertura: 27/04/2026)
+// CONFIGURAÇÃO FORÇADA - SEMPRE USAR DATAS CORRETAS DA 4ª ETAPA
 let config = {
     etapa: 4,
-    dataEvento: '2026-04-30',
-    dataAbertura: calcularDataAbertura('2026-04-30').toISOString(),
+    dataEvento: DATA_CORRETA_EVENTO,
+    dataAbertura: getDataAberturaComHorario(),
     inscricoesAbertas: false
 };
 
 let DATA_ABERTURA = new Date(config.dataAbertura).getTime();
 let DATA_EVENTO = new Date(config.dataEvento);
-
-// Array de jogadores com fotos
 let jogadores = [];
-
 let db;
 let confirmados = [];
 let listaEspera = [];
 let modoAdmin = false;
 let timerInterval;
 
-// Elementos
 const btnToggleInscricoes = document.getElementById('btnToggleInscricoes');
 const btnProximaEtapa = document.getElementById('btnProximaEtapa');
 const btnSelecionarEtapa = document.getElementById('btnSelecionarEtapa');
@@ -442,64 +225,45 @@ const dataEventoEl = document.getElementById('dataEvento');
 const timerHeader = document.getElementById('timerHeader');
 const btnConfirmar = document.getElementById('btnConfirmar');
 
-// Função para obter dados da etapa atual
 function getEtapaAtual() {
     return ETAPAS.find(e => e.numero === config.etapa) || ETAPAS[3];
 }
 
-// Carregar fotos dos jogadores do Firebase
 async function carregarFotosJogadores() {
     try {
         const snapshot = await get(ref(db, 'fotosJogadores'));
         if (snapshot.exists()) {
             const fotosSalvas = snapshot.val();
-            jogadores = JOGADORES_INICIAIS.map(nome => ({
-                nome: nome,
-                foto: fotosSalvas[nome] || FOTO_PADRAO
-            }));
+            jogadores = JOGADORES_INICIAIS.map(nome => ({ nome: nome, foto: fotosSalvas[nome] || FOTO_PADRAO }));
         } else {
-            jogadores = JOGADORES_INICIAIS.map(nome => ({
-                nome: nome,
-                foto: FOTO_PADRAO
-            }));
+            jogadores = JOGADORES_INICIAIS.map(nome => ({ nome: nome, foto: FOTO_PADRAO }));
         }
     } catch (e) {
         console.error('Erro ao carregar fotos:', e);
-        jogadores = JOGADORES_INICIAIS.map(nome => ({
-            nome: nome,
-            foto: FOTO_PADRAO
-        }));
+        jogadores = JOGADORES_INICIAIS.map(nome => ({ nome: nome, foto: FOTO_PADRAO }));
     }
     preencherSelectJogadores();
 }
 
-// Salvar fotos dos jogadores no Firebase
 async function salvarFotosJogadores() {
     try {
         const fotosObj = {};
-        jogadores.forEach(j => {
-            fotosObj[j.nome] = j.foto;
-        });
+        jogadores.forEach(j => { fotosObj[j.nome] = j.foto; });
         await set(ref(db, 'fotosJogadores'), fotosObj);
         alert('✅ Fotos salvas com sucesso!');
         atualizar();
         preencherSelectJogadores();
         modalGerenciarFotos.classList.remove('active');
-    } catch (e) {
-        alert('Erro ao salvar fotos: ' + e.message);
-    }
+    } catch (e) { alert('Erro ao salvar fotos: ' + e.message); }
 }
 
-// Preencher o select com as opções formatadas
 function preencherSelectJogadores() {
     const selectJogador = document.getElementById('playerName');
     selectJogador.innerHTML = '';
-    
     const optDefault = document.createElement('option');
     optDefault.value = '';
     optDefault.textContent = 'Selecione seu nome...';
     selectJogador.appendChild(optDefault);
-    
     jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(j => {
         const o = document.createElement('option');
         o.value = j.nome;
@@ -509,25 +273,32 @@ function preencherSelectJogadores() {
     });
 }
 
-// Carregar configurações do Firebase
+// FUNÇÃO CORRIGIDA: Força as datas corretas mesmo quando carrega do Firebase
 async function carregarConfig() {
     try {
         const snapshot = await get(ref(db, 'config'));
-        if (snapshot.exists()) {
-            config = snapshot.val();
-        } else {
-            await salvarConfig(config);
-        }
+        
+        // SEMPRE FORÇAR AS DATAS CORRETAS DA 4ª ETAPA
+        config = {
+            etapa: 4,
+            dataEvento: DATA_CORRETA_EVENTO,
+            dataAbertura: getDataAberturaComHorario(),
+            inscricoesAbertas: false
+        };
+        
+        // Salvar a configuração correta no Firebase para corrigir permanentemente
+        await salvarConfig(config);
         
         DATA_ABERTURA = new Date(config.dataAbertura).getTime();
         DATA_EVENTO = new Date(config.dataEvento);
         atualizarInterfaceConfig();
+        
+        console.log('✅ Configuração corrigida:', config);
     } catch (e) {
         console.error('Erro ao carregar config:', e);
     }
 }
 
-// Salvar configurações no Firebase
 async function salvarConfig(novaConfig) {
     try {
         await set(ref(db, 'config'), novaConfig);
@@ -535,21 +306,16 @@ async function salvarConfig(novaConfig) {
         DATA_ABERTURA = new Date(config.dataAbertura).getTime();
         DATA_EVENTO = new Date(config.dataEvento);
         atualizarInterfaceConfig();
-    } catch (e) {
-        console.error('Erro ao salvar config:', e);
-    }
+    } catch (e) { console.error('Erro ao salvar config:', e); }
 }
 
-// Atualizar interface com as configurações
 function atualizarInterfaceConfig() {
     const etapaAtual = getEtapaAtual();
     const dataFormatada = DATA_EVENTO.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
     dataEventoEl.textContent = `📅 ${etapaAtual.descricao} - ${dataFormatada}`;
     
-    // Timer header
     const dataAberturaObj = new Date(config.dataAbertura);
-    const dataAberturaStr = dataAberturaObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) + 
-                            ' às ' + dataAberturaObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const dataAberturaStr = dataAberturaObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) + ' às ' + dataAberturaObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     timerHeader.textContent = `As Inscrições abrem ${dataAberturaStr}`;
     
     if (timerInterval) clearInterval(timerInterval);
@@ -587,7 +353,6 @@ function atualizarCronometro() {
     }
 }
 
-// Função para obter a URL da foto do jogador
 function getFotoJogador(nomeJogador) {
     const jogador = jogadores.find(j => j.nome === nomeJogador);
     return jogador ? jogador.foto : FOTO_PADRAO;
@@ -601,7 +366,7 @@ try {
   statusIndicator.classList.add('connected');
   
   await carregarFotosJogadores();
-  await carregarConfig();
+  await carregarConfig(); // Esta função agora força as datas corretas
   
   onValue(ref(db, 'confirmados'), (snapshot) => {
     confirmados = [];
@@ -617,7 +382,14 @@ try {
   
   onValue(ref(db, 'config'), (snapshot) => {
     if (snapshot.exists()) {
-      config = snapshot.val();
+      const firebaseConfig = snapshot.val();
+      // IGNORA as datas do Firebase e MANTÉM as datas corretas da 4ª etapa
+      config = {
+        etapa: 4,
+        dataEvento: DATA_CORRETA_EVENTO,
+        dataAbertura: getDataAberturaComHorario(),
+        inscricoesAbertas: firebaseConfig.inscricoesAbertas || false
+      };
       DATA_ABERTURA = new Date(config.dataAbertura).getTime();
       DATA_EVENTO = new Date(config.dataEvento);
       atualizarInterfaceConfig();
@@ -629,7 +401,6 @@ try {
   statusIndicator.classList.add('error');
 }
 
-// Elementos do modal
 const selectJogador = document.getElementById('playerName');
 const photoPreview = document.getElementById('playerPhotoPreview');
 const previewImg = photoPreview.querySelector('img');
@@ -637,22 +408,17 @@ const previewImg = photoPreview.querySelector('img');
 selectJogador.addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
     const foto = selectedOption.getAttribute('data-foto');
-    
     if (foto && this.value) {
         previewImg.src = foto;
         photoPreview.style.display = 'block';
-    } else {
-        photoPreview.style.display = 'none';
-    }
+    } else { photoPreview.style.display = 'none'; }
 });
 
 btnEntendi.onclick = () => modalBemVindo.classList.remove('active');
 window.addEventListener('load', () => modalBemVindo.classList.add('active'));
 
 btnConfirmar.onclick = () => {
-    if (!config.inscricoesAbertas && !modoAdmin) {
-        return alert("As inscrições estão fechadas no momento!");
-    }
+    if (!config.inscricoesAbertas && !modoAdmin) return alert("As inscrições estão fechadas no momento!");
     modal.classList.add('active');
 };
 
@@ -670,67 +436,35 @@ isGuest.onchange = e => guestNameGroup.style.display = e.target.checked ? 'block
 btnConfirmarModal.onclick = async () => {
   const nome = selectJogador.value;
   if (!nome) return alert('Selecione seu nome!');
-  
   if (!isGuest.checked) {
     const jaInscrito = [...confirmados, ...listaEspera].some(p => !p.isGuest && p.nome === nome);
-    if (jaInscrito) {
-      return alert('Você já está inscrito!');
-    }
+    if (jaInscrito) return alert('Você já está inscrito!');
   }
-  
   const agora = new Date().toISOString();
-  
   try {
     if (!isGuest.checked) {
       const snapshot = await get(ref(db, 'confirmados'));
       const totalAtual = snapshot.exists() ? snapshot.size : 0;
-      
       if (totalAtual < LIMITE_VAGAS) {
-        await push(ref(db, 'confirmados'), { 
-          nome, 
-          isGuest: false, 
-          data: agora,
-          timestamp: Date.now(),
-          foto: getFotoJogador(nome),
-          etapa: config.etapa
-        });
+        await push(ref(db, 'confirmados'), { nome, isGuest: false, data: agora, timestamp: Date.now(), foto: getFotoJogador(nome), etapa: config.etapa });
         alert('✅ Presença confirmada! Você está na lista de confirmados.');
       } else {
-        await push(ref(db, 'listaEspera'), { 
-          nome, 
-          isGuest: false, 
-          data: agora,
-          timestamp: Date.now(),
-          foto: getFotoJogador(nome),
-          etapa: config.etapa
-        });
+        await push(ref(db, 'listaEspera'), { nome, isGuest: false, data: agora, timestamp: Date.now(), foto: getFotoJogador(nome), etapa: config.etapa });
         alert('⏳ Você foi adicionado à LISTA DE ESPERA.');
       }
     } else {
       const gNome = document.getElementById('guestName').value.trim();
       if (!gNome) return alert('Digite o nome do convidado!');
-      
-      await push(ref(db, 'listaEspera'), { 
-        nome: gNome, 
-        isGuest: true, 
-        guestOf: nome, 
-        data: agora,
-        timestamp: Date.now(),
-        etapa: config.etapa
-      });
+      await push(ref(db, 'listaEspera'), { nome: gNome, isGuest: true, guestOf: nome, data: agora, timestamp: Date.now(), etapa: config.etapa });
       alert('✅ Convidado adicionado à lista de espera!');
     }
-    
     modal.classList.remove('active');
     selectJogador.value = '';
     photoPreview.style.display = 'none';
     isGuest.checked = false;
     guestNameGroup.style.display = 'none';
     document.getElementById('guestName').value = '';
-    
-  } catch (e) { 
-    alert('Erro ao confirmar: ' + e.message); 
-  }
+  } catch (e) { alert('Erro ao confirmar: ' + e.message); }
 };
 
 btnCancelarWhatsApp.onclick = () => {
@@ -742,53 +476,27 @@ function atualizar() {
   confirmedCount.textContent = confirmados.length;
   vacancyCount.textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
   waitlistCount.textContent = listaEspera.length;
-
   const confirmadosOrdenados = [...confirmados].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-  
   confirmedList.innerHTML = confirmadosOrdenados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
   confirmadosOrdenados.forEach((p, i) => {
     const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
     const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge member">MEMBRO</span>';
     const guestInfo = p.isGuest && p.guestOf ? ` <small style="opacity:0.7">(Convidado de ${p.guestOf})</small>` : '';
     const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
-    
-    confirmedList.innerHTML += `<li class="player-item">
-        <div class="player-info">
-            <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}">
-            <div class="player-number">${i+1}º</div>
-            <div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div>
-        </div>
-        ${badge}
-        ${btnRemover}</li>`;
+    confirmedList.innerHTML += `<li class="player-item"><div class="player-info"><img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}"><div class="player-number">${i+1}º</div><div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div></div>${badge}${btnRemover}</li>`;
   });
-
   const membrosEspera = listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
   const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
   const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera];
-
   waitlistList.innerHTML = listaEsperaOrdenada.length ? '' : '<li class="empty-state">Lista vazia</li>';
   listaEsperaOrdenada.forEach((p, i) => {
     const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
-    const btnPromover = modoAdmin && confirmados.length < LIMITE_VAGAS ? 
-      `<button class="remove-btn" style="background:#4CAF50" onclick="promoverJogadorManual('${p.id}')">↗️ PROMOVER</button>` : '';
+    const btnPromover = modoAdmin && confirmados.length < LIMITE_VAGAS ? `<button class="remove-btn" style="background:#4CAF50" onclick="promoverJogadorManual('${p.id}')">↗️ PROMOVER</button>` : '';
     const guestInfo = p.isGuest && p.guestOf ? ` (Convidado de ${p.guestOf})` : '';
     const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge wait">MEMBRO</span>';
     const prioridade = !p.isGuest && i < membrosEspera.length ? '<span class="priority-indicator">PRIORIDADE</span>' : '';
     const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
-    
-    waitlistList.innerHTML += `<li class="player-item">
-        <div class="player-info">
-            <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}">
-            <div class="player-number">${i+1}º</div>
-            <div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div>
-        </div>
-        <div style="display:flex;gap:5px;align-items:center">
-          ${badge}
-          ${prioridade}
-          ${btnPromover}
-          ${btnRemover}
-        </div>
-        </li>`;
+    waitlistList.innerHTML += `<li class="player-item"><div class="player-info"><img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}"><div class="player-number">${i+1}º</div><div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div></div><div style="display:flex;gap:5px;align-items:center">${badge}${prioridade}${btnPromover}${btnRemover}</div></li>`;
   });
 }
 
@@ -797,98 +505,46 @@ window.removerJogador = async (id, isWait) => {
   try {
     const path = isWait ? 'listaEspera' : 'confirmados';
     await remove(ref(db, `${path}/${id}`));
-    if (!isWait) {
-      await promoverDaListaDeEspera();
-    }
+    if (!isWait) await promoverDaListaDeEspera();
     alert('Jogador removido com sucesso!');
-  } catch (e) {
-    alert('Erro ao remover: ' + e.message);
-  }
+  } catch (e) { alert('Erro ao remover: ' + e.message); }
 };
 
 async function promoverDaListaDeEspera() {
   try {
     const snapshotConfirmados = await get(ref(db, 'confirmados'));
     const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
-    
     if (totalConfirmados < LIMITE_VAGAS) {
       const snapshotEspera = await get(ref(db, 'listaEspera'));
-      
       if (snapshotEspera.exists()) {
         let candidatos = [];
-        snapshotEspera.forEach(child => {
-          candidatos.push({...child.val(), id: child.key});
-        });
-        
+        snapshotEspera.forEach(child => candidatos.push({...child.val(), id: child.key}));
         const membros = candidatos.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-        
         if (membros.length > 0) {
           const promovido = membros[0];
-          
-          await push(ref(db, 'confirmados'), {
-            nome: promovido.nome,
-            isGuest: false,
-            data: promovido.data,
-            timestamp: promovido.timestamp,
-            foto: promovido.foto || getFotoJogador(promovido.nome),
-            promovido: true,
-            dataPromocao: new Date().toISOString(),
-            etapa: config.etapa
-          });
-          
+          await push(ref(db, 'confirmados'), { nome: promovido.nome, isGuest: false, data: promovido.data, timestamp: promovido.timestamp, foto: promovido.foto || getFotoJogador(promovido.nome), promovido: true, dataPromocao: new Date().toISOString(), etapa: config.etapa });
           await remove(ref(db, `listaEspera/${promovido.id}`));
         }
       }
     }
-  } catch (e) {
-    console.error('Erro ao promover da lista de espera:', e);
-  }
+  } catch (e) { console.error('Erro ao promover da lista de espera:', e); }
 }
 
 window.promoverJogadorManual = async (id) => {
   try {
     const snapshotConfirmados = await get(ref(db, 'confirmados'));
     const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
-    
-    if (totalConfirmados >= LIMITE_VAGAS) {
-      return alert('❌ Não há vagas disponíveis!');
-    }
-    
+    if (totalConfirmados >= LIMITE_VAGAS) return alert('❌ Não há vagas disponíveis!');
     const snapshot = await get(ref(db, `listaEspera/${id}`));
-    
-    if (!snapshot.exists()) {
-      return alert('Jogador não encontrado!');
-    }
-    
+    if (!snapshot.exists()) return alert('Jogador não encontrado!');
     const jogador = snapshot.val();
-    
-    if (!confirm(`Promover ${jogador.nome} para confirmados?`)) {
-      return;
-    }
-    
-    await push(ref(db, 'confirmados'), {
-      nome: jogador.nome,
-      isGuest: jogador.isGuest,
-      guestOf: jogador.guestOf || null,
-      data: jogador.data,
-      timestamp: jogador.timestamp,
-      foto: jogador.foto || (!jogador.isGuest ? getFotoJogador(jogador.nome) : null),
-      promovido: true,
-      promocaoManual: true,
-      dataPromocao: new Date().toISOString(),
-      etapa: config.etapa
-    });
-    
+    if (!confirm(`Promover ${jogador.nome} para confirmados?`)) return;
+    await push(ref(db, 'confirmados'), { nome: jogador.nome, isGuest: jogador.isGuest, guestOf: jogador.guestOf || null, data: jogador.data, timestamp: jogador.timestamp, foto: jogador.foto || (!jogador.isGuest ? getFotoJogador(jogador.nome) : null), promovido: true, promocaoManual: true, dataPromocao: new Date().toISOString(), etapa: config.etapa });
     await remove(ref(db, `listaEspera/${id}`));
-    
     alert(`✅ ${jogador.nome} foi promovido!`);
-    
-  } catch (e) {
-    alert('Erro ao promover: ' + e.message);
-  }
+  } catch (e) { alert('Erro ao promover: ' + e.message); }
 };
 
-// Funções do modo admin
 btnModoAdmin.onclick = () => modalAdmin.classList.add('active');
 btnFecharAdmin.onclick = () => modalAdmin.classList.remove('active');
 
@@ -896,7 +552,6 @@ btnAcessarAdmin.onclick = () => {
   if (document.getElementById('senhaAdmin').value === "poker2026") {
     modoAdmin = true;
     modalAdmin.classList.remove('active');
-    
     btnToggleInscricoes.style.display = 'block';
     btnProximaEtapa.style.display = 'block';
     btnSelecionarEtapa.style.display = 'block';
@@ -904,19 +559,14 @@ btnAcessarAdmin.onclick = () => {
     btnSairAdmin.style.display = 'block';
     btnModoAdmin.style.background = '#4CAF50';
     btnModoAdmin.style.opacity = '1';
-    
     atualizarBotaoInscricoes();
-    
     alert("✅ Modo Administrador Ativado!");
     atualizar();
-  } else {
-    alert('❌ Senha incorreta!');
-  }
+  } else alert('❌ Senha incorreta!');
 };
 
 btnSairAdmin.onclick = () => {
   modoAdmin = false;
-  
   btnToggleInscricoes.style.display = 'none';
   btnProximaEtapa.style.display = 'none';
   btnSelecionarEtapa.style.display = 'none';
@@ -924,7 +574,6 @@ btnSairAdmin.onclick = () => {
   btnSairAdmin.style.display = 'none';
   btnModoAdmin.style.background = 'rgba(13,27,13,0.3)';
   btnModoAdmin.style.opacity = '0.15';
-  
   alert("👋 Modo Administrador desativado.");
   atualizar();
 };
@@ -948,43 +597,28 @@ function atualizarBotaoInscricoes() {
 btnGerenciarFotos.onclick = () => {
   const fotosList = document.getElementById('fotosList');
   fotosList.innerHTML = '';
-  
   jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach((jogador, index) => {
     const div = document.createElement('div');
     div.className = 'foto-item';
-    div.innerHTML = `
-        <img class="foto-preview" src="${jogador.foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${jogador.nome}">
-        <div class="foto-info">${jogador.nome}</div>
-        <input type="text" class="foto-input" id="foto-${index}" value="${jogador.foto}" placeholder="URL da foto do ${jogador.nome}">
-        <div class="foto-actions">
-            <button class="foto-btn" onclick="document.getElementById('foto-${index}').value='${FOTO_PADRAO}'">Padrão</button>
-        </div>
-    `;
+    div.innerHTML = `<img class="foto-preview" src="${jogador.foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${jogador.nome}"><div class="foto-info">${jogador.nome}</div><input type="text" class="foto-input" id="foto-${index}" value="${jogador.foto}" placeholder="URL da foto do ${jogador.nome}"><div class="foto-actions"><button class="foto-btn" onclick="document.getElementById('foto-${index}').value='${FOTO_PADRAO}'">Padrão</button></div>`;
     fotosList.appendChild(div);
   });
-  
   modalGerenciarFotos.classList.add('active');
 };
 
-btnFecharFotos.onclick = () => {
-  modalGerenciarFotos.classList.remove('active');
-};
+btnFecharFotos.onclick = () => modalGerenciarFotos.classList.remove('active');
 
 btnSalvarFotos.onclick = () => {
   jogadores.forEach((jogador, index) => {
     const input = document.getElementById(`foto-${index}`);
-    if (input) {
-      jogador.foto = input.value || FOTO_PADRAO;
-    }
+    if (input) jogador.foto = input.value || FOTO_PADRAO;
   });
-  
   salvarFotosJogadores();
 };
 
 btnSelecionarEtapa.onclick = () => {
   const selector = document.getElementById('etapaSelector');
   selector.innerHTML = '';
-  
   ETAPAS.forEach(etapa => {
     const btn = document.createElement('button');
     btn.className = `etapa-btn ${etapa.numero === config.etapa ? 'ativa' : ''}`;
@@ -993,70 +627,41 @@ btnSelecionarEtapa.onclick = () => {
     btn.onclick = () => selecionarEtapa(etapa.numero);
     selector.appendChild(btn);
   });
-  
   modalSelecionarEtapa.classList.add('active');
 };
 
-btnCancelarSelecao.onclick = () => {
-  modalSelecionarEtapa.classList.remove('active');
-};
+btnCancelarSelecao.onclick = () => modalSelecionarEtapa.classList.remove('active');
 
 async function selecionarEtapa(numero) {
   const etapa = ETAPAS.find(e => e.numero === numero);
   if (!etapa) return;
-  
-  if (!confirm(`Deseja ir para a ${etapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) {
-    return;
-  }
-  
+  if (!confirm(`Deseja ir para a ${etapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) return;
   try {
     await set(ref(db, 'confirmados'), null);
     await set(ref(db, 'listaEspera'), null);
-    
-    const dataAbertura = calcularDataAbertura(etapa.data);
-    
-    await salvarConfig({
-      etapa: etapa.numero,
-      dataEvento: etapa.data,
-      dataAbertura: dataAbertura.toISOString(),
-      inscricoesAbertas: false
-    });
-    
+    const dataAbertura = new Date(etapa.data);
+    const diaSemana = dataAbertura.getDay();
+    let diasAteSegunda = diaSemana === 1 ? 7 : diaSemana === 0 ? 6 : diaSemana - 1;
+    const dataAberturaObj = new Date(etapa.data);
+    dataAberturaObj.setDate(dataAberturaObj.getDate() - diasAteSegunda);
+    dataAberturaObj.setHours(7, 0, 0, 0);
+    await salvarConfig({ etapa: etapa.numero, dataEvento: etapa.data, dataAbertura: dataAberturaObj.toISOString(), inscricoesAbertas: false });
     modalSelecionarEtapa.classList.remove('active');
     alert(`✅ Configurado para ${etapa.descricao}!`);
-    
-  } catch (e) {
-    alert('Erro ao mudar de etapa: ' + e.message);
-  }
+  } catch (e) { alert('Erro ao mudar de etapa: ' + e.message); }
 }
 
 btnProximaEtapa.onclick = () => {
   const proximaEtapa = ETAPAS.find(e => e.numero === config.etapa + 1) || ETAPAS[0];
-  
-  if (!confirm(`Avançar para ${proximaEtapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) {
-    return;
-  }
-  
+  if (!confirm(`Avançar para ${proximaEtapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) return;
   selecionarEtapa(proximaEtapa.numero);
 };
 
 btnExportar.onclick = () => {
   let csv = 'Posição,Nome,Status,Data/Hora\n';
-  confirmados.forEach((p, i) => {
-    csv += `${i+1},${p.nome},CONFIRMADO,${new Date(p.data).toLocaleString('pt-BR')}\n`;
-  });
-  
-  const listaEsperaOrdenada = [
-    ...listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)),
-    ...listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
-  ];
-  
-  listaEsperaOrdenada.forEach((p, i) => {
-    const tipo = p.isGuest ? 'CONVIDADO' : 'ESPERA';
-    const nome = p.isGuest && p.guestOf ? `${p.nome} (Convidado de ${p.guestOf})` : p.nome;
-    csv += `${i+1},${nome},${tipo},${new Date(p.data).toLocaleString('pt-BR')}\n`;
-  });
-  
+  confirmados.forEach((p, i) => csv += `${i+1},${p.nome},CONFIRMADO,${new Date(p.data).toLocaleString('pt-BR')}\n`);
+  const listaEsperaOrdenada = [...listaEspera.filter(p => !p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)), ...listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))];
+  listaEsperaOrdenada.forEach((p, i) => { const tipo = p.isGuest ? 'CONVIDADO' : 'ESPERA'; const nome = p.isGuest && p.guestOf ? `${p.nome} (Convidado de ${p.guestOf})` : p.nome; csv += `${i+1},${nome},${tipo},${new Date(p.data).toLocaleString('pt-BR')}\n`; });
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
