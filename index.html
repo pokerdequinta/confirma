@@ -14,7 +14,7 @@ body{font-family:'Roboto', sans-serif;background:#0d1b0d;color:#fff;min-height:1
 .container{max-width:1000px;margin:auto;padding:20px}
 header{text-align:center;background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;margin-bottom:30px}
 h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
-.subtitle{margin-top:10px}
+.subtitle{margin-top:10px;font-size:1.3em;font-weight:bold;color:#d4a121}
 
 #countdownContainer {
     background: #1a3d1a;
@@ -30,16 +30,17 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:25px}
 .info-card{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;text-align:center}
 .info-card h2{font-family:'Anton';font-size:2.5em;color:#d4a121}
-.add-btn{width:100%;padding:15px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:10px;color:#000}
-.cancel-btn-main{width:100%;padding:15px;background:#c72c48;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px;color:#fff}
-.add-btn:disabled{opacity:0.5;cursor:not-allowed}
+.add-btn{width:100%;padding:15px;background:#d4a121;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:10px;color:#000;font-size:1.1em}
+.add-btn:disabled{opacity:0.5;cursor:not-allowed;background:#666}
+.cancel-btn-main{width:100%;padding:15px;background:#c72c48;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-bottom:20px;color:#fff;font-size:1.1em}
 .export-btn{background:#2d5016;color:#fff}
 .section{background:#102810;border:2px solid #d4a121;border-radius:12px;padding:20px;margin-bottom:25px}
+.section h3{margin-bottom:15px;color:#d4a121}
 .player-list{list-style:none}
-.player-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);padding:15px;border-radius:10px;margin-bottom:10px;gap:10px}
-.player-info{display:flex;gap:15px;align-items:center}
+.player-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.05);padding:15px;border-radius:10px;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+.player-info{display:flex;gap:15px;align-items:center;flex-wrap:wrap}
 .player-avatar {width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #d4a121}
-.player-number{font-family:'Anton';color:#d4a121}
+.player-number{font-family:'Anton';color:#d4a121;font-size:1.2em}
 .player-details{display:flex;flex-direction:column}
 .player-details small{opacity:.85}
 .player-badge{background:#d4a121;color:#000;padding:4px 10px;border-radius:20px;font-size:.8em;font-weight:bold}
@@ -52,15 +53,10 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);justify-content:center;align-items:center;z-index:1000}
 .modal.active{display:flex}
 .modal-content{background:#102810;border:2px solid #d4a121;border-radius:15px;padding:30px;width:90%;max-width:500px}
+.modal-content h2{color:#d4a121;margin-bottom:20px}
 .form-group{margin-bottom:15px}
 .form-group label{color:#d4a121;font-weight:bold;display:block;margin-bottom:5px}
 .form-group input,.form-group select{width:100%;padding:10px;border-radius:8px;border:1px solid #2d5016;background:#1a3d1a;color:#fff}
-.player-select {display:flex;align-items:center;gap:10px;padding:5px}
-.player-select img {width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #d4a121}
-.player-select span {color:#fff}
-#playerName option {background:#1a3d1a;color:#fff;padding:10px}
-#playerName option:hover {background:#2d5016}
-#playerName optgroup {background:#102810;color:#d4a121;font-weight:bold}
 .modal-buttons{display:flex;gap:10px;margin-top:20px}
 .modal-btn{flex:1;padding:10px;font-weight:bold;border:none;border-radius:8px;cursor:pointer}
 .modal-btn.confirm{background:#d4a121;color:#000}
@@ -72,7 +68,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 .priority-indicator{background:#FFA500;color:#000;padding:2px 8px;border-radius:10px;font-size:0.75em;margin-left:5px}
 .penalty-indicator{background:#FF4500;color:#fff;padding:2px 8px;border-radius:10px;font-size:0.75em;margin-left:5px}
 
-/* Estilos para o painel admin */
 .admin-panel {
     position: fixed;
     bottom: 10px;
@@ -99,12 +94,6 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     background: #d4a121;
     color: #000;
 }
-.admin-btn.active {
-    opacity: 1;
-    background: #4CAF50;
-}
-
-/* Estilo para o seletor de etapa no admin */
 .etapa-selector {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -119,19 +108,11 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    transition: all 0.3s;
-}
-.etapa-btn:hover {
-    background: #d4a121;
-    color: #000;
 }
 .etapa-btn.ativa {
     background: #d4a121;
     color: #000;
-    border-color: #fff;
 }
-
-/* Estilo para a área de gerenciamento de fotos */
 .foto-item {
     display: flex;
     align-items: center;
@@ -140,6 +121,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     background: rgba(255,255,255,0.05);
     padding: 15px;
     border-radius: 8px;
+    flex-wrap: wrap;
 }
 .foto-info {
     min-width: 150px;
@@ -155,44 +137,13 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 }
 .foto-input {
     flex: 1;
+    min-width: 200px;
     padding: 10px;
     background: #1a3d1a;
     border: 1px solid #2d5016;
     color: #fff;
     border-radius: 5px;
-    font-size: 0.9em;
 }
-.foto-actions {
-    display: flex;
-    gap: 5px;
-}
-.foto-btn {
-    padding: 8px 15px;
-    background: #d4a121;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: #000;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-.foto-btn.reset {
-    background: #c72c48;
-    color: #fff;
-}
-.fotos-header {
-    display: grid;
-    grid-template-columns: 80px 150px 1fr 100px;
-    gap: 15px;
-    padding: 10px 15px;
-    background: #102810;
-    border-bottom: 2px solid #d4a121;
-    font-weight: bold;
-    color: #d4a121;
-    margin-bottom: 10px;
-}
-
-/* Estilos para o modal de penalidade */
 .penalty-modal-content {
     max-width: 550px;
 }
@@ -206,34 +157,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     justify-content: space-between;
     align-items: center;
 }
-.penalized-player-item .player-name {
-    font-weight: bold;
-    color: #fff;
-}
-.penalized-player-item .penalty-etapa {
-    font-size: 0.8em;
-    color: #FF6600;
-    opacity: 0.9;
-}
-.remove-penalty-btn {
-    background: #c72c48;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.85em;
-}
-
-/* Modal de aviso de penalidade ao jogador */
 .penalty-warning-modal {
     max-width: 480px;
     border-color: #FF4500 !important;
-}
-.penalty-warning-icon {
-    font-size: 3em;
-    text-align: center;
-    margin: 10px 0;
 }
 .penalty-warning-text {
     background: rgba(255,69,0,0.15);
@@ -241,11 +167,21 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
     border-radius: 8px;
     padding: 15px;
     margin: 15px 0;
-    line-height: 1.7;
 }
-
+.aviso-datas {
+    background: #1a3d1a;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    text-align: center;
+}
+.aviso-datas strong {
+    color: #d4a121;
+}
 @media(max-width:768px){
 .info-cards{grid-template-columns:1fr}
+.foto-item{flex-direction:column;align-items:flex-start}
+.foto-input{width:100%}
 }
 </style>
 </head>
@@ -261,25 +197,25 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="container">
 
 <header>
-<h1>LISTA DE PRESENÇA POKER DE QUINTA</h1>
-<div class="subtitle" id="dataEvento">📅 Carregando...</div>
+<h1>🎲 LISTA DE PRESENÇA 🃏</h1>
+<h1>POKER DE QUINTA</h1>
+<div class="subtitle" id="dataEvento">📅 5ª Etapa - 28/05/2026</div>
 </header>
 
-<!-- Container de contagem regressiva (oculto porque inscrições já estão abertas) -->
-<div id="countdownContainer" style="display: none;">
-    <span class="timer-header" id="timerHeader">✅ INSCRIÇÕES ABERTAS!</span>
-    <div id="timer">As inscrições já estão liberadas!</div>
+<div id="countdownContainer">
+    <span class="timer-header" id="timerHeader">⏳ ABERTURA DAS INSCRIÇÕES EM</span>
+    <div id="timer">--d --h --m --s</div>
 </div>
 
 <div class="info-cards">
-<div class="info-card"><h2 id="confirmedCount">0</h2>Confirmados</div>
-<div class="info-card"><h2 id="vacancyCount">20</h2>Vagas</div>
-<div class="info-card"><h2 id="waitlistCount">0</h2>Espera</div>
+<div class="info-card"><h2 id="confirmedCount">0</h2><span>✅ Confirmados</span></div>
+<div class="info-card"><h2 id="vacancyCount">20</h2><span>🎯 Vagas Restantes</span></div>
+<div class="info-card"><h2 id="waitlistCount">0</h2><span>⏳ Lista de Espera</span></div>
 </div>
 
-<button class="add-btn" id="btnConfirmar">➕ CONFIRMAR PRESENÇA</button>
+<button class="add-btn" id="btnConfirmar" disabled>🔒 INSCRIÇÕES FECHADAS - AGUARDE 25/05</button>
 <button class="cancel-btn-main" id="btnCancelarWhatsApp">❌ CANCELAR MINHA INSCRIÇÃO</button>
-<button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR CSV</button>
+<button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR LISTA (CSV)</button>
 
 <div class="section">
 <h3>✅ CONFIRMADOS</h3>
@@ -291,7 +227,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="section">
 <h3>⏳ LISTA DE ESPERA</h3>
 <p style="opacity:0.8;margin-bottom:15px;font-size:0.9em">
-  🔸 Membros têm prioridade sobre convidados • Ordem de chegada dentro de cada categoria
+🔸 Membros têm prioridade sobre convidados • Ordem de chegada dentro de cada categoria
 </p>
 <ul id="waitlistList" class="player-list">
 <li class="loading">Carregando dados...</li>
@@ -301,79 +237,27 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </div>
 
 <div class="admin-panel">
-    <button class="admin-btn" id="btnModoAdmin" style="background:rgba(13,27,13,0.3);">🔐</button>
+    <button class="admin-btn" id="btnModoAdmin">🔐</button>
     <button class="admin-btn" id="btnToggleInscricoes" style="display:none;">🔒 Fechar</button>
     <button class="admin-btn" id="btnProximaEtapa" style="display:none;">⏭️ Próx</button>
     <button class="admin-btn" id="btnSelecionarEtapa" style="display:none;">📅 Etapa</button>
     <button class="admin-btn" id="btnGerenciarFotos" style="display:none;">📸 Fotos</button>
     <button class="admin-btn" id="btnGerenciarPenalidades" style="display:none;">⚠️ Penalidades</button>
-    <button class="admin-btn" id="btnSairAdmin" style="display:none; background:#c72c48;">🚪 Sair</button>
+    <button class="admin-btn" id="btnSairAdmin" style="display:none;">🚪 Sair</button>
 </div>
 
 <!-- Modal Admin Login -->
 <div class="modal" id="modalAdmin">
 <div class="modal-content">
-<h2 style="color: #8b0000;">🔐 Modo Administrador</h2>
-<p style="margin: 15px 0; opacity: 0.8;">Digite a senha de administrador para acessar funções exclusivas:</p>
+<h2>🔐 Modo Administrador</h2>
+<p style="margin: 15px 0;">Digite a senha de administrador:</p>
 <div class="form-group">
 <label>Senha Admin</label>
 <input type="password" id="senhaAdmin" placeholder="Digite a senha">
 </div>
 <div class="modal-buttons">
 <button class="modal-btn cancel" id="btnFecharAdmin">Cancelar</button>
-<button class="modal-btn confirm" id="btnAcessarAdmin" style="background:#8b0000; color:#fff">Acessar</button>
-</div>
-</div>
-</div>
-
-<!-- Modal Gerenciar Fotos -->
-<div class="modal" id="modalGerenciarFotos">
-<div class="modal-content" style="max-width: 900px;">
-<h2 style="color: #d4a121;">📸 Gerenciar Fotos dos Jogadores</h2>
-<p style="margin: 15px 0; opacity: 0.8;">Configure as URLs das fotos de cada jogador:</p>
-<div class="fotos-header">
-    <div>Prévia</div>
-    <div>Jogador</div>
-    <div>URL da Foto</div>
-    <div>Ações</div>
-</div>
-<div id="fotosList" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
-</div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnFecharFotos">Fechar</button>
-<button class="modal-btn confirm" id="btnSalvarFotos" style="background:#d4a121;">Salvar Todas</button>
-</div>
-</div>
-</div>
-
-<!-- Modal Selecionar Etapa -->
-<div class="modal" id="modalSelecionarEtapa">
-<div class="modal-content">
-<h2 style="color: #d4a121;">📅 Selecionar Etapa</h2>
-<p style="margin: 15px 0;">Escolha a etapa para configurar o sistema:</p>
-<div class="etapa-selector" id="etapaSelector">
-</div>
-<div class="modal-buttons">
-<button class="modal-btn cancel" id="btnCancelarSelecao">Cancelar</button>
-</div>
-</div>
-</div>
-
-<!-- Modal Bem-vindo -->
-<div class="modal" id="modalBemVindo">
-<div class="modal-content">
-<h2 style="color: #d4a121;">📋 Bem-vindo ao Poker de Quinta!</h2>
-<p style="margin: 15px 0; line-height: 1.6;">Esta é a página oficial de inscrição do <strong>Poker de Quinta</strong>.</p>
-<p style="margin: 15px 0; line-height: 1.6; font-size:0.9em">
-  <strong>Regras importantes:</strong><br>
-  • Limite de 20 vagas confirmadas<br>
-  • Confirme a presença somente se for ir com CERTEZA<br>
-  • Caso se inscreva e não possa ir a etapa, clique no botão CANCELAR MINHA INSCRIÇÃO<br>
-  • Após 20 confirmações, novos jogadores vão para lista de espera<br>
-  • Na lista de espera: membros têm prioridade sobre convidados
-</p>
-<div class="modal-buttons">
-<button class="modal-btn confirm" id="btnEntendi" style="width:100%">Entendi!</button>
+<button class="modal-btn confirm" id="btnAcessarAdmin">Acessar</button>
 </div>
 </div>
 </div>
@@ -381,20 +265,21 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <!-- Modal Confirmar Presença -->
 <div class="modal" id="modal">
 <div class="modal-content">
-<h2>Confirmar Presença</h2>
+<h2>✅ Confirmar Presença</h2>
 <div class="form-group">
-<label>Jogador</label>
-<select id="playerName" style="padding:10px;"></select>
-<div id="playerPhotoPreview" style="display:none; margin-top:10px; text-align:center;">
-    <img src="" alt="Foto do jogador" style="width:60px;height:60px;border-radius:50%;border:2px solid #d4a121;object-fit:cover;">
-</div>
+<label>👤 Selecione seu nome</label>
+<select id="playerName"></select>
 </div>
 <div class="form-group">
-<input type="checkbox" id="isGuest"> Adicionar convidado
+<input type="checkbox" id="isGuest"> 🧑‍🤝‍🧑 Sou convidado de um membro
 </div>
 <div class="form-group" id="guestNameGroup" style="display:none">
-<label>Nome do Convidado</label>
+<label>📝 Nome do Convidado</label>
 <input id="guestName" placeholder="Digite o nome completo">
+</div>
+<div class="aviso-datas">
+📅 <strong>5ª Etapa: 28/05/2026</strong><br>
+🕐 Inscrições a partir de <strong>25/05 às 07:00</strong>
 </div>
 <div class="modal-buttons">
 <button class="modal-btn cancel" id="btnCancelar">Cancelar</button>
@@ -403,49 +288,84 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 </div>
 </div>
 
-<!-- Modal Aviso de Penalidade (exibido ao jogador penalizado que se inscreve) -->
+<!-- Modal Aviso de Penalidade -->
 <div class="modal" id="modalAvisoPenalidade">
 <div class="modal-content penalty-warning-modal">
-<div class="penalty-warning-icon">⚠️🃏</div>
-<h2 style="color: #FF4500; text-align:center;">PENALIDADE APLICADA</h2>
+<h2 style="color:#FF4500; text-align:center;">⚠️ PENALIDADE APLICADA</h2>
 <div class="penalty-warning-text">
-  <strong id="penaltyPlayerName" style="color:#FF6600; font-size:1.1em;"></strong>, você foi penalizado por <strong>falta em uma etapa anterior</strong> sem cancelamento prévio.<br><br>
-  Como penalidade, sua inscrição foi colocada automaticamente no <strong>último lugar da lista de espera</strong>, independente do horário de inscrição.
+<strong id="penaltyPlayerName"></strong>, você foi penalizado por <strong>falta em uma etapa anterior</strong> sem cancelamento prévio.<br><br>
+Sua inscrição foi colocada automaticamente no <strong>último lugar da lista de espera</strong>.
 </div>
-<p style="opacity:0.8; font-size:0.9em; text-align:center;">Entre em contato com a organização para mais informações.</p>
 <div class="modal-buttons">
-<button class="modal-btn confirm" id="btnFecharAvisoPenalidade" style="background:#FF4500; color:#fff;">Entendi</button>
+<button class="modal-btn confirm" id="btnFecharAvisoPenalidade" style="background:#FF4500;">Entendi</button>
 </div>
 </div>
 </div>
 
-<!-- Modal Gerenciar Penalidades (Admin) -->
+<!-- Modal Bem-vindo -->
+<div class="modal" id="modalBemVindo">
+<div class="modal-content">
+<h2>🎲 Bem-vindo ao Poker de Quinta!</h2>
+<p style="margin: 15px 0; line-height: 1.6;">Esta é a página oficial de inscrição do torneio.</p>
+<p style="margin: 15px 0; line-height: 1.6;">
+<strong>📅 DATAS IMPORTANTES:</strong><br>
+• 🟢 Abertura das inscrições: <strong style="color:#4CAF50">25/05/2026 às 07:00</strong><br>
+• 🎯 5ª Etapa: <strong style="color:#d4a121">28/05/2026</strong>
+</p>
+<p style="margin: 15px 0; line-height: 1.6; font-size:0.9em">
+<strong>📋 Regras:</strong><br>
+• Limite de 20 vagas confirmadas<br>
+• Confirme presença somente se for com CERTEZA<br>
+• Cancelamentos devem ser feitos pelo WhatsApp<br>
+• Após 20 confirmações, novos jogadores vão para lista de espera<br>
+• Membros têm prioridade sobre convidados na lista de espera
+</p>
+<div class="modal-buttons">
+<button class="modal-btn confirm" id="btnEntendi" style="width:100%">👍 Entendi!</button>
+</div>
+</div>
+</div>
+
+<!-- Modal Gerenciar Fotos -->
+<div class="modal" id="modalGerenciarFotos">
+<div class="modal-content" style="max-width: 900px;">
+<h2>📸 Gerenciar Fotos dos Jogadores</h2>
+<div id="fotosList" style="max-height: 400px; overflow-y: auto; margin: 20px 0;"></div>
+<div class="modal-buttons">
+<button class="modal-btn cancel" id="btnFecharFotos">Fechar</button>
+<button class="modal-btn confirm" id="btnSalvarFotos">Salvar Todas</button>
+</div>
+</div>
+</div>
+
+<!-- Modal Selecionar Etapa -->
+<div class="modal" id="modalSelecionarEtapa">
+<div class="modal-content">
+<h2>📅 Selecionar Etapa</h2>
+<div id="etapaSelector" class="etapa-selector"></div>
+<div class="modal-buttons">
+<button class="modal-btn cancel" id="btnCancelarSelecao">Cancelar</button>
+</div>
+</div>
+</div>
+
+<!-- Modal Gerenciar Penalidades -->
 <div class="modal" id="modalGerenciarPenalidades">
-<div class="modal-content penalty-modal-content" style="max-width:600px;">
-<h2 style="color: #FF4500;">⚠️ Gerenciar Penalidades</h2>
-<p style="margin: 10px 0 5px; opacity: 0.8; font-size:0.9em;">Jogadores penalizados serão automaticamente enviados ao <strong>último lugar da lista de espera</strong> ao se inscreverem, com aviso de penalidade.</p>
-
+<div class="modal-content penalty-modal-content">
+<h2>⚠️ Gerenciar Penalidades</h2>
+<p style="margin: 10px 0;">Jogadores penalizados vão para o último lugar da lista de espera.</p>
 <div style="margin: 20px 0;">
-  <div class="form-group">
-    <label style="color:#FF6600;">Aplicar Penalidade a:</label>
-    <select id="penaltyPlayerSelect" style="padding:10px; width:100%; background:#1a3d1a; border:1px solid #FF4500; color:#fff; border-radius:8px;">
-      <option value="">Selecione o jogador...</option>
-    </select>
-  </div>
-  <button class="modal-btn confirm" id="btnAplicarPenalidade" style="background:#FF4500; color:#fff; width:100%; padding:12px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:5px;">
-    ⚠️ APLICAR PENALIDADE
-  </button>
+<select id="penaltyPlayerSelect" style="width:100%; padding:10px; background:#1a3d1a; color:#fff; border:1px solid #FF4500; border-radius:8px;">
+<option value="">Selecione o jogador...</option>
+</select>
+<button id="btnAplicarPenalidade" style="margin-top:10px; width:100%; padding:10px; background:#FF4500; color:#fff; border:none; border-radius:8px; cursor:pointer;">⚠️ APLICAR PENALIDADE</button>
 </div>
-
-<div style="border-top: 1px solid #333; padding-top:15px; margin-top:5px;">
-  <h3 style="color:#FF6600; margin-bottom:12px;">Jogadores Penalizados Atualmente:</h3>
-  <div id="penalizedList" style="max-height:250px; overflow-y:auto;">
-    <div class="empty-state" id="emptyPenalizedMsg">Nenhum jogador penalizado no momento.</div>
-  </div>
+<div style="border-top: 1px solid #333; padding-top:15px;">
+<h3>Jogadores Penalizados:</h3>
+<div id="penalizedList" style="max-height: 250px; overflow-y: auto; margin-top: 10px;"></div>
 </div>
-
-<div class="modal-buttons" style="margin-top:20px;">
-  <button class="modal-btn cancel" id="btnFecharPenalidades">Fechar</button>
+<div class="modal-buttons">
+<button class="modal-btn cancel" id="btnFecharPenalidades">Fechar</button>
 </div>
 </div>
 </div>
@@ -467,19 +387,20 @@ const firebaseConfig = {
 const LIMITE_VAGAS = 20;
 const FOTO_PADRAO = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
 
-// =============================================
-// CALENDÁRIO OFICIAL DAS ETAPAS
-// =============================================
+// DATAS CORRETAS
+const DATA_ABERTURA_INSCRICOES = new Date('2026-05-25T07:00:00');
+const DATA_5_ETAPA = '2026-05-28';
+
 const ETAPAS = [
-    { numero: 1,  data: '2026-01-29', descricao: '1ª Etapa' },
-    { numero: 2,  data: '2026-02-26', descricao: '2ª Etapa' },
-    { numero: 3,  data: '2026-03-26', descricao: '3ª Etapa' },
-    { numero: 4,  data: '2026-04-30', descricao: '4ª Etapa' },
-    { numero: 5,  data: '2026-05-28', descricao: '5ª Etapa' },
-    { numero: 6,  data: '2026-06-25', descricao: '6ª Etapa' },
-    { numero: 7,  data: '2026-07-30', descricao: '7ª Etapa' },
-    { numero: 8,  data: '2026-08-27', descricao: '8ª Etapa' },
-    { numero: 9,  data: '2026-09-24', descricao: '9ª Etapa' },
+    { numero: 1, data: '2026-01-29', descricao: '1ª Etapa' },
+    { numero: 2, data: '2026-02-26', descricao: '2ª Etapa' },
+    { numero: 3, data: '2026-03-26', descricao: '3ª Etapa' },
+    { numero: 4, data: '2026-04-30', descricao: '4ª Etapa' },
+    { numero: 5, data: DATA_5_ETAPA, descricao: '5ª Etapa' },
+    { numero: 6, data: '2026-06-25', descricao: '6ª Etapa' },
+    { numero: 7, data: '2026-07-30', descricao: '7ª Etapa' },
+    { numero: 8, data: '2026-08-27', descricao: '8ª Etapa' },
+    { numero: 9, data: '2026-09-24', descricao: '9ª Etapa' },
     { numero: 10, data: '2026-10-08', descricao: '10ª Etapa' },
     { numero: 11, data: '2026-10-29', descricao: '11ª Etapa' },
     { numero: 12, data: '2026-11-26', descricao: '12ª Etapa' },
@@ -495,14 +416,11 @@ const JOGADORES_INICIAIS = [
 ];
 
 let config = {
-    etapa: 4,  // 4ª Etapa
-    dataEvento: '2026-04-30',
-    dataAbertura: new Date('2026-04-20T07:00:00').toISOString(), // Data passada para garantir inscrições abertas
-    inscricoesAbertas: true  // FORÇADO: inscrições ABERTAS!
+    etapa: 5,
+    dataEvento: DATA_5_ETAPA,
+    dataAbertura: DATA_ABERTURA_INSCRICOES.toISOString(),
+    inscricoesAbertas: false
 };
-
-let DATA_ABERTURA = new Date(config.dataAbertura).getTime();
-let DATA_EVENTO = new Date(config.dataEvento);
 
 let db;
 let confirmados = [];
@@ -510,7 +428,10 @@ let listaEspera = [];
 let jogadoresPenalizados = [];
 let modoAdmin = false;
 let jogadores = [];
+let inscricoesAtivas = false;
+let countdownInterval = null;
 
+const btnConfirmar = document.getElementById('btnConfirmar');
 const btnToggleInscricoes = document.getElementById('btnToggleInscricoes');
 const btnProximaEtapa = document.getElementById('btnProximaEtapa');
 const btnSelecionarEtapa = document.getElementById('btnSelecionarEtapa');
@@ -518,14 +439,61 @@ const btnGerenciarFotos = document.getElementById('btnGerenciarFotos');
 const btnGerenciarPenalidades = document.getElementById('btnGerenciarPenalidades');
 const btnSairAdmin = document.getElementById('btnSairAdmin');
 const dataEventoEl = document.getElementById('dataEvento');
-const btnConfirmar = document.getElementById('btnConfirmar');
+const timerHeader = document.getElementById('timerHeader');
+const timerDisplay = document.getElementById('timer');
+
+// FORÇA A DATA CORRETA NO CARD
+dataEventoEl.textContent = '📅 5ª Etapa - 28/05/2026';
 
 function getEtapaAtual() {
-    return ETAPAS.find(e => e.numero === config.etapa) || ETAPAS[3]; // 4ª etapa por padrão
+    return ETAPAS.find(e => e.numero === config.etapa) || ETAPAS[4];
 }
 
 function isJogadorPenalizado(nome) {
     return jogadoresPenalizados.some(p => p.nome === nome);
+}
+
+function iniciarContador() {
+    if (countdownInterval) clearInterval(countdownInterval);
+    
+    countdownInterval = setInterval(() => {
+        const agora = new Date().getTime();
+        const diff = DATA_ABERTURA_INSCRICOES.getTime() - agora;
+        
+        if (diff <= 0) {
+            if (!inscricoesAtivas) {
+                inscricoesAtivas = true;
+                timerHeader.innerHTML = "✅ INSCRIÇÕES ABERTAS!";
+                timerDisplay.innerHTML = "As inscrições estão liberadas!";
+                document.getElementById('countdownContainer').style.borderColor = "#4CAF50";
+                btnConfirmar.disabled = false;
+                btnConfirmar.textContent = "➕ CONFIRMAR PRESENÇA";
+                if (config.inscricoesAbertas !== true) {
+                    set(ref(db, 'config/inscricoesAbertas'), true);
+                    config.inscricoesAbertas = true;
+                }
+            }
+        } else {
+            if (inscricoesAtivas) {
+                inscricoesAtivas = false;
+                timerHeader.innerHTML = "⏳ ABERTURA DAS INSCRIÇÕES EM";
+                document.getElementById('countdownContainer').style.borderColor = "#d4a121";
+                btnConfirmar.disabled = true;
+                btnConfirmar.textContent = "🔒 INSCRIÇÕES FECHADAS - AGUARDE 25/05";
+                if (config.inscricoesAbertas !== false) {
+                    set(ref(db, 'config/inscricoesAbertas'), false);
+                    config.inscricoesAbertas = false;
+                }
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (86400000)) / (3600000));
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            
+            timerDisplay.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+    }, 1000);
 }
 
 async function carregarFotosJogadores() {
@@ -591,7 +559,7 @@ function preencherSelectJogadores() {
 function preencherSelectPenalidade() {
     const sel = document.getElementById('penaltyPlayerSelect');
     sel.innerHTML = '<option value="">Selecione o jogador...</option>';
-    JOGADORES_INICIAIS.slice().sort((a,b) => a.localeCompare(b)).forEach(nome => {
+    JOGADORES_INICIAIS.slice().sort((a, b) => a.localeCompare(b)).forEach(nome => {
         const o = document.createElement('option');
         o.value = nome;
         o.textContent = nome;
@@ -604,50 +572,15 @@ async function carregarConfig() {
         const snapshot = await get(ref(db, 'config'));
         if (snapshot.exists()) {
             const savedConfig = snapshot.val();
-            // Força inscrições abertas para a 4ª etapa
-            if (savedConfig.etapa === 4) {
-                config = {
-                    ...savedConfig,
-                    inscricoesAbertas: true  // Força aberto
-                };
-            } else {
-                config = savedConfig;
-            }
+            config = { ...savedConfig };
         }
-        
-        // Garante que para etapa 4 as inscrições estão abertas
-        if (config.etapa === 4) {
-            config.inscricoesAbertas = true;
+        if (config.etapa === 5) {
+            config.dataEvento = DATA_5_ETAPA;
+            config.dataAbertura = DATA_ABERTURA_INSCRICOES.toISOString();
         }
-        
-        DATA_ABERTURA = new Date(config.dataAbertura).getTime();
-        DATA_EVENTO = new Date(config.dataEvento);
-        atualizarInterfaceConfig();
     } catch (e) {
         console.error('Erro ao carregar config:', e);
     }
-}
-
-async function salvarConfig(novaConfig) {
-    try {
-        await set(ref(db, 'config'), novaConfig);
-        config = novaConfig;
-        DATA_ABERTURA = new Date(config.dataAbertura).getTime();
-        DATA_EVENTO = new Date(config.dataEvento);
-        atualizarInterfaceConfig();
-    } catch (e) {
-        console.error('Erro ao salvar config:', e);
-    }
-}
-
-function atualizarInterfaceConfig() {
-    const etapaAtual = getEtapaAtual();
-    const dataFormatada = DATA_EVENTO.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
-    dataEventoEl.textContent = `📅 ${etapaAtual.descricao} - ${dataFormatada}`;
-    
-    // Botão sempre habilitado pois as inscrições estão abertas
-    btnConfirmar.disabled = false;
-    btnConfirmar.textContent = modoAdmin ? "➕ CONFIRMAR (MODO TESTE)" : "➕ CONFIRMAR PRESENÇA";
 }
 
 function getFotoJogador(nomeJogador) {
@@ -655,603 +588,555 @@ function getFotoJogador(nomeJogador) {
     return jogador ? jogador.foto : FOTO_PADRAO;
 }
 
-// =============================================
-// INICIALIZAR FIREBASE
-// =============================================
+// Inicialização Firebase
 try {
-  const app = initializeApp(firebaseConfig);
-  db = getDatabase(app);
-  document.getElementById('statusIndicator').textContent = '✅ Conectado';
-  document.getElementById('statusIndicator').classList.add('connected');
-  
-  await carregarFotosJogadores();
-  await carregarConfig();
-  
-  onValue(ref(db, 'confirmados'), (snapshot) => {
-    confirmados = [];
-    if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
-    atualizar();
-  });
-  
-  onValue(ref(db, 'listaEspera'), (snapshot) => {
-    listaEspera = [];
-    if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
-    atualizar();
-  });
+    const app = initializeApp(firebaseConfig);
+    db = getDatabase(app);
+    document.getElementById('statusIndicator').textContent = '✅ Conectado';
+    document.getElementById('statusIndicator').classList.add('connected');
+    
+    await carregarFotosJogadores();
+    await carregarConfig();
+    iniciarContador();
+    
+    onValue(ref(db, 'confirmados'), (snapshot) => {
+        confirmados = [];
+        if (snapshot.exists()) snapshot.forEach(child => { confirmados.push({...child.val(), id: child.key}); });
+        atualizar();
+    });
+    
+    onValue(ref(db, 'listaEspera'), (snapshot) => {
+        listaEspera = [];
+        if (snapshot.exists()) snapshot.forEach(child => { listaEspera.push({...child.val(), id: child.key}); });
+        atualizar();
+    });
 
-  onValue(ref(db, 'penalizados'), (snapshot) => {
-    jogadoresPenalizados = [];
-    if (snapshot.exists()) snapshot.forEach(child => { jogadoresPenalizados.push({...child.val(), id: child.key}); });
-    atualizarListaPenalizados();
-  });
-  
-  onValue(ref(db, 'config'), (snapshot) => {
-    if (snapshot.exists()) {
-      config = snapshot.val();
-      if (config.etapa === 4) {
-        config.inscricoesAbertas = true; // Força aberto para etapa 4
-      }
-      DATA_ABERTURA = new Date(config.dataAbertura).getTime();
-      DATA_EVENTO = new Date(config.dataEvento);
-      atualizarInterfaceConfig();
-    }
-  });
-  
+    onValue(ref(db, 'penalizados'), (snapshot) => {
+        jogadoresPenalizados = [];
+        if (snapshot.exists()) snapshot.forEach(child => { jogadoresPenalizados.push({...child.val(), id: child.key}); });
+        atualizarListaPenalizados();
+    });
+    
 } catch (e) {
-  document.getElementById('statusIndicator').textContent = '❌ Erro de conexão';
-  document.getElementById('statusIndicator').classList.add('error');
+    document.getElementById('statusIndicator').textContent = '❌ Erro de conexão';
+    document.getElementById('statusIndicator').classList.add('error');
+    console.error(e);
 }
 
-// =============================================
-// MODAL CONFIRMAR PRESENÇA
-// =============================================
-const selectJogador = document.getElementById('playerName');
-const photoPreview = document.getElementById('playerPhotoPreview');
-const previewImg = photoPreview.querySelector('img');
-
-selectJogador.addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-    const foto = selectedOption.getAttribute('data-foto');
-    if (foto && this.value) {
-        previewImg.src = foto;
-        photoPreview.style.display = 'block';
-    } else {
-        photoPreview.style.display = 'none';
-    }
-});
-
+// Eventos dos modais
 document.getElementById('btnEntendi').onclick = () => document.getElementById('modalBemVindo').classList.remove('active');
 window.addEventListener('load', () => document.getElementById('modalBemVindo').classList.add('active'));
 
 btnConfirmar.onclick = () => {
-    // Inscrições estão abertas, pode confirmar
+    if (!inscricoesAtivas && !modoAdmin) {
+        alert("📅 As inscrições abrirão no dia 25/05/2026 às 07:00 da manhã!");
+        return;
+    }
     document.getElementById('modal').classList.add('active');
 };
 
 document.getElementById('btnCancelar').onclick = () => {
-  document.getElementById('modal').classList.remove('active');
-  selectJogador.value = '';
-  photoPreview.style.display = 'none';
-  document.getElementById('isGuest').checked = false;
-  document.getElementById('guestNameGroup').style.display = 'none';
-  document.getElementById('guestName').value = '';
-};
-
-document.getElementById('isGuest').onchange = e => {
-  document.getElementById('guestNameGroup').style.display = e.target.checked ? 'block' : 'none';
-};
-
-document.getElementById('btnConfirmarModal').onclick = async () => {
-  const nome = selectJogador.value;
-  if (!nome) return alert('Selecione seu nome!');
-  
-  const isGuestChecked = document.getElementById('isGuest').checked;
-  
-  if (!isGuestChecked) {
-    const jaInscrito = [...confirmados, ...listaEspera].some(p => !p.isGuest && p.nome === nome);
-    if (jaInscrito) {
-      return alert('Você já está inscrito!');
-    }
-  }
-  
-  const agora = new Date().toISOString();
-  const penalizado = !isGuestChecked && isJogadorPenalizado(nome);
-  
-  try {
-    if (!isGuestChecked) {
-      const snapshot = await get(ref(db, 'confirmados'));
-      const totalAtual = snapshot.exists() ? snapshot.size : 0;
-      
-      if (totalAtual < LIMITE_VAGAS && !penalizado) {
-        await push(ref(db, 'confirmados'), { 
-          nome, 
-          isGuest: false, 
-          data: agora,
-          timestamp: Date.now(),
-          foto: getFotoJogador(nome),
-          etapa: config.etapa
-        });
-        alert('✅ Presença confirmada! Você está na lista de confirmados.');
-      } else {
-        const tsInscricao = penalizado ? Date.now() + (1000 * 60 * 60 * 24 * 365) : Date.now();
-        
-        await push(ref(db, 'listaEspera'), { 
-          nome, 
-          isGuest: false, 
-          data: agora,
-          timestamp: tsInscricao,
-          foto: getFotoJogador(nome),
-          etapa: config.etapa,
-          penalizado: penalizado
-        });
-        
-        if (penalizado) {
-          document.getElementById('modal').classList.remove('active');
-          selectJogador.value = '';
-          photoPreview.style.display = 'none';
-          document.getElementById('isGuest').checked = false;
-          document.getElementById('guestNameGroup').style.display = 'none';
-          document.getElementById('guestName').value = '';
-          
-          document.getElementById('penaltyPlayerName').textContent = nome;
-          document.getElementById('modalAvisoPenalidade').classList.add('active');
-          return;
-        } else {
-          alert('⏳ Você foi adicionado à LISTA DE ESPERA.');
-        }
-      }
-    } else {
-      const gNome = document.getElementById('guestName').value.trim();
-      if (!gNome) return alert('Digite o nome do convidado!');
-      
-      await push(ref(db, 'listaEspera'), { 
-        nome: gNome, 
-        isGuest: true, 
-        guestOf: nome, 
-        data: agora,
-        timestamp: Date.now(),
-        etapa: config.etapa
-      });
-      alert('✅ Convidado adicionado à lista de espera!');
-    }
-    
     document.getElementById('modal').classList.remove('active');
-    selectJogador.value = '';
-    photoPreview.style.display = 'none';
+    document.getElementById('playerName').value = '';
     document.getElementById('isGuest').checked = false;
     document.getElementById('guestNameGroup').style.display = 'none';
     document.getElementById('guestName').value = '';
+};
+
+document.getElementById('isGuest').onchange = e => {
+    document.getElementById('guestNameGroup').style.display = e.target.checked ? 'block' : 'none';
+};
+
+document.getElementById('btnConfirmarModal').onclick = async () => {
+    if (!inscricoesAtivas && !modoAdmin) {
+        alert("As inscrições estão fechadas! Aguarde 25/05 às 07:00.");
+        return;
+    }
     
-  } catch (e) { 
-    alert('Erro ao confirmar: ' + e.message); 
-  }
+    const nome = document.getElementById('playerName').value;
+    if (!nome) return alert('Selecione seu nome!');
+    
+    const isGuestChecked = document.getElementById('isGuest').checked;
+    
+    if (!isGuestChecked) {
+        const jaInscrito = [...confirmados, ...listaEspera].some(p => !p.isGuest && p.nome === nome);
+        if (jaInscrito) {
+            return alert('Você já está inscrito!');
+        }
+    }
+    
+    const agora = new Date().toISOString();
+    const penalizado = !isGuestChecked && isJogadorPenalizado(nome);
+    
+    try {
+        if (!isGuestChecked) {
+            const snapshot = await get(ref(db, 'confirmados'));
+            const totalAtual = snapshot.exists() ? snapshot.size : 0;
+            
+            if (totalAtual < LIMITE_VAGAS && !penalizado) {
+                await push(ref(db, 'confirmados'), { 
+                    nome, isGuest: false, data: agora, timestamp: Date.now(),
+                    foto: getFotoJogador(nome), etapa: config.etapa
+                });
+                alert('✅ Presença confirmada! Você está na lista de confirmados.');
+            } else {
+                const tsInscricao = penalizado ? Date.now() + (1000 * 60 * 60 * 24 * 365) : Date.now();
+                await push(ref(db, 'listaEspera'), { 
+                    nome, isGuest: false, data: agora, timestamp: tsInscricao,
+                    foto: getFotoJogador(nome), etapa: config.etapa, penalizado: penalizado
+                });
+                
+                if (penalizado) {
+                    document.getElementById('modal').classList.remove('active');
+                    document.getElementById('penaltyPlayerName').textContent = nome;
+                    document.getElementById('modalAvisoPenalidade').classList.add('active');
+                    return;
+                } else {
+                    alert('⏳ Você foi adicionado à LISTA DE ESPERA.');
+                }
+            }
+        } else {
+            const gNome = document.getElementById('guestName').value.trim();
+            if (!gNome) return alert('Digite o nome do convidado!');
+            await push(ref(db, 'listaEspera'), { 
+                nome: gNome, isGuest: true, guestOf: nome, data: agora,
+                timestamp: Date.now(), etapa: config.etapa
+            });
+            alert('✅ Convidado adicionado à lista de espera!');
+        }
+        
+        document.getElementById('modal').classList.remove('active');
+        document.getElementById('playerName').value = '';
+        document.getElementById('isGuest').checked = false;
+        document.getElementById('guestNameGroup').style.display = 'none';
+        document.getElementById('guestName').value = '';
+        
+    } catch (e) { 
+        alert('Erro ao confirmar: ' + e.message); 
+    }
 };
 
 document.getElementById('btnFecharAvisoPenalidade').onclick = () => {
-  document.getElementById('modalAvisoPenalidade').classList.remove('active');
+    document.getElementById('modalAvisoPenalidade').classList.remove('active');
 };
 
 document.getElementById('btnCancelarWhatsApp').onclick = () => {
-  const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ');
-  window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
+    const msg = encodeURIComponent('Gostaria de cancelar minha inscrição no Poker de Quinta.\nNome: ');
+    window.open(`https://wa.me/5541987210685?text=${msg}`, '_blank');
 };
 
-// =============================================
-// FUNÇÃO ATUALIZAR LISTAS
-// =============================================
 function atualizar() {
-  document.getElementById('confirmedCount').textContent = confirmados.length;
-  document.getElementById('vacancyCount').textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
-  document.getElementById('waitlistCount').textContent = listaEspera.length;
+    document.getElementById('confirmedCount').textContent = confirmados.length;
+    document.getElementById('vacancyCount').textContent = Math.max(0, LIMITE_VAGAS - confirmados.length);
+    document.getElementById('waitlistCount').textContent = listaEspera.length;
 
-  const confirmedList = document.getElementById('confirmedList');
-  const waitlistList = document.getElementById('waitlistList');
+    const confirmedList = document.getElementById('confirmedList');
+    const waitlistList = document.getElementById('waitlistList');
 
-  const confirmadosOrdenados = [...confirmados].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-  
-  confirmedList.innerHTML = confirmadosOrdenados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
-  confirmadosOrdenados.forEach((p, i) => {
-    const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
-    const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge member">MEMBRO</span>';
-    const guestInfo = p.isGuest && p.guestOf ? ` <small style="opacity:0.7">(Convidado de ${p.guestOf})</small>` : '';
-    const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
+    const confirmadosOrdenados = [...confirmados].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
     
-    confirmedList.innerHTML += `<li class="player-item">
-        <div class="player-info">
-            <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}">
-            <div class="player-number">${i+1}º</div>
-            <div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div>
-        </div>
-        ${badge}
-        ${btnRemover}</li>`;
-  });
-
-  const membrosEspera = listaEspera.filter(p => !p.isGuest && !p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-  const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-  const penalizadosEspera = listaEspera.filter(p => p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-  const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera, ...penalizadosEspera];
-
-  waitlistList.innerHTML = listaEsperaOrdenada.length ? '' : '<li class="empty-state">Lista vazia</li>';
-  listaEsperaOrdenada.forEach((p, i) => {
-    const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
-    const btnPromover = modoAdmin && confirmados.length < LIMITE_VAGAS ? 
-      `<button class="remove-btn" style="background:#4CAF50" onclick="promoverJogadorManual('${p.id}')">↗️ PROMOVER</button>` : '';
-    const guestInfo = p.isGuest && p.guestOf ? ` (Convidado de ${p.guestOf})` : '';
-    const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : 
-                  p.penalizado ? '<span class="player-badge penalized">MEMBRO</span>' :
-                  '<span class="player-badge wait">MEMBRO</span>';
-    const prioridade = !p.isGuest && !p.penalizado && i < membrosEspera.length ? '<span class="priority-indicator">PRIORIDADE</span>' : '';
-    const penalizadoTag = p.penalizado ? '<span class="penalty-indicator">⚠️ PENALIZADO</span>' : '';
-    const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
-    
-    waitlistList.innerHTML += `<li class="player-item">
-        <div class="player-info">
-            <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${p.nome}">
-            <div class="player-number">${i+1}º</div>
-            <div class="player-details"><strong>${p.nome}${guestInfo}</strong><small>🕒 ${new Date(p.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></div>
-        </div>
-        <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;">
-          ${badge}
-          ${prioridade}
-          ${penalizadoTag}
-          ${btnPromover}
-          ${btnRemover}
-        </div>
+    confirmedList.innerHTML = confirmadosOrdenados.length ? '' : '<li class="empty-state">Nenhuma confirmação</li>';
+    confirmadosOrdenados.forEach((p, i) => {
+        const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
+        const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge member">MEMBRO</span>';
+        const guestInfo = p.isGuest && p.guestOf ? ` <small>(Convidado de ${p.guestOf})</small>` : '';
+        const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
+        
+        confirmedList.innerHTML += `<li class="player-item">
+            <div class="player-info">
+                <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'">
+                <div class="player-number">${i+1}º</div>
+                <div class="player-details">
+                    <strong>${p.nome}${guestInfo}</strong>
+                    <small>🕒 ${new Date(p.data).toLocaleString('pt-BR')}</small>
+                </div>
+            </div>
+            <div>${badge} ${btnRemover}</div>
         </li>`;
-  });
+    });
+
+    const membrosEspera = listaEspera.filter(p => !p.isGuest && !p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    const penalizadosEspera = listaEspera.filter(p => p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera, ...penalizadosEspera];
+
+    waitlistList.innerHTML = listaEsperaOrdenada.length ? '' : '<li class="empty-state">Lista vazia</li>';
+    listaEsperaOrdenada.forEach((p, i) => {
+        const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',true)">❌</button>` : '';
+        const btnPromover = modoAdmin && confirmados.length < LIMITE_VAGAS ? 
+            `<button class="remove-btn" style="background:#4CAF50" onclick="promoverJogadorManual('${p.id}')">↗️ PROMOVER</button>` : '';
+        const guestInfo = p.isGuest && p.guestOf ? ` (Convidado de ${p.guestOf})` : '';
+        const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : 
+                      p.penalizado ? '<span class="player-badge penalized">MEMBRO</span>' :
+                      '<span class="player-badge wait">MEMBRO</span>';
+        const prioridade = !p.isGuest && !p.penalizado && i < membrosEspera.length ? '<span class="priority-indicator">PRIORIDADE</span>' : '';
+        const penalizadoTag = p.penalizado ? '<span class="penalty-indicator">⚠️ PENALIZADO</span>' : '';
+        const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
+        
+        waitlistList.innerHTML += `<li class="player-item">
+            <div class="player-info">
+                <img class="player-avatar" src="${foto}" onerror="this.src='${FOTO_PADRAO}'">
+                <div class="player-number">${i+1}º</div>
+                <div class="player-details">
+                    <strong>${p.nome}${guestInfo}</strong>
+                    <small>🕒 ${new Date(p.data).toLocaleString('pt-BR')}</small>
+                </div>
+            </div>
+            <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;">
+                ${badge} ${prioridade} ${penalizadoTag} ${btnPromover} ${btnRemover}
+            </div>
+        </li>`;
+    });
 }
 
-// =============================================
-// REMOVER / PROMOVER JOGADORES
-// =============================================
 window.removerJogador = async (id, isWait) => {
-  if(!confirm('Tem certeza que deseja remover este jogador?')) return;
-  try {
-    const path = isWait ? 'listaEspera' : 'confirmados';
-    await remove(ref(db, `${path}/${id}`));
-    if (!isWait) {
-      await promoverDaListaDeEspera();
+    if (!confirm('Tem certeza que deseja remover este jogador?')) return;
+    try {
+        const path = isWait ? 'listaEspera' : 'confirmados';
+        await remove(ref(db, `${path}/${id}`));
+        if (!isWait) {
+            await promoverDaListaDeEspera();
+        }
+        alert('Jogador removido com sucesso!');
+    } catch (e) {
+        alert('Erro ao remover: ' + e.message);
     }
-    alert('Jogador removido com sucesso!');
-  } catch (e) {
-    alert('Erro ao remover: ' + e.message);
-  }
 };
 
 async function promoverDaListaDeEspera() {
-  try {
-    const snapshotConfirmados = await get(ref(db, 'confirmados'));
-    const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
-    
-    if (totalConfirmados < LIMITE_VAGAS) {
-      const snapshotEspera = await get(ref(db, 'listaEspera'));
-      
-      if (snapshotEspera.exists()) {
-        let candidatos = [];
-        snapshotEspera.forEach(child => {
-          candidatos.push({...child.val(), id: child.key});
-        });
+    try {
+        const snapshotConfirmados = await get(ref(db, 'confirmados'));
+        const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
         
-        const membros = candidatos.filter(p => !p.isGuest && !p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-        
-        if (membros.length > 0) {
-          const promovido = membros[0];
-          
-          await push(ref(db, 'confirmados'), {
-            nome: promovido.nome,
-            isGuest: false,
-            data: promovido.data,
-            timestamp: promovido.timestamp,
-            foto: promovido.foto || getFotoJogador(promovido.nome),
-            promovido: true,
-            dataPromocao: new Date().toISOString(),
-            etapa: config.etapa
-          });
-          
-          await remove(ref(db, `listaEspera/${promovido.id}`));
+        if (totalConfirmados < LIMITE_VAGAS) {
+            const snapshotEspera = await get(ref(db, 'listaEspera'));
+            
+            if (snapshotEspera.exists()) {
+                let candidatos = [];
+                snapshotEspera.forEach(child => {
+                    candidatos.push({...child.val(), id: child.key});
+                });
+                
+                const membros = candidatos.filter(p => !p.isGuest && !p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                
+                if (membros.length > 0) {
+                    const promovido = membros[0];
+                    
+                    await push(ref(db, 'confirmados'), {
+                        nome: promovido.nome,
+                        isGuest: false,
+                        data: promovido.data,
+                        timestamp: promovido.timestamp,
+                        foto: promovido.foto || getFotoJogador(promovido.nome),
+                        promovido: true,
+                        dataPromocao: new Date().toISOString(),
+                        etapa: config.etapa
+                    });
+                    
+                    await remove(ref(db, `listaEspera/${promovido.id}`));
+                }
+            }
         }
-      }
+    } catch (e) {
+        console.error('Erro ao promover da lista de espera:', e);
     }
-  } catch (e) {
-    console.error('Erro ao promover da lista de espera:', e);
-  }
 }
 
 window.promoverJogadorManual = async (id) => {
-  try {
-    const snapshotConfirmados = await get(ref(db, 'confirmados'));
-    const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
-    
-    if (totalConfirmados >= LIMITE_VAGAS) {
-      return alert('❌ Não há vagas disponíveis!');
+    try {
+        const snapshotConfirmados = await get(ref(db, 'confirmados'));
+        const totalConfirmados = snapshotConfirmados.exists() ? snapshotConfirmados.size : 0;
+        
+        if (totalConfirmados >= LIMITE_VAGAS) {
+            return alert('❌ Não há vagas disponíveis!');
+        }
+        
+        const snapshot = await get(ref(db, `listaEspera/${id}`));
+        if (!snapshot.exists()) return alert('Jogador não encontrado!');
+        
+        const jogador = snapshot.val();
+        if (!confirm(`Promover ${jogador.nome} para confirmados?`)) return;
+        
+        await push(ref(db, 'confirmados'), {
+            nome: jogador.nome,
+            isGuest: jogador.isGuest,
+            guestOf: jogador.guestOf || null,
+            data: jogador.data,
+            timestamp: jogador.timestamp,
+            foto: jogador.foto || (!jogador.isGuest ? getFotoJogador(jogador.nome) : null),
+            promovido: true,
+            promocaoManual: true,
+            dataPromocao: new Date().toISOString(),
+            etapa: config.etapa
+        });
+        
+        await remove(ref(db, `listaEspera/${id}`));
+        alert(`✅ ${jogador.nome} foi promovido!`);
+        
+    } catch (e) {
+        alert('Erro ao promover: ' + e.message);
     }
-    
-    const snapshot = await get(ref(db, `listaEspera/${id}`));
-    if (!snapshot.exists()) return alert('Jogador não encontrado!');
-    
-    const jogador = snapshot.val();
-    if (!confirm(`Promover ${jogador.nome} para confirmados?`)) return;
-    
-    await push(ref(db, 'confirmados'), {
-      nome: jogador.nome,
-      isGuest: jogador.isGuest,
-      guestOf: jogador.guestOf || null,
-      data: jogador.data,
-      timestamp: jogador.timestamp,
-      foto: jogador.foto || (!jogador.isGuest ? getFotoJogador(jogador.nome) : null),
-      promovido: true,
-      promocaoManual: true,
-      dataPromocao: new Date().toISOString(),
-      etapa: config.etapa
-    });
-    
-    await remove(ref(db, `listaEspera/${id}`));
-    alert(`✅ ${jogador.nome} foi promovido!`);
-    
-  } catch (e) {
-    alert('Erro ao promover: ' + e.message);
-  }
 };
 
-// =============================================
-// MODO ADMIN
-// =============================================
+// Modo Admin
 document.getElementById('btnModoAdmin').onclick = () => document.getElementById('modalAdmin').classList.add('active');
 document.getElementById('btnFecharAdmin').onclick = () => document.getElementById('modalAdmin').classList.remove('active');
 
 document.getElementById('btnAcessarAdmin').onclick = () => {
-  if (document.getElementById('senhaAdmin').value === "poker2026") {
-    modoAdmin = true;
-    document.getElementById('modalAdmin').classList.remove('active');
-    
-    btnToggleInscricoes.style.display = 'block';
-    btnProximaEtapa.style.display = 'block';
-    btnSelecionarEtapa.style.display = 'block';
-    btnGerenciarFotos.style.display = 'block';
-    btnGerenciarPenalidades.style.display = 'block';
-    btnSairAdmin.style.display = 'block';
-    document.getElementById('btnModoAdmin').style.background = '#4CAF50';
-    document.getElementById('btnModoAdmin').style.opacity = '1';
-    
-    atualizarBotaoInscricoes();
-    alert("✅ Modo Administrador Ativado!");
-    atualizar();
-  } else {
-    alert('❌ Senha incorreta!');
-  }
+    if (document.getElementById('senhaAdmin').value === "poker2026") {
+        modoAdmin = true;
+        document.getElementById('modalAdmin').classList.remove('active');
+        
+        btnToggleInscricoes.style.display = 'block';
+        btnProximaEtapa.style.display = 'block';
+        btnSelecionarEtapa.style.display = 'block';
+        btnGerenciarFotos.style.display = 'block';
+        btnGerenciarPenalidades.style.display = 'block';
+        btnSairAdmin.style.display = 'block';
+        document.getElementById('btnModoAdmin').style.background = '#4CAF50';
+        document.getElementById('btnModoAdmin').style.opacity = '1';
+        
+        alert("✅ Modo Administrador Ativado!");
+        atualizar();
+    } else {
+        alert('❌ Senha incorreta!');
+    }
 };
 
 btnSairAdmin.onclick = () => {
-  modoAdmin = false;
-  btnToggleInscricoes.style.display = 'none';
-  btnProximaEtapa.style.display = 'none';
-  btnSelecionarEtapa.style.display = 'none';
-  btnGerenciarFotos.style.display = 'none';
-  btnGerenciarPenalidades.style.display = 'none';
-  btnSairAdmin.style.display = 'none';
-  document.getElementById('btnModoAdmin').style.background = 'rgba(13,27,13,0.3)';
-  document.getElementById('btnModoAdmin').style.opacity = '0.15';
-  alert("👋 Modo Administrador desativado.");
-  atualizar();
+    modoAdmin = false;
+    btnToggleInscricoes.style.display = 'none';
+    btnProximaEtapa.style.display = 'none';
+    btnSelecionarEtapa.style.display = 'none';
+    btnGerenciarFotos.style.display = 'none';
+    btnGerenciarPenalidades.style.display = 'none';
+    btnSairAdmin.style.display = 'none';
+    document.getElementById('btnModoAdmin').style.background = 'rgba(13,27,13,0.3)';
+    document.getElementById('btnModoAdmin').style.opacity = '0.15';
+    alert("👋 Modo Administrador desativado.");
+    atualizar();
 };
 
 btnToggleInscricoes.onclick = async () => {
-  const novaConfig = {...config, inscricoesAbertas: !config.inscricoesAbertas};
-  await salvarConfig(novaConfig);
-  atualizarBotaoInscricoes();
+    inscricoesAtivas = !inscricoesAtivas;
+    if (inscricoesAtivas) {
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = "➕ CONFIRMAR PRESENÇA";
+        timerHeader.innerHTML = "✅ INSCRIÇÕES ABERTAS (Admin)";
+        timerDisplay.innerHTML = "Abertas manualmente pelo administrador";
+    } else {
+        btnConfirmar.disabled = true;
+        btnConfirmar.textContent = "🔒 INSCRIÇÕES FECHADAS";
+        iniciarContador();
+    }
 };
 
-function atualizarBotaoInscricoes() {
-  if (config.inscricoesAbertas) {
-    btnToggleInscricoes.textContent = '🔒 Fechar';
-    btnToggleInscricoes.style.background = '#c72c48';
-    btnConfirmar.disabled = false;
-    btnConfirmar.textContent = modoAdmin ? "➕ CONFIRMAR (MODO TESTE)" : "➕ CONFIRMAR PRESENÇA";
-  } else {
-    btnToggleInscricoes.textContent = '🔓 Abrir';
-    btnToggleInscricoes.style.background = '#4CAF50';
-    btnConfirmar.disabled = true;
-    btnConfirmar.textContent = "🔒 INSCRIÇÕES FECHADAS";
-  }
-}
-
-// =============================================
-// GERENCIAR FOTOS
-// =============================================
+// Gerenciar Fotos
 btnGerenciarFotos.onclick = () => {
-  const fotosList = document.getElementById('fotosList');
-  fotosList.innerHTML = '';
-  
-  jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach((jogador, index) => {
-    const div = document.createElement('div');
-    div.className = 'foto-item';
-    div.innerHTML = `
-        <img class="foto-preview" src="${jogador.foto}" onerror="this.src='${FOTO_PADRAO}'" alt="${jogador.nome}">
-        <div class="foto-info">${jogador.nome}</div>
-        <input type="text" class="foto-input" id="foto-${index}" value="${jogador.foto}" placeholder="URL da foto do ${jogador.nome}">
-        <div class="foto-actions">
-            <button class="foto-btn" onclick="document.getElementById('foto-${index}').value='${FOTO_PADRAO}'">Padrão</button>
-        </div>
-    `;
-    fotosList.appendChild(div);
-  });
-  
-  document.getElementById('modalGerenciarFotos').classList.add('active');
+    const fotosList = document.getElementById('fotosList');
+    fotosList.innerHTML = '';
+    
+    jogadores.sort((a, b) => a.nome.localeCompare(b.nome)).forEach((jogador, index) => {
+        const div = document.createElement('div');
+        div.className = 'foto-item';
+        div.innerHTML = `
+            <img class="foto-preview" src="${jogador.foto}" onerror="this.src='${FOTO_PADRAO}'">
+            <div class="foto-info">${jogador.nome}</div>
+            <input type="text" class="foto-input" id="foto-${index}" value="${jogador.foto}" placeholder="URL da foto">
+            <div class="foto-actions">
+                <button class="foto-btn" onclick="document.getElementById('foto-${index}').value='${FOTO_PADRAO}'">Padrão</button>
+            </div>
+        `;
+        fotosList.appendChild(div);
+    });
+    
+    document.getElementById('modalGerenciarFotos').classList.add('active');
 };
 
 document.getElementById('btnFecharFotos').onclick = () => {
-  document.getElementById('modalGerenciarFotos').classList.remove('active');
+    document.getElementById('modalGerenciarFotos').classList.remove('active');
 };
 
 document.getElementById('btnSalvarFotos').onclick = () => {
-  jogadores.forEach((jogador, index) => {
-    const input = document.getElementById(`foto-${index}`);
-    if (input) {
-      jogador.foto = input.value || FOTO_PADRAO;
-    }
-  });
-  salvarFotosJogadores();
+    jogadores.forEach((jogador, index) => {
+        const input = document.getElementById(`foto-${index}`);
+        if (input) {
+            jogador.foto = input.value || FOTO_PADRAO;
+        }
+    });
+    salvarFotosJogadores();
 };
 
-// =============================================
-// SELECIONAR ETAPA
-// =============================================
+// Selecionar Etapa
 btnSelecionarEtapa.onclick = () => {
-  const selector = document.getElementById('etapaSelector');
-  selector.innerHTML = '';
-  
-  ETAPAS.forEach(etapa => {
-    const btn = document.createElement('button');
-    btn.className = `etapa-btn ${etapa.numero === config.etapa ? 'ativa' : ''}`;
-    btn.textContent = `${etapa.numero}ª`;
-    btn.title = etapa.descricao;
-    btn.onclick = () => selecionarEtapa(etapa.numero);
-    selector.appendChild(btn);
-  });
-  
-  document.getElementById('modalSelecionarEtapa').classList.add('active');
+    const selector = document.getElementById('etapaSelector');
+    selector.innerHTML = '';
+    
+    ETAPAS.forEach(etapa => {
+        const btn = document.createElement('button');
+        btn.className = `etapa-btn ${etapa.numero === config.etapa ? 'ativa' : ''}`;
+        btn.textContent = `${etapa.numero}ª`;
+        btn.title = etapa.descricao;
+        btn.onclick = () => selecionarEtapa(etapa.numero);
+        selector.appendChild(btn);
+    });
+    
+    document.getElementById('modalSelecionarEtapa').classList.add('active');
 };
 
 document.getElementById('btnCancelarSelecao').onclick = () => {
-  document.getElementById('modalSelecionarEtapa').classList.remove('active');
+    document.getElementById('modalSelecionarEtapa').classList.remove('active');
 };
 
 async function selecionarEtapa(numero) {
-  const etapa = ETAPAS.find(e => e.numero === numero);
-  if (!etapa) return;
-  
-  if (!confirm(`Deseja ir para a ${etapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) return;
-  
-  try {
-    await set(ref(db, 'confirmados'), null);
-    await set(ref(db, 'listaEspera'), null);
+    const etapa = ETAPAS.find(e => e.numero === numero);
+    if (!etapa) return;
     
-    const dataAbertura = new Date('2026-04-20T07:00:00'); // Data passada para garantir abertura
+    if (!confirm(`Deseja ir para a ${etapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) return;
     
-    await salvarConfig({
-      etapa: etapa.numero,
-      dataEvento: etapa.data,
-      dataAbertura: dataAbertura.toISOString(),
-      inscricoesAbertas: true  // Força inscrições abertas
-    });
-    
-    document.getElementById('modalSelecionarEtapa').classList.remove('active');
-    alert(`✅ Configurado para ${etapa.descricao}!`);
-    
-  } catch (e) {
-    alert('Erro ao mudar de etapa: ' + e.message);
-  }
+    try {
+        await set(ref(db, 'confirmados'), null);
+        await set(ref(db, 'listaEspera'), null);
+        
+        let dataAbertura;
+        if (etapa.numero === 5) {
+            dataAbertura = DATA_ABERTURA_INSCRICOES;
+        } else {
+            dataAbertura = new Date('2026-04-20T07:00:00');
+        }
+        
+        await set(ref(db, 'config'), {
+            etapa: etapa.numero,
+            dataEvento: etapa.data,
+            dataAbertura: dataAbertura.toISOString(),
+            inscricoesAbertas: false
+        });
+        
+        config.etapa = etapa.numero;
+        config.dataEvento = etapa.data;
+        config.dataAbertura = dataAbertura.toISOString();
+        config.inscricoesAbertas = false;
+        
+        document.getElementById('modalSelecionarEtapa').classList.remove('active');
+        
+        if (etapa.numero === 5) {
+            dataEventoEl.textContent = '📅 5ª Etapa - 28/05/2026';
+        } else {
+            const dataFormatada = new Date(etapa.data).toLocaleDateString('pt-BR');
+            dataEventoEl.textContent = `📅 ${etapa.descricao} - ${dataFormatada}`;
+        }
+        
+        alert(`✅ Configurado para ${etapa.descricao}!`);
+        iniciarContador();
+        
+    } catch (e) {
+        alert('Erro ao mudar de etapa: ' + e.message);
+    }
 }
 
 btnProximaEtapa.onclick = () => {
-  const proximaEtapa = ETAPAS.find(e => e.numero === config.etapa + 1) || ETAPAS[0];
-  if (!confirm(`Avançar para ${proximaEtapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) return;
-  selecionarEtapa(proximaEtapa.numero);
+    const proximaEtapa = ETAPAS.find(e => e.numero === config.etapa + 1) || ETAPAS[0];
+    if (!confirm(`Avançar para ${proximaEtapa.descricao}?\n\nIsso irá apagar TODOS os jogadores das listas atuais!`)) return;
+    selecionarEtapa(proximaEtapa.numero);
 };
 
-// =============================================
-// SISTEMA DE PENALIDADES
-// =============================================
+// Penalidades
 btnGerenciarPenalidades.onclick = () => {
-  preencherSelectPenalidade();
-  atualizarListaPenalizados();
-  document.getElementById('modalGerenciarPenalidades').classList.add('active');
+    preencherSelectPenalidade();
+    atualizarListaPenalizados();
+    document.getElementById('modalGerenciarPenalidades').classList.add('active');
 };
 
 document.getElementById('btnFecharPenalidades').onclick = () => {
-  document.getElementById('modalGerenciarPenalidades').classList.remove('active');
+    document.getElementById('modalGerenciarPenalidades').classList.remove('active');
 };
 
 document.getElementById('btnAplicarPenalidade').onclick = async () => {
-  const nome = document.getElementById('penaltyPlayerSelect').value;
-  if (!nome) return alert('Selecione um jogador!');
-  
-  if (isJogadorPenalizado(nome)) {
-    return alert(`⚠️ ${nome} já está na lista de penalizados!`);
-  }
-  
-  if (!confirm(`Aplicar penalidade a ${nome}?\n\nEle será colocado automaticamente no último lugar da lista de espera ao se inscrever e receberá um aviso de penalidade.`)) return;
-  
-  try {
-    await push(ref(db, 'penalizados'), {
-      nome: nome,
-      etapaFalta: config.etapa,
-      dataAplicacao: new Date().toISOString()
-    });
-    alert(`⚠️ Penalidade aplicada a ${nome}!`);
-    document.getElementById('penaltyPlayerSelect').value = '';
-  } catch (e) {
-    alert('Erro ao aplicar penalidade: ' + e.message);
-  }
+    const nome = document.getElementById('penaltyPlayerSelect').value;
+    if (!nome) return alert('Selecione um jogador!');
+    
+    if (isJogadorPenalizado(nome)) {
+        return alert(`⚠️ ${nome} já está na lista de penalizados!`);
+    }
+    
+    if (!confirm(`Aplicar penalidade a ${nome}?\n\nEle será colocado automaticamente no último lugar da lista de espera.`)) return;
+    
+    try {
+        await push(ref(db, 'penalizados'), {
+            nome: nome,
+            etapaFalta: config.etapa,
+            dataAplicacao: new Date().toISOString()
+        });
+        alert(`⚠️ Penalidade aplicada a ${nome}!`);
+        document.getElementById('penaltyPlayerSelect').value = '';
+    } catch (e) {
+        alert('Erro ao aplicar penalidade: ' + e.message);
+    }
 };
 
 function atualizarListaPenalizados() {
-  const lista = document.getElementById('penalizedList');
-  const emptyMsg = document.getElementById('emptyPenalizedMsg');
-  
-  if (!lista) return;
-  
-  Array.from(lista.children).forEach(child => {
-    if (child.id !== 'emptyPenalizedMsg') child.remove();
-  });
-  
-  if (jogadoresPenalizados.length === 0) {
-    if (emptyMsg) emptyMsg.style.display = 'block';
-    return;
-  }
-  
-  if (emptyMsg) emptyMsg.style.display = 'none';
-  
-  jogadoresPenalizados.forEach(p => {
-    const div = document.createElement('div');
-    div.className = 'penalized-player-item';
-    div.innerHTML = `
-      <div>
-        <div class="player-name">⚠️ ${p.nome}</div>
-        <div class="penalty-etapa">Penalizado na ${p.etapaFalta}ª etapa · ${new Date(p.dataAplicacao).toLocaleDateString('pt-BR')}</div>
-      </div>
-      <button class="remove-penalty-btn" onclick="removerPenalidade('${p.id}', '${p.nome}')">Remover</button>
-    `;
-    lista.appendChild(div);
-  });
+    const lista = document.getElementById('penalizedList');
+    if (!lista) return;
+    
+    lista.innerHTML = '';
+    
+    if (jogadoresPenalizados.length === 0) {
+        lista.innerHTML = '<div class="empty-state">Nenhum jogador penalizado no momento.</div>';
+        return;
+    }
+    
+    jogadoresPenalizados.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'penalized-player-item';
+        div.innerHTML = `
+            <div>
+                <strong>⚠️ ${p.nome}</strong>
+                <div style="font-size:0.8em; opacity:0.8;">Penalizado na ${p.etapaFalta}ª etapa</div>
+            </div>
+            <button class="remove-penalty-btn" onclick="removerPenalidade('${p.id}', '${p.nome}')">Remover</button>
+        `;
+        lista.appendChild(div);
+    });
 }
 
 window.removerPenalidade = async (id, nome) => {
-  if (!confirm(`Remover a penalidade de ${nome}?`)) return;
-  try {
-    await remove(ref(db, `penalizados/${id}`));
-    alert(`✅ Penalidade de ${nome} removida!`);
-  } catch (e) {
-    alert('Erro ao remover penalidade: ' + e.message);
-  }
+    if (!confirm(`Remover a penalidade de ${nome}?`)) return;
+    try {
+        await remove(ref(db, `penalizados/${id}`));
+        alert(`✅ Penalidade de ${nome} removida!`);
+    } catch (e) {
+        alert('Erro ao remover penalidade: ' + e.message);
+    }
 };
 
-// =============================================
-// EXPORTAR CSV
-// =============================================
+// Exportar CSV
 document.getElementById('btnExportar').onclick = () => {
-  let csv = 'Posição,Nome,Status,Data/Hora\n';
-  confirmados.forEach((p, i) => {
-    csv += `${i+1},${p.nome},CONFIRMADO,${new Date(p.data).toLocaleString('pt-BR')}\n`;
-  });
-  
-  const listaEsperaOrdenada = [
-    ...listaEspera.filter(p => !p.isGuest && !p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)),
-    ...listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)),
-    ...listaEspera.filter(p => p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
-  ];
-  
-  listaEsperaOrdenada.forEach((p, i) => {
-    const tipo = p.isGuest ? 'CONVIDADO' : p.penalizado ? 'ESPERA-PENALIZADO' : 'ESPERA';
-    const nome = p.isGuest && p.guestOf ? `${p.nome} (Convidado de ${p.guestOf})` : p.nome;
-    csv += `${i+1},${nome},${tipo},${new Date(p.data).toLocaleString('pt-BR')}\n`;
-  });
-  
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `lista-poker-etapa${config.etapa}-${new Date().toISOString().split('T')[0]}.csv`;
-  link.click();
+    let csv = "Posição,Nome,Status,Data/Hora\n";
+    
+    confirmados.forEach((p, i) => {
+        csv += `${i+1},${p.nome},CONFIRMADO,${new Date(p.data).toLocaleString('pt-BR')}\n`;
+    });
+    
+    const membrosEspera = listaEspera.filter(p => !p.isGuest && !p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    const convidadosEspera = listaEspera.filter(p => p.isGuest).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    const penalizadosEspera = listaEspera.filter(p => p.penalizado).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    const listaEsperaOrdenada = [...membrosEspera, ...convidadosEspera, ...penalizadosEspera];
+    
+    listaEsperaOrdenada.forEach((p, i) => {
+        const tipo = p.isGuest ? 'CONVIDADO' : p.penalizado ? 'ESPERA-PENALIZADO' : 'ESPERA';
+        const nome = p.isGuest && p.guestOf ? `${p.nome} (Convidado de ${p.guestOf})` : p.nome;
+        csv += `${i+1},${nome},${tipo},${new Date(p.data).toLocaleString('pt-BR')}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = `lista-poker-etapa${config.etapa}-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 };
 </script>
 </body>
