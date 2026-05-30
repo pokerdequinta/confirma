@@ -446,9 +446,17 @@ function getEtapaAtual() {
     return ETAPAS.find(e => e.numero === config.etapa) || ETAPAS[4];
 }
 
+function formatarDataBR(dataString) {
+    const partes = dataString.split('-');
+    if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+    return dataString;
+}
+
 function atualizarDatasNaInterface() {
     const etapaAtual = getEtapaAtual();
-    const dataFormatada = new Date(etapaAtual.data).toLocaleDateString('pt-BR');
+    const dataFormatada = formatarDataBR(etapaAtual.data);
     dataEventoEl.textContent = `📅 ${etapaAtual.descricao} - ${dataFormatada}`;
     
     // Atualizar informações no modal de confirmação
@@ -1031,8 +1039,8 @@ async function selecionarEtapa(numero) {
         
         document.getElementById('modalSelecionarEtapa').classList.remove('active');
         
-        // Atualizar a data no container principal
-        const dataFormatada = new Date(etapa.data).toLocaleDateString('pt-BR');
+        // Atualizar a data no container principal usando a função de formatação
+        const dataFormatada = formatarDataBR(etapa.data);
         dataEventoEl.textContent = `📅 ${etapa.descricao} - ${dataFormatada}`;
         
         // Atualizar também os modais
