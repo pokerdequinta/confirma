@@ -213,7 +213,7 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <div class="info-card"><h2 id="waitlistCount">0</h2><span>⏳ Lista de Espera</span></div>
 </div>
 
-<button class="add-btn" id="btnConfirmar" disabled>🔒 INSCRIÇÕES FECHADAS - AGUARDE 25/05</button>
+<button class="add-btn" id="btnConfirmar" disabled>🔒 INSCRIÇÕES FECHADAS - AGUARDE 22/06</button>
 <button class="cancel-btn-main" id="btnCancelarWhatsApp">❌ CANCELAR MINHA INSCRIÇÃO</button>
 <button class="add-btn export-btn" id="btnExportar">📊 EXPORTAR LISTA (CSV)</button>
 
@@ -277,9 +277,9 @@ h1{font-family:'Anton';color:#d4a121;letter-spacing:3px}
 <label>📝 Nome do Convidado</label>
 <input id="guestName" placeholder="Digite o nome completo">
 </div>
-<div class="aviso-datas">
-📅 <strong>5ª Etapa: 28/05/2026</strong><br>
-🕐 Inscrições a partir de <strong>25/05 às 07:00</strong>
+<div class="aviso-datas" id="avisoDatasModal">
+📅 <strong id="modalEtapaInfo">5ª Etapa: 28/05/2026</strong><br>
+🕐 Inscrições a partir de <strong id="modalAberturaInfo">22/06/2026 às 07:00</strong>
 </div>
 <div class="modal-buttons">
 <button class="modal-btn cancel" id="btnCancelar">Cancelar</button>
@@ -309,8 +309,8 @@ Sua inscrição foi colocada automaticamente no <strong>último lugar da lista d
 <p style="margin: 15px 0; line-height: 1.6;">Esta é a página oficial de inscrição do torneio.</p>
 <p style="margin: 15px 0; line-height: 1.6;">
 <strong>📅 DATAS IMPORTANTES:</strong><br>
-• 🟢 Abertura das inscrições: <strong style="color:#4CAF50">25/05/2026 às 07:00</strong><br>
-• 🎯 5ª Etapa: <strong style="color:#d4a121">28/05/2026</strong>
+• 🟢 Abertura das inscrições: <strong style="color:#4CAF50" id="welcomeAberturaInfo">22/06/2026 às 07:00</strong><br>
+• 🎯 <span id="welcomeEtapaInfo">5ª Etapa: 28/05/2026</span>
 </p>
 <p style="margin: 15px 0; line-height: 1.6; font-size:0.9em">
 <strong>📋 Regras:</strong><br>
@@ -387,8 +387,8 @@ const firebaseConfig = {
 const LIMITE_VAGAS = 20;
 const FOTO_PADRAO = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
 
-// DATAS CORRETAS
-const DATA_ABERTURA_INSCRICOES = new Date('2026-05-25T07:00:00');
+// DATAS CORRETAS - INSCRIÇÕES ABREM 22/06 às 07:00
+const DATA_ABERTURA_INSCRICOES = new Date('2026-06-22T07:00:00');
 const DATA_5_ETAPA = '2026-05-28';
 
 const ETAPAS = [
@@ -442,11 +442,25 @@ const dataEventoEl = document.getElementById('dataEvento');
 const timerHeader = document.getElementById('timerHeader');
 const timerDisplay = document.getElementById('timer');
 
-// FORÇA A DATA CORRETA NO CARD
-dataEventoEl.textContent = '📅 5ª Etapa - 28/05/2026';
-
 function getEtapaAtual() {
     return ETAPAS.find(e => e.numero === config.etapa) || ETAPAS[4];
+}
+
+function atualizarDatasNaInterface() {
+    const etapaAtual = getEtapaAtual();
+    const dataFormatada = new Date(etapaAtual.data).toLocaleDateString('pt-BR');
+    dataEventoEl.textContent = `📅 ${etapaAtual.descricao} - ${dataFormatada}`;
+    
+    // Atualizar informações no modal de confirmação
+    document.getElementById('modalEtapaInfo').textContent = `${etapaAtual.descricao}: ${dataFormatada}`;
+    document.getElementById('modalAberturaInfo').textContent = `22/06/2026 às 07:00`;
+    
+    // Atualizar informações no modal de boas-vindas
+    document.getElementById('welcomeAberturaInfo').textContent = `22/06/2026 às 07:00`;
+    document.getElementById('welcomeEtapaInfo').textContent = `${etapaAtual.descricao}: ${dataFormatada}`;
+    
+    // Atualizar texto do botão
+    btnConfirmar.textContent = `🔒 INSCRIÇÕES FECHADAS - AGUARDE 22/06`;
 }
 
 function isJogadorPenalizado(nome) {
@@ -479,7 +493,7 @@ function iniciarContador() {
                 timerHeader.innerHTML = "⏳ ABERTURA DAS INSCRIÇÕES EM";
                 document.getElementById('countdownContainer').style.borderColor = "#d4a121";
                 btnConfirmar.disabled = true;
-                btnConfirmar.textContent = "🔒 INSCRIÇÕES FECHADAS - AGUARDE 25/05";
+                btnConfirmar.textContent = "🔒 INSCRIÇÕES FECHADAS - AGUARDE 22/06";
                 if (config.inscricoesAbertas !== false) {
                     set(ref(db, 'config/inscricoesAbertas'), false);
                     config.inscricoesAbertas = false;
@@ -578,6 +592,7 @@ async function carregarConfig() {
             config.dataEvento = DATA_5_ETAPA;
             config.dataAbertura = DATA_ABERTURA_INSCRICOES.toISOString();
         }
+        atualizarDatasNaInterface();
     } catch (e) {
         console.error('Erro ao carregar config:', e);
     }
@@ -629,7 +644,7 @@ window.addEventListener('load', () => document.getElementById('modalBemVindo').c
 
 btnConfirmar.onclick = () => {
     if (!inscricoesAtivas && !modoAdmin) {
-        alert("📅 As inscrições abrirão no dia 25/05/2026 às 07:00 da manhã!");
+        alert("📅 As inscrições abrirão no dia 22/06/2026 às 07:00 da manhã!");
         return;
     }
     document.getElementById('modal').classList.add('active');
@@ -649,7 +664,7 @@ document.getElementById('isGuest').onchange = e => {
 
 document.getElementById('btnConfirmarModal').onclick = async () => {
     if (!inscricoesAtivas && !modoAdmin) {
-        alert("As inscrições estão fechadas! Aguarde 25/05 às 07:00.");
+        alert("As inscrições estão fechadas! Aguarde 22/06 às 07:00.");
         return;
     }
     
@@ -672,18 +687,19 @@ document.getElementById('btnConfirmarModal').onclick = async () => {
         if (!isGuestChecked) {
             const snapshot = await get(ref(db, 'confirmados'));
             const totalAtual = snapshot.exists() ? snapshot.size : 0;
+            const fotoJogador = getFotoJogador(nome);
             
             if (totalAtual < LIMITE_VAGAS && !penalizado) {
                 await push(ref(db, 'confirmados'), { 
                     nome, isGuest: false, data: agora, timestamp: Date.now(),
-                    foto: getFotoJogador(nome), etapa: config.etapa
+                    foto: fotoJogador, etapa: config.etapa
                 });
                 alert('✅ Presença confirmada! Você está na lista de confirmados.');
             } else {
                 const tsInscricao = penalizado ? Date.now() + (1000 * 60 * 60 * 24 * 365) : Date.now();
                 await push(ref(db, 'listaEspera'), { 
                     nome, isGuest: false, data: agora, timestamp: tsInscricao,
-                    foto: getFotoJogador(nome), etapa: config.etapa, penalizado: penalizado
+                    foto: fotoJogador, etapa: config.etapa, penalizado: penalizado
                 });
                 
                 if (penalizado) {
@@ -700,7 +716,7 @@ document.getElementById('btnConfirmarModal').onclick = async () => {
             if (!gNome) return alert('Digite o nome do convidado!');
             await push(ref(db, 'listaEspera'), { 
                 nome: gNome, isGuest: true, guestOf: nome, data: agora,
-                timestamp: Date.now(), etapa: config.etapa
+                timestamp: Date.now(), etapa: config.etapa, foto: FOTO_PADRAO
             });
             alert('✅ Convidado adicionado à lista de espera!');
         }
@@ -740,7 +756,7 @@ function atualizar() {
         const btnRemover = modoAdmin ? `<button class="remove-btn" onclick="removerJogador('${p.id}',false)">❌</button>` : '';
         const badge = p.isGuest ? '<span class="player-badge guest">CONVIDADO</span>' : '<span class="player-badge member">MEMBRO</span>';
         const guestInfo = p.isGuest && p.guestOf ? ` <small>(Convidado de ${p.guestOf})</small>` : '';
-        const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
+        const foto = p.foto || getFotoJogador(p.nome) || FOTO_PADRAO;
         
         confirmedList.innerHTML += `<li class="player-item">
             <div class="player-info">
@@ -771,7 +787,7 @@ function atualizar() {
                       '<span class="player-badge wait">MEMBRO</span>';
         const prioridade = !p.isGuest && !p.penalizado && i < membrosEspera.length ? '<span class="priority-indicator">PRIORIDADE</span>' : '';
         const penalizadoTag = p.penalizado ? '<span class="penalty-indicator">⚠️ PENALIZADO</span>' : '';
-        const foto = !p.isGuest ? (p.foto || getFotoJogador(p.nome)) : FOTO_PADRAO;
+        const foto = p.foto || (!p.isGuest ? getFotoJogador(p.nome) : FOTO_PADRAO);
         
         waitlistList.innerHTML += `<li class="player-item">
             <div class="player-info">
@@ -863,7 +879,7 @@ window.promoverJogadorManual = async (id) => {
             guestOf: jogador.guestOf || null,
             data: jogador.data,
             timestamp: jogador.timestamp,
-            foto: jogador.foto || (!jogador.isGuest ? getFotoJogador(jogador.nome) : null),
+            foto: jogador.foto || (!jogador.isGuest ? getFotoJogador(jogador.nome) : FOTO_PADRAO),
             promovido: true,
             promocaoManual: true,
             dataPromocao: new Date().toISOString(),
@@ -926,7 +942,7 @@ btnToggleInscricoes.onclick = async () => {
         timerDisplay.innerHTML = "Abertas manualmente pelo administrador";
     } else {
         btnConfirmar.disabled = true;
-        btnConfirmar.textContent = "🔒 INSCRIÇÕES FECHADAS";
+        btnConfirmar.textContent = "🔒 INSCRIÇÕES FECHADAS - AGUARDE 22/06";
         iniciarContador();
     }
 };
@@ -998,12 +1014,8 @@ async function selecionarEtapa(numero) {
         await set(ref(db, 'confirmados'), null);
         await set(ref(db, 'listaEspera'), null);
         
-        let dataAbertura;
-        if (etapa.numero === 5) {
-            dataAbertura = DATA_ABERTURA_INSCRICOES;
-        } else {
-            dataAbertura = new Date('2026-04-20T07:00:00');
-        }
+        // Para todas as etapas, a abertura é 22/06 às 07:00
+        const dataAbertura = DATA_ABERTURA_INSCRICOES;
         
         await set(ref(db, 'config'), {
             etapa: etapa.numero,
@@ -1019,12 +1031,13 @@ async function selecionarEtapa(numero) {
         
         document.getElementById('modalSelecionarEtapa').classList.remove('active');
         
-        if (etapa.numero === 5) {
-            dataEventoEl.textContent = '📅 5ª Etapa - 28/05/2026';
-        } else {
-            const dataFormatada = new Date(etapa.data).toLocaleDateString('pt-BR');
-            dataEventoEl.textContent = `📅 ${etapa.descricao} - ${dataFormatada}`;
-        }
+        // Atualizar a data no container principal
+        const dataFormatada = new Date(etapa.data).toLocaleDateString('pt-BR');
+        dataEventoEl.textContent = `📅 ${etapa.descricao} - ${dataFormatada}`;
+        
+        // Atualizar também os modais
+        document.getElementById('modalEtapaInfo').textContent = `${etapa.descricao}: ${dataFormatada}`;
+        document.getElementById('welcomeEtapaInfo').textContent = `${etapa.descricao}: ${dataFormatada}`;
         
         alert(`✅ Configurado para ${etapa.descricao}!`);
         iniciarContador();
